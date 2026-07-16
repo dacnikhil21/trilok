@@ -352,11 +352,10 @@ function DashboardContent() {
         {/* ── Mobile Scroll Body ─────────────── */}
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
 
-          {/* HERO CARD — Mockup Refinement */}
           <motion.div
             whileTap={{ scale: 0.985 }}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-5 flex flex-col justify-between h-[200px]"
+            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-4.5 pb-4 flex flex-col justify-between h-[162px]"
           >
             {/* Gloss reflection glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
@@ -380,7 +379,7 @@ function DashboardContent() {
                 
                 {/* SVG Illustration resembling the document + shield + check + pen */}
                 <div className="relative">
-                  <svg className="w-[84px] h-[64px]" viewBox="0 0 84 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-[74px] h-[56px]" viewBox="0 0 84 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                     {/* Document Shadow */}
                     <rect x="25" y="5" width="44" height="54" rx="8" fill="black" fillOpacity="0.08" />
                     {/* Document Sheet */}
