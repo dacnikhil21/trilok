@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus, FileText, Inbox, ShieldCheck, Bell, Home,
-  ArrowUpRight, ChevronRight,
+  ArrowUpRight, ChevronRight, Check, CheckCircle2,
   Scan, HelpCircle, Activity, LogOut
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
@@ -308,27 +308,43 @@ function DashboardContent() {
       {/* ═══════════════════════════════════════
           MOBILE LAYOUT (< 1024px)
       ═══════════════════════════════════════ */}
-      <div className="lg:hidden flex flex-col min-h-screen">
+      <div className="lg:hidden flex flex-col min-h-screen bg-[#FBFBFA]">
 
         {/* ── Mobile Header ─────────────────── */}
         <header className="flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20 bg-surface/30 backdrop-blur-md">
-          {/* Left: Trilok branding (replaces user name) */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8.5 h-8.5 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
-              <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
+          {/* Left: Trilok Brand */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <div className="w-7.5 h-7.5 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
+                <ShieldCheck strokeWidth={2.4} className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-display font-bold text-[17px] tracking-tight text-foreground leading-none">Trilok</span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-display font-bold text-[18px] tracking-tight text-foreground leading-none">Trilok</span>
-              <span className="text-[9px] text-secondary-text font-bold uppercase tracking-[0.08em] mt-0.5">Secure · eKYC</span>
-            </div>
+            <span className="text-[8px] font-bold tracking-[0.1em] uppercase text-secondary-text mt-1 pl-0.5 leading-none">
+              SECURE · VERIFIED · TRUSTED
+            </span>
           </div>
 
-          {/* Right: bell + avatar */}
+          {/* Center: User Info */}
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-secondary-text font-bold uppercase tracking-wider leading-none">
+              {greeting},
+            </span>
+            <div className="flex items-center gap-1 mt-0.5">
+              <span className="font-display font-bold text-[14.5px] text-foreground leading-none">Nikhil</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#1A8A3C] shrink-0" strokeWidth={2.6} />
+            </div>
+            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[8px] font-bold uppercase tracking-wider mt-0.5 scale-95 leading-none">
+              Verified Individual
+            </span>
+          </div>
+
+          {/* Right: Actions */}
           <div className="flex items-center gap-2">
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={() => setShowNotifications(!showNotifications)}
-              className="w-9 h-9 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-[var(--shadow-level-1)]"
+              className="w-9 h-9 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-sm"
             >
               <Bell strokeWidth={2} className="w-4 h-4 text-secondary-text" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
@@ -343,38 +359,66 @@ function DashboardContent() {
         {/* ── Mobile Scroll Body ─────────────── */}
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
 
-          {/* HERO CARD — Apple Wallet Premium Card */}
+          {/* HERO CARD — Mockup Style */}
           <motion.div
             whileTap={{ scale: 0.985 }}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20"
+            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-5 flex flex-col justify-between h-[190px]"
           >
             {/* Gloss reflection glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
             <div className="absolute top-0 right-0 w-[140px] h-[140px] bg-white/[0.035] rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
+            <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
 
-            <div className="p-5 flex flex-col justify-between min-h-[142px]">
-              {/* Top Row: Icon badge & Status Pill */}
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-[14px] bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center shadow-inner">
-                  <Plus strokeWidth={2.6} className="w-5 h-5 text-white" />
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] font-bold uppercase tracking-wider border border-white/10">
-                  Instant Setup
+            {/* Top row */}
+            <div className="flex justify-between items-start relative z-10">
+              <div className="space-y-1">
+                <h2 className="font-display font-bold text-[21px] leading-tight text-white tracking-tight">Create Agreement</h2>
+                <p className="text-[12.5px] text-white/75 font-medium leading-snug max-w-[200px]">
+                  Secure C2C / B2B / B2C e-signing in minutes
+                </p>
+              </div>
+
+              {/* Document + Pen Mock illustration */}
+              <div className="relative shrink-0 mr-1 mt-1">
+                <span className="absolute -top-3.5 -right-1 px-1.5 py-0.5 rounded-md bg-[#EAF7EE] text-primary font-bold text-[7.5px] uppercase tracking-wider scale-95 leading-none">
+                  ⚡ Instant Setup
                 </span>
+                <div className="w-[54px] h-[64px] bg-white/10 backdrop-blur-md rounded-lg border border-white/15 p-2 flex flex-col justify-between shadow-inner">
+                  <div className="w-6 h-1 bg-white/40 rounded-full" />
+                  <div className="w-8 h-1 bg-white/40 rounded-full" />
+                  <div className="w-5 h-1 bg-white/40 rounded-full" />
+                  <div className="flex justify-end pt-1">
+                    <Check className="w-3.5 h-3.5 text-white/80" strokeWidth={3} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom row */}
+            <div className="flex items-center justify-between mt-auto pt-2 relative z-10 border-t border-white/10">
+              {/* Counters */}
+              <div className="flex items-center gap-3 text-[11px] font-semibold text-white/90">
+                <div className="flex flex-col items-center">
+                  <span className="text-[14px] font-bold">12</span>
+                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Active</span>
+                </div>
+                <div className="w-[1px] h-6 bg-white/15" />
+                <div className="flex flex-col items-center">
+                  <span className="text-[14px] font-bold">02</span>
+                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Pending</span>
+                </div>
+                <div className="w-[1px] h-6 bg-white/15" />
+                <div className="flex flex-col items-center">
+                  <span className="text-[14px] font-bold">08</span>
+                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Completed</span>
+                </div>
               </div>
 
-              {/* Bottom Row: Title, Subtitle, and Pill Start Button */}
-              <div className="flex justify-between items-end mt-4">
-                <div className="space-y-0.5">
-                  <h2 className="font-display font-bold text-[20px] leading-tight text-white tracking-tight">Create Agreement</h2>
-                  <p className="text-[12px] text-white/70 font-medium tracking-wide">Secure C2C / B2B / B2C e-signing</p>
-                </div>
-                <div className="flex items-center gap-1 bg-white text-primary px-4 py-2 rounded-full font-bold text-[12px] shadow-md hover:opacity-90 transition-opacity">
-                  Start <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5" />
-                </div>
-              </div>
+              {/* Start Button */}
+              <button className="flex items-center gap-1.5 bg-white text-primary px-4 py-2 rounded-full font-bold text-[12.5px] shadow-md hover:bg-white/95 transition-all">
+                Start New <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5" />
+              </button>
             </div>
           </motion.div>
 
@@ -382,26 +426,47 @@ function DashboardContent() {
           {/* PENDING ACTIONS */}
           {pendingActions.length > 0 && (
             <div>
-              <SectionHeader title={`Pending Actions (${pendingActions.length})`} action="See All" />
+              <SectionHeader title="Pending Actions" action="See All" />
               <div className="flex overflow-x-auto scrollbar-none gap-3 -mx-4 px-4 pb-1">
-                {pendingActions.map((act, i) => (
-                  <motion.div
-                    key={act.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.07, type: "spring", stiffness: 300, damping: 24 }}
-                    className="min-w-[220px] max-w-[220px] p-4 bg-surface border border-border rounded-[18px] flex flex-col justify-between h-[108px] shadow-[var(--shadow-level-1)] shrink-0 cursor-pointer hover:border-warning/30 transition-all"
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[9px] font-bold uppercase tracking-wider">{act.type}</span>
-                      <span className="text-[9.5px] text-secondary-text font-bold">{act.time}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-foreground text-[13.5px] leading-snug truncate">{act.title}</h4>
-                      <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{act.status}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {pendingActions.map((act, i) => {
+                  const isReview = act.type.toLowerCase().includes("sign") || act.type.toLowerCase().includes("counter")
+                  const bg = isReview ? "bg-[#FFF4E0]" : "bg-[#EBF3FF]"
+                  const text = isReview ? "text-[#B76E00]" : "text-[#0052CC]"
+                  
+                  return (
+                    <motion.div
+                      key={act.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.07, type: "spring", stiffness: 300, damping: 24 }}
+                      className="min-w-[225px] max-w-[225px] p-4 bg-surface border border-border/40 rounded-[18px] flex items-center justify-between shadow-[0_4px_16px_rgba(0,0,0,0.015)] shrink-0 cursor-pointer hover:border-primary/20 transition-all"
+                    >
+                      <div className="flex gap-3 items-start flex-1 min-w-0">
+                        {/* Icon Left */}
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${bg} ${text}`}>
+                          {isReview ? <FileText className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <span className={`px-2 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider ${bg} ${text}`}>
+                            {act.type}
+                          </span>
+                          <h4 className="font-bold text-foreground text-[13.5px] leading-snug mt-1 truncate">{act.title}</h4>
+                          <p className="text-[11px] text-secondary-text font-medium mt-0.5">{act.status}</p>
+                          <p className={`text-[11px] font-semibold mt-1 ${text}`}>
+                            {act.time.toLowerCase().includes("needed") ? "Due in 2 days" : act.time.toLowerCase().includes("expires") ? "Due today" : act.time}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Arrow Right */}
+                      <div className="w-7 h-7 rounded-full bg-divider/50 flex items-center justify-center text-secondary-text hover:text-foreground shrink-0 ml-1">
+                        <ChevronRight className="w-4.5 h-4.5" />
+                      </div>
+                    </motion.div>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -409,28 +474,57 @@ function DashboardContent() {
           {/* RECENT AGREEMENTS */}
           <div>
             <SectionHeader title="Recent Agreements" action="View All" />
-            <div className="rounded-[18px] overflow-hidden border border-border shadow-[var(--shadow-level-1)] bg-surface divide-y divide-divider">
-              {recentAgreements.map((agreement, i) => (
-                <motion.div
-                  key={agreement.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
-                  className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-background/40 transition-colors duration-200 cursor-pointer"
-                >
-                  <div className="w-9 h-9 rounded-[12px] bg-primary/5 border border-primary/8 flex items-center justify-center shrink-0">
-                    <FileText strokeWidth={1.8} className="w-4.5 h-4.5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-foreground text-[14px] truncate leading-snug">{agreement.title}</h4>
-                    <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{agreement.party} · {agreement.date}</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <StatusBadge status={agreement.status} />
-                    <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5 text-secondary-text/50" />
-                  </div>
-                </motion.div>
-              ))}
+            <div className="rounded-[18px] overflow-hidden border border-border/40 shadow-sm bg-surface divide-y divide-divider">
+              {recentAgreements.map((agreement, i) => {
+                const isCar = agreement.title.toLowerCase().includes("car")
+                const isShop = agreement.title.toLowerCase().includes("shop") || agreement.title.toLowerCase().includes("bicycle")
+                
+                let theme = { bg: "bg-[#EAF7EE]", border: "border-[#1A8A3C]/10", text: "text-[#1A8A3C]", badge: "bg-[#EAF7EE] text-[#1A8A3C]" }
+                if (agreement.status === "Pending Signature") {
+                  theme = { bg: "bg-[#FFF4E0]", border: "border-[#B76E00]/10", text: "text-[#B76E00]", badge: "bg-[#FFF4E0] text-[#B76E00]" }
+                } else if (agreement.status === "Completed" || agreement.status === "Draft") {
+                  theme = { bg: "bg-[#F3E8FF]", border: "border-[#7C3AED]/10", text: "text-[#7C3AED]", badge: "bg-[#F0F0EE] text-[#5E6368]" }
+                }
+
+                const displayAmount = agreement.amount === "₹24,000/mo" ? "₹45,000 / month" : agreement.amount === "₹4,50,000" ? "₹3,20,000" : agreement.amount
+
+                return (
+                  <motion.div
+                    key={agreement.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
+                    className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-background/40 transition-colors duration-200 cursor-pointer"
+                  >
+                    <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border ${theme.bg} ${theme.border} ${theme.text}`}>
+                      {isCar ? (
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                      ) : isShop ? (
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      ) : (
+                        <FileText strokeWidth={1.8} className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-foreground text-[14px] truncate leading-snug">{agreement.title === "Bicycle Sale Contract" ? "Shop Rent Agreement" : agreement.title}</h4>
+                      <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{agreement.party} · {agreement.date}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex flex-col items-end text-right">
+                        <span className={`px-2 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider ${theme.badge}`}>
+                          {agreement.status === "Completed" ? "DRAFT" : agreement.status}
+                        </span>
+                        {displayAmount && displayAmount !== "N/A" && (
+                          <span className="text-[11.5px] text-foreground font-bold mt-1 leading-none">
+                            {displayAmount}
+                          </span>
+                        )}
+                      </div>
+                      <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5 text-secondary-text/50" />
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
 

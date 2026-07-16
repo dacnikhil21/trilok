@@ -11,7 +11,7 @@ import { ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock
 
 type OnboardingStep = "aadhaar" | "otp" | "consent" | "permissions" | "liveness" | "success"
 
-function VerifyIdentityPageContent() {
+function VerifyIdentityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
@@ -392,7 +392,7 @@ export default function VerifyIdentityPage() {
         <span className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     }>
-      <VerifyIdentityPageContent />
+      <VerifyIdentityContent />
     </React.Suspense>
   )
 }

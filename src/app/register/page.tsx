@@ -24,7 +24,7 @@ const B2B_TYPES = [
   "Public Limited Company"
 ]
 
-function RegisterPageContent() {
+function RegisterFormContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase() as "c2c" | "b2b" | "b2c"
@@ -444,7 +444,7 @@ export default function RegisterPage() {
         <span className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     }>
-      <RegisterPageContent />
+      <RegisterFormContent />
     </React.Suspense>
   )
 }

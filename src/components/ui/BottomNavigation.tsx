@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { Home, FileText, Inbox, LogOut, Plus, LucideIcon } from "lucide-react"
+import { Home, FileText, Inbox, User, Plus, LucideIcon } from "lucide-react"
 
 export interface NavTabItem {
   id: string
@@ -30,27 +30,27 @@ export function BottomNavigation({
 
   const leftTabs: NavTabItem[] = [
     { id: "home", label: "Home", icon: Home },
-    { id: "agreements", label: "Contracts", icon: FileText },
+    { id: "agreements", label: "Agreements", icon: FileText },
   ]
 
   const rightTabs: NavTabItem[] = [
     { id: "invitations", label: "Inbox", icon: Inbox },
-    { id: "signout", label: "Sign Out", icon: LogOut },
+    { id: "profile", label: "Profile", icon: User },
   ]
 
   const renderTab = (tab: NavTabItem) => {
     const Icon = tab.icon
     const isActive = activeTab === tab.id
-    const isSignOut = tab.id === "signout"
+    const isProfile = tab.id === "profile"
 
     return (
       <button
         key={tab.id}
-        onClick={() => isSignOut ? onLogout() : onTabChange(tab.id)}
+        onClick={() => isProfile ? onLogout() : onTabChange(tab.id)}
         className="flex flex-col items-center justify-center flex-1 py-2 gap-0.5 relative"
       >
         <div className={`flex items-center justify-center transition-all duration-250 ${
-          isSignOut ? "text-error" : isActive ? "text-primary" : "text-secondary-text"
+          isActive ? "text-primary" : "text-secondary-text"
         }`}>
           <Icon strokeWidth={isActive ? 2.4 : 1.9} className="w-[19px] h-[19px]" />
           {tab.id === "invitations" && unreadCount > 0 && (
@@ -58,7 +58,7 @@ export function BottomNavigation({
           )}
         </div>
         <span className={`text-[9.5px] font-bold transition-colors leading-none ${
-          isSignOut ? "text-error" : isActive ? "text-primary" : "text-secondary-text"
+          isActive ? "text-primary" : "text-secondary-text"
         }`}>
           {tab.label}
         </span>
