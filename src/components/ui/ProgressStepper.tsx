@@ -20,7 +20,7 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
       {/* Node row */}
       <div className="flex items-center justify-between w-full relative px-2">
         {/* Background line that goes across the entire row behind the dots */}
-        <div className="absolute left-6 right-6 top-[13px] h-[2px] bg-border -z-10 rounded-full overflow-hidden">
+        <div className="absolute left-6 right-6 top-[13px] h-[2px] bg-border z-0 rounded-full overflow-hidden">
           <motion.div
             initial={false}
             animate={{ width: `${(currentStep / (totalSteps - 1)) * 100}%` }}
@@ -35,7 +35,7 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
           const isPending = idx > currentStep
 
           return (
-            <div key={idx} className="flex flex-col items-center z-10 shrink-0 w-12">
+            <div key={idx} className="flex flex-col items-center relative z-10 shrink-0 w-12">
               {/* Node Dot */}
               <motion.div
                 initial={false}
