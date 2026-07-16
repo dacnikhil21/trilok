@@ -147,25 +147,24 @@ function DashboardContent() {
 
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 flex flex-col min-w-0 pb-28 lg:pb-0 z-10">
-          {/* HEADER */}
           <header className="bg-surface/30 backdrop-blur-[24px] border-b border-border/30 px-6 py-5 sticky top-0 z-30">
             <div className="flex items-center justify-between w-full max-w-4xl mx-auto">
-              <div className="space-y-1">
-                <p className="text-[13px] text-secondary-text font-bold tracking-wider uppercase leading-none">{greeting}</p>
-                <h2 className="text-[28px] font-display font-bold text-foreground leading-tight tracking-tight">Nikhil</h2>
-                <p className="text-[11px] text-primary font-bold tracking-wider uppercase mt-1">{config.title} • {config.subtitle}</p>
+              <div className="space-y-0.5">
+                <p className="text-[12px] text-secondary-text font-bold tracking-wider uppercase leading-none">{greeting}</p>
+                <h2 className="text-[26px] font-display font-bold text-foreground leading-tight tracking-tight">Nikhil</h2>
+                <p className="text-[10px] text-secondary-text font-bold tracking-wider uppercase mt-1">{config.title} • {config.subtitle}</p>
               </div>
 
-              <div className="flex items-center gap-3.5">
+              <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-2.5 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border"
+                  className="p-2 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border"
                 >
-                  <Bell strokeWidth={2.2} className="w-5 h-5" />
-                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary" />
+                  <Bell strokeWidth={2.2} className="w-4.5 h-4.5" />
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
                 </button>
 
-                <div className="w-10 h-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[14px] border border-primary/10 shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[13px] border border-primary/10 shadow-sm">
                   N
                 </div>
               </div>
@@ -173,7 +172,7 @@ function DashboardContent() {
           </header>
 
           {/* DASHBOARD HOME HIERARCHY */}
-          <div className="flex-1 p-5 sm:p-6 space-y-8 max-w-4xl w-full mx-auto">
+          <div className="flex-1 p-5 sm:p-6 space-y-6 max-w-4xl w-full mx-auto">
             {/* 1. VERIFICATION STATUS BANNER */}
             <StatusCard
               variant="success"

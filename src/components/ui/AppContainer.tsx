@@ -31,7 +31,7 @@ export function AppContainer({ children, className = "", centered = false }: App
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[45%] bg-[#D4AF37]/[0.02] rounded-full blur-[110px] pointer-events-none" />
       
       {/* FLOATING DEVELOPER QUICK BYPASS PANEL */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      <div className="fixed bottom-24 right-6 z-50 flex flex-row-reverse items-center gap-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="h-8 px-3 rounded-full backdrop-blur-md bg-primary/10 border border-primary/20 text-primary font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5 shadow-sm hover:bg-primary/15 transition-all"
