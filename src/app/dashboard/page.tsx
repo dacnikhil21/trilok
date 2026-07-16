@@ -449,7 +449,7 @@ function DashboardContent() {
 
               {/* Start Button */}
               <button className="flex items-center justify-center gap-1 bg-white text-[#0A5C36] px-4.5 py-2.5 rounded-full font-bold text-[13px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all shrink-0 whitespace-nowrap">
-                Start New <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
+                Start <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
               </button>
             </div>
           </motion.div>
