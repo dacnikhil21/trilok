@@ -4,9 +4,9 @@ import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Plus, FileText, Inbox, ShieldCheck, Home, Bell,
-  ArrowUpRight, ChevronRight, CheckCircle2,
-  Scan, HelpCircle, Activity, LogOut, Zap, TrendingUp
+  Plus, FileText, Inbox, ShieldCheck, Bell, Home,
+  ArrowUpRight, ChevronRight,
+  Scan, HelpCircle, Activity, LogOut
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { Card } from "@/components/ui/card"
@@ -339,54 +339,36 @@ function DashboardContent() {
         </header>
 
         {/* ── Mobile Scroll Body ─────────────── */}
-        <div className="flex-1 overflow-y-auto pb-32 px-4 pt-5 space-y-5">
+        <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
 
-          {/* HERO CARD */}
+          {/* HERO CARD — compact premium row-style */}
           <motion.button
-            whileHover={{ y: -3 }} whileTap={{ scale: 0.975 }} transition={spring}
+            whileHover={{ y: -2 }} whileTap={{ scale: 0.977 }} transition={spring}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#095230] text-surface text-left overflow-hidden group cursor-pointer shadow-[0_12px_40px_-8px_rgba(10,92,54,0.30)] border border-primary/15"
+            className="relative w-full rounded-[20px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#095230] text-white text-left overflow-hidden cursor-pointer shadow-[0_8px_28px_-6px_rgba(10,92,54,0.32)] border border-primary/15"
           >
             <div className="sweep-overlay" />
-            {/* Subtle dot pattern overlay */}
-            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+            <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
 
-            <div className="relative px-5 pt-5 pb-5 flex flex-col gap-4">
-              {/* Top row */}
-              <div className="flex items-start justify-between">
-                <div className="w-11 h-11 rounded-[14px] bg-white/12 backdrop-blur-md border border-white/18 flex items-center justify-center">
-                  <Plus strokeWidth={2.6} className="w-5.5 h-5.5 text-white" />
-                </div>
-                <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-white/60 bg-white/8 px-2.5 py-1 rounded-full border border-white/12">
-                  <Zap className="w-3 h-3" /> Instant
-                </span>
+            <div className="relative flex items-center gap-4 px-5 py-4">
+              {/* Icon */}
+              <div className="w-10 h-10 rounded-[13px] bg-white/12 border border-white/18 flex items-center justify-center shrink-0">
+                <Plus strokeWidth={2.6} className="w-5 h-5 text-white" />
               </div>
 
-              {/* Content */}
-              <div>
-                <h2 className="font-display font-bold text-[22px] leading-tight text-white mb-1">
-                  Create Agreement
-                </h2>
-                <p className="text-[13px] text-white/75 font-medium leading-snug max-w-[240px]">
-                  Legally binding digital agreements, ready in seconds.
-                </p>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <h2 className="font-display font-bold text-[18px] leading-tight text-white">Create Agreement</h2>
+                <p className="text-[12px] text-white/70 font-medium leading-snug mt-0.5">Legally binding · eKYC verified · Instant</p>
               </div>
 
               {/* CTA */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-[11px] text-white/55 font-semibold">
-                  <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> eKYC Verified</span>
-                  <span className="flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> Blockchain Logged</span>
-                </div>
-                <motion.div
-                  whileHover={{ x: 2, y: -2 }}
-                  className="flex items-center gap-1.5 text-[12px] font-bold tracking-wider uppercase text-white bg-white/12 hover:bg-white/20 transition-colors px-4 py-2.5 rounded-full border border-white/20"
-                >
-                  Start <ArrowUpRight strokeWidth={2.5} className="w-4 h-4" />
-                </motion.div>
+              <div className="flex items-center gap-1 text-[11.5px] font-bold tracking-wider uppercase text-white bg-white/12 px-3.5 py-2 rounded-full border border-white/20 shrink-0">
+                Start <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5 ml-0.5" />
               </div>
             </div>
           </motion.button>
+
 
           {/* PENDING ACTIONS */}
           {pendingActions.length > 0 && (
@@ -498,6 +480,7 @@ function DashboardContent() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onLogout={handleLogout}
+          onCreateNew={handleCreateNew}
           unreadCount={pendingActions.length}
         />
       </div>
