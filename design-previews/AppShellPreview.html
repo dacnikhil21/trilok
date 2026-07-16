@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>eSaleAgreement Shell</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colors */
+            --bg-ivory: #FDFDFB;
+            --surface-white: #FFFFFF;
+            --text-slate: #1A1D1F;
+            --text-secondary: #6F767E;
+            --accent-emerald: #0A5C36;
+            --accent-emerald-hover: #08492b;
+            --border-light: rgba(26, 29, 31, 0.05);
+            --danger-muted: #E25C5C;
+            --success-muted: #4BB543;
+            
+            /* Tokens */
+            --space-1: 8px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --shadow-card: 0px 4px 24px rgba(0,0,0, 0.04);
+            --shadow-float: 0px 12px 32px rgba(0,0,0, 0.08);
+            
+            /* Transitions */
+            --transition-smooth: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #EAEAEA; /* Desktop background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-slate);
+        }
+
+        /* Mobile Device Container */
+        .app-container {
+            width: 100%;
+            max-width: 414px; /* iPhone Max width */
+            height: 100vh;
+            max-height: 896px;
+            background-color: var(--bg-ivory);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                height: 90vh;
+                border-radius: 40px;
+                border: 8px solid #333;
+            }
+        }
+
+        /* Status Bar (Simulated) */
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 14px;
+            font-weight: 600;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 50;
+        }
+
+        /* Top Header */
+        .top-header {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            padding: var(--space-2) var(--space-3);
+            display: flex;
+            align-items: center;
+            z-index: 40;
+            background: linear-gradient(to bottom, var(--bg-ivory) 80%, transparent);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-white);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .back-btn:active {
+            transform: scale(0.92);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: var(--space-2);
+            letter-spacing: -0.5px;
+        }
+
+        /* Main Content Scrollable Area */
+        .main-content {
+            height: 100%;
+            overflow-y: auto;
+            padding: 110px var(--space-3) 160px; /* Space for header & sticky CTA/Nav */
+            scroll-behavior: smooth;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hero / Typography */
+        h1.hero-text {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: var(--space-1);
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: var(--space-4);
+        }
+
+        /* Components: Inputs */
+        .input-group {
+            position: relative;
+            margin-bottom: var(--space-3);
+        }
+
+        .input-label {
+            position: absolute;
+            left: 16px;
+            top: 18px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 24px 16px 10px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--text-slate);
+            background: var(--surface-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-card);
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-emerald);
+        }
+
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label {
+            transform: translateY(-8px) scale(0.75);
+            transform-origin: left top;
+            color: var(--accent-emerald);
+        }
+
+        /* Components: Cards */
+        .card {
+            background: var(--surface-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3);
+            box-shadow: var(--shadow-card);
+            margin-bottom: var(--space-3);
+            border: 1px solid var(--border-light);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: var(--space-1);
+        }
+
+        .card-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Sticky Bottom CTA */
+        .sticky-cta-container {
+            position: absolute;
+            bottom: 84px; /* Above Bottom Nav */
+            left: 0;
+            right: 0;
+            padding: var(--space-3) var(--space-3) var(--space-2);
+            background: linear-gradient(to top, var(--bg-ivory) 60%, transparent);
+            z-index: 30;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            border-radius: var(--radius-sm);
+            background-color: var(--accent-emerald);
+            color: var(--surface-white);
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(10, 92, 54, 0.25);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 12px rgba(10, 92, 54, 0.2);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 84px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px; /* Safe area padding */
+            z-index: 40;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            width: 60px;
+        }
+
+        .nav-item.active {
+            color: var(--accent-emerald);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .nav-item.active .nav-icon {
+            fill: currentColor;
+            stroke: none;
+        }
+
+        /* Floating Bottom Sheet */
+        .bottom-sheet-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .bottom-sheet {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            background: var(--surface-white);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: var(--space-4) var(--space-3) var(--space-4);
+            z-index: 70;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+        }
+
+        .bottom-sheet.open {
+            transform: translateY(0);
+        }
+        .bottom-sheet-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--border-light);
+            border-radius: 2px;
+            margin: 0 auto var(--space-3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>LTE &nbsp; 🔋</span>
+        </div>
+
+        <!-- Top Header -->
+        <div class="top-header">
+            <button class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h2 class="page-title">New Agreement</h2>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1 class="hero-text">Party Details</h1>
+            <p class="subtitle">Enter the registered mobile number of the person or business you are transacting with.</p>
+
+            <!-- Input System -->
+            <div class="input-group">
+                <input type="tel" class="input-field" placeholder=" " id="mobileInput">
+                <label class="input-label" for="mobileInput">Mobile Number</label>
+            </div>
+
+            <!-- Card System -->
+            <div class="card" onclick="toggleSheet()">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 class="card-title">Select Role</h3>
+                        <p class="card-text">Are you buying or selling?</p>
+                    </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Trust & Security</h3>
+                <p class="card-text">Data is encrypted and securely processed under the DPDP Act guidelines.</p>
+            </div>
+        </div>
+
+        <!-- Sticky CTA -->
+        <div class="sticky-cta-container">
+            <button class="btn-primary" onclick="alert('Proceeding to next step with Haptic Feedback')">Continue</button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <div class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+        </div>
+
+        <!-- Bottom Sheet -->
+        <div class="bottom-sheet-overlay" onclick="toggleSheet()" id="sheetOverlay"></div>
+        <div class="bottom-sheet" id="bottomSheet">
+            <div class="sheet-handle"></div>
+            <h2 class="hero-text" style="font-size: 24px;">Select Role</h2>
+            <p class="subtitle">Choose your responsibility in this agreement.</p>
+            
+            <div class="card" style="border: 2px solid var(--accent-emerald); background: rgba(10, 92, 54, 0.02); cursor: pointer;" onclick="toggleSheet()">
+                <h3 class="card-title" style="color: var(--accent-emerald);">I am the Seller</h3>
+                <p class="card-text">I am transferring ownership of the item.</p>
+            </div>
+            <div class="card" style="cursor: pointer;" onclick="toggleSheet()">
+                <h3 class="card-title">I am the Buyer</h3>
+                <p class="card-text">I am purchasing the item and taking ownership.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSheet() {
+            document.getElementById('bottomSheet').classList.toggle('open');
+            document.getElementById('sheetOverlay').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

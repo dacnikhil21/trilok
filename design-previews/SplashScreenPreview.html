@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>eSaleAgreement - Splash Screen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-ivory: #FDFDFB;
+            --text-slate: #1A1D1F;
+            --accent-emerald: #0A5C36;
+            --accent-gold: #D4AF37;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #EAEAEA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            background-color: var(--bg-ivory);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                height: 90vh;
+                border-radius: 40px;
+                border: 8px solid #333;
+            }
+        }
+
+        /* Ambient Lighting Effect (No generic gradients) */
+        .ambient-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(10, 92, 54, 0.03) 0%, rgba(253, 253, 251, 0) 70%);
+            border-radius: 50%;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: pulse-glow 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* Abstract Premium Logo */
+        .logo-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .geometric-mark {
+            width: 64px;
+            height: 64px;
+            position: relative;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            animation: reveal-mark 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s;
+        }
+
+        /* Creating an elegant interlocking shape for the logo */
+        .shape-1, .shape-2 {
+            position: absolute;
+            border-radius: 12px;
+            border: 2px solid var(--text-slate);
+            transition: all 1s ease;
+        }
+
+        .shape-1 {
+            width: 40px;
+            height: 40px;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+        }
+
+        .shape-2 {
+            width: 40px;
+            height: 40px;
+            bottom: 0;
+            right: 0;
+            background-color: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+            box-shadow: 0 8px 24px rgba(10, 92, 54, 0.2);
+        }
+
+        /* Typography */
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--text-slate);
+            letter-spacing: -0.5px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: reveal-text 1s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.7s;
+        }
+
+        .brand-name span {
+            color: var(--accent-emerald);
+            font-weight: 600;
+        }
+
+        /* Minimal Loading Indicator */
+        .loading-line {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px; /* Starts invisible */
+            height: 2px;
+            background-color: var(--border-light);
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+            animation: reveal-line 0.5s ease forwards 1.2s;
+        }
+
+        .loading-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-emerald);
+            animation: load-progress 1.5s cubic-bezier(0.8, 0, 0.2, 1) forwards 1.4s;
+        }
+
+        /* The final transition away from splash screen */
+        .exit-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-ivory);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            animation: exit-splash 0.8s ease forwards 3.2s;
+        }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        @keyframes reveal-mark {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes reveal-text {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes reveal-line {
+            0% { opacity: 0; width: 0px; }
+            100% { opacity: 1; width: 80px; }
+        }
+
+        @keyframes load-progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes exit-splash {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Subtle background glow -->
+        <div class="ambient-glow"></div>
+
+        <div class="logo-container">
+            <!-- Bespoke Geometric Mark replacing generic shields -->
+            <div class="geometric-mark">
+                <div class="shape-1"></div>
+                <div class="shape-2"></div>
+            </div>
+            
+            <h1 class="brand-name">eSale<span>Agreement</span></h1>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="loading-line"></div>
+
+        <!-- Simulates transition to the next screen -->
+        <div class="exit-overlay"></div>
+    </div>
+
+</body>
+</html>
