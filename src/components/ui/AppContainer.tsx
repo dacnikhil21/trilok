@@ -80,17 +80,15 @@ export function AppContainer({ children, className = "", centered = false }: App
         Mobile: top-aligned (justify-start) so content flows from top, no floating effect
         Desktop (sm+): centered card layout (sm:justify-center)
       */}
-      <div className={`relative z-10 flex-1 flex flex-col ${centered ? "items-center justify-start sm:justify-center p-0 sm:p-6 lg:p-8" : "w-full"}`}>
+      <div className={`relative z-10 flex-1 flex flex-col ${centered ? "items-center justify-center p-3.5 sm:p-6 lg:p-8" : "w-full"}`}>
         {centered ? (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
-            className={`w-full flex flex-col bg-transparent sm:h-auto sm:max-w-[480px] sm:bg-surface/50 sm:backdrop-blur-[24px] sm:rounded-[var(--radius-xl)] sm:shadow-[var(--shadow-level-2)] sm:border sm:border-white/20 overflow-hidden ${className}`}
+            className={`w-full flex flex-col bg-surface rounded-[28px] border border-primary/12 shadow-[0_8px_30px_rgba(10,92,54,0.02)] overflow-hidden max-w-[412px] ${className}`}
           >
-            {/* Mobile: pt-10 gives comfortable breathing room from phone status bar */}
-            {/* Desktop (sm+): generous symmetric padding for the floating card */}
-            <div className="flex flex-col flex-1 px-5 pt-10 pb-8 sm:p-10 lg:p-12">
+            <div className="flex flex-col flex-1 p-5 pb-6 sm:p-8 lg:p-10">
               {children}
             </div>
           </motion.div>

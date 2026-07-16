@@ -29,37 +29,34 @@ export function OnboardingLayout({
   onBackClick
 }: OnboardingLayoutProps) {
   return (
-    <div className="flex flex-col flex-1 w-full max-w-[420px] mx-auto min-h-screen px-5 pt-4 pb-8 justify-between">
+    <div className="flex flex-col flex-1 w-full max-w-[420px] mx-auto justify-between space-y-6">
 
-      {/* 2. Trilok Brand Area */}
-      <div className="relative flex flex-col items-center justify-center">
-        {showBackButton && onBackClick && (
+      {/* 2. Top Navigation Bar (Header) */}
+      <div className="w-full flex items-center justify-between h-12 relative px-1 shrink-0">
+        {showBackButton && onBackClick ? (
           <button 
             type="button"
             onClick={onBackClick}
-            className="absolute left-1 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full border border-border flex items-center justify-center text-secondary-text hover:text-foreground active:scale-95 transition-all"
+            className="w-10 h-10 rounded-full border border-border bg-surface flex items-center justify-center text-secondary-text hover:text-foreground active:scale-95 transition-all shadow-sm z-10 shrink-0"
             aria-label="Go Back"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
           </button>
+        ) : (
+          <div className="w-10 h-10" />
         )}
-        <div className="flex flex-col items-center justify-center gap-1">
-          <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
-            <ShieldCheck strokeWidth={2.4} className="h-5.5 w-5.5 text-primary" />
-          </div>
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="text-[19px] font-display font-bold tracking-tight text-foreground leading-none">
+
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="flex items-center gap-1.5 bg-primary/6 border border-primary/10 px-3.5 py-1.5 rounded-full shadow-sm">
+            <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
+            <span className="text-[15.5px] font-display font-bold tracking-tight text-foreground leading-none">
               Trilok
-            </span>
-            <span className="text-[8.5px] font-bold tracking-[0.18em] uppercase text-secondary-text leading-none mt-1">
-              SECURE • VERIFIED • TRUSTED
             </span>
           </div>
         </div>
-      </div>
 
-      {/* 24px Gap */}
-      <div className="h-6" />
+        <div className="w-10 h-10" />
+      </div>
 
       {/* 3. Page Heading */}
       <div className="text-center space-y-1 px-2">
