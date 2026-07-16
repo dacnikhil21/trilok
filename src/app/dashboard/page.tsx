@@ -373,37 +373,38 @@ function DashboardContent() {
               </div>
 
               {/* Document + Pen Custom SVG Mock Illustration */}
-              <div className="relative shrink-0 mr-1 -mt-1 flex flex-col items-end">
-                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/95 font-semibold text-[8px] uppercase tracking-wider scale-90 origin-top-right border border-white/10 mb-2.5">
+              <div className="relative shrink-0 -mt-1 flex flex-col items-end">
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/95 font-semibold text-[8px] uppercase tracking-wider scale-90 origin-top-right border border-white/10 mb-2">
                   ⚡ INSTANT SETUP
                 </span>
                 
                 {/* SVG Illustration resembling the document + shield + check + pen */}
-                <div className="relative w-[72px] h-[64px]">
-                  {/* Document Sheet */}
-                  <div className="absolute right-0 top-0 w-[42px] h-[52px] bg-white rounded-lg shadow-md p-1.5 flex flex-col justify-between border border-white/10">
-                    <div className="space-y-1 pt-0.5">
-                      <div className="w-[18px] h-[1.5px] bg-[#EFEFEF]" />
-                      <div className="w-[26px] h-[1.5px] bg-[#EFEFEF]" />
-                      <div className="w-[22px] h-[1.5px] bg-[#EFEFEF]" />
-                      <div className="w-[14px] h-[1.5px] bg-[#EFEFEF]" />
-                    </div>
-                    {/* Scribbled signature */}
-                    <svg className="w-6 h-2 text-[#0A5C36]/80 self-end mr-0.5 mb-0.5" viewBox="0 0 24 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 6c3-3 5-1 8-3s4-2 7 1 3-3 5-1" />
-                    </svg>
-                  </div>
-                  
-                  {/* Shield over document */}
-                  <div className="absolute left-1.5 top-[18px] w-[26px] h-[30px] rounded-[6px] bg-[#1A8A3C] border-2 border-white flex items-center justify-center shadow-lg">
-                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.8} />
-                  </div>
+                <div className="relative">
+                  <svg className="w-[84px] h-[64px]" viewBox="0 0 84 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Document Shadow */}
+                    <rect x="25" y="5" width="44" height="54" rx="8" fill="black" fillOpacity="0.08" />
+                    {/* Document Sheet */}
+                    <rect x="24" y="4" width="44" height="54" rx="8" fill="white" />
+                    
+                    {/* Lines representing text */}
+                    <line x1="32" y1="14" x2="60" y2="14" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
+                    <line x1="32" y1="22" x2="54" y2="22" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
+                    <line x1="32" y1="30" x2="58" y2="30" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
+                    <line x1="32" y1="38" x2="48" y2="38" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
+                    
+                    {/* Green signature trace */}
+                    <path d="M32 47 C 35 44, 38 48, 42 45 C 45 42, 48 46, 52 44" fill="none" stroke="#1A8A3C" strokeWidth="1.8" strokeLinecap="round" />
 
-                  {/* Pen pointing to signature */}
-                  <div className="absolute right-[-10px] top-[14px] w-[6px] h-[34px] bg-[#053D24] border border-white/20 rounded-full rotate-[25deg] shadow-md origin-bottom flex flex-col justify-between p-[1px]">
-                    <div className="w-full h-1 bg-[#D4AF37] rounded-full" />
-                    <div className="w-full h-[3px] bg-white/20" />
-                  </div>
+                    {/* Shield (on the left edge overlay) */}
+                    <path d="M12 21 C 12 21, 17 19, 23 21 C 23 29, 23 37, 12 43 C 1 37, 1 29, 1 21 C 7 19, 12 21, 12 21 Z" fill="#1A8A3C" stroke="white" strokeWidth="1.8" strokeLinejoin="round" />
+                    {/* Checkmark inside shield */}
+                    <path d="M7 32 L 10.5 35.5 L 17.5 27.5" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+
+                    {/* Pen Body (on the right) */}
+                    <path d="M72 40 L 78 16 C 78.3 14.8, 79.5 14.1, 80.7 14.4 C 81.9 14.7, 82.6 15.9, 82.3 17.1 L 76.3 41.1 Z" fill="#053D24" stroke="white" strokeWidth="0.8" />
+                    {/* Pen Nib / Drawing Tip */}
+                    <path d="M76.3 41.1 L 74 46 L 72 40 Z" fill="#D4AF37" />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -411,11 +412,11 @@ function DashboardContent() {
             {/* Bottom row */}
             <div className="flex items-end justify-between mt-auto pt-2.5 relative z-10 border-t border-white/10 w-full">
               {/* Counters */}
-              <div className="flex items-center gap-2.5 text-white">
+              <div className="flex items-center gap-2 text-white">
                 {/* 1. Active */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <FileText strokeWidth={2.4} className="w-4 h-4 text-white" />
+                    <FileText strokeWidth={2.4} className="w-3.5 h-3.5 text-white" />
                   </div>
                   <div className="flex flex-col text-left leading-none">
                     <span className="text-[13px] font-bold">12</span>
@@ -424,9 +425,9 @@ function DashboardContent() {
                 </div>
                 
                 {/* 2. Pending */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <Clock strokeWidth={2.4} className="w-4 h-4 text-white" />
+                    <Clock strokeWidth={2.4} className="w-3.5 h-3.5 text-white" />
                   </div>
                   <div className="flex flex-col text-left leading-none">
                     <span className="text-[13px] font-bold">02</span>
@@ -435,9 +436,9 @@ function DashboardContent() {
                 </div>
 
                 {/* 3. Completed */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <Check strokeWidth={2.8} className="w-4 h-4 text-white" />
+                    <Check strokeWidth={2.8} className="w-3.5 h-3.5 text-white" />
                   </div>
                   <div className="flex flex-col text-left leading-none">
                     <span className="text-[13px] font-bold">08</span>
@@ -447,7 +448,7 @@ function DashboardContent() {
               </div>
 
               {/* Start Button */}
-              <button className="flex items-center justify-center gap-1 bg-white text-[#0A5C36] px-4.5 py-2.5 rounded-full font-bold text-[13.5px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all">
+              <button className="flex items-center justify-center gap-1 bg-white text-[#0A5C36] px-4.5 py-2.5 rounded-full font-bold text-[13px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all shrink-0 whitespace-nowrap">
                 Start New <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
               </button>
             </div>
