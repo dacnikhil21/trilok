@@ -66,7 +66,7 @@ function RegisterFormContent() {
 
   React.useEffect(() => {
     const stored = typeof window !== "undefined" ? sessionStorage.getItem("user_mobile") : ""
-    const initialMobile = stored || "9876543210"
+    const initialMobile = stored || ""
     setC2cMobile(initialMobile)
     setB2bMobile(initialMobile)
     setB2cMobile(initialMobile)
