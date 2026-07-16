@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Plus, FileText, Inbox, ShieldCheck, Bell, Home,
   ArrowUpRight, ChevronRight, Check, CheckCircle2,
-  Scan, HelpCircle, Activity, LogOut
+  Scan, HelpCircle, Activity, LogOut, Clock
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { Card } from "@/components/ui/card"
@@ -315,43 +315,36 @@ function DashboardContent() {
           {/* Left: Trilok Brand */}
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <div className="w-7.5 h-7.5 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
-                <ShieldCheck strokeWidth={2.4} className="h-4 w-4 text-primary" />
+              <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
+                <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
               </div>
-              <span className="font-display font-bold text-[17px] tracking-tight text-foreground leading-none">Trilok</span>
+              <span className="font-display font-bold text-[19px] tracking-tight text-foreground leading-none">Trilok</span>
             </div>
-            <span className="text-[8px] font-bold tracking-[0.1em] uppercase text-secondary-text mt-1 pl-0.5 leading-none">
+            <span className="text-[9px] font-bold tracking-[0.12em] uppercase text-secondary-text mt-1.5 pl-0.5 leading-none">
               SECURE · VERIFIED · TRUSTED
             </span>
           </div>
 
-          {/* Center: User Info */}
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] text-secondary-text font-bold uppercase tracking-wider leading-none">
-              {greeting},
-            </span>
-            <div className="flex items-center gap-1 mt-0.5">
-              <span className="font-display font-bold text-[14.5px] text-foreground leading-none">Nikhil</span>
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#1A8A3C] shrink-0" strokeWidth={2.6} />
-            </div>
-            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[8px] font-bold uppercase tracking-wider mt-0.5 scale-95 leading-none">
-              Verified Individual
-            </span>
-          </div>
+          {/* Center: Empty (clutter removed) */}
+          <div className="flex-1" />
 
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2">
+          {/* Right: Actions (2 icons only) */}
+          <div className="flex items-center gap-3">
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={() => setShowNotifications(!showNotifications)}
-              className="w-9 h-9 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-sm"
+              className="w-10 h-10 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-sm hover:bg-background transition-colors"
             >
-              <Bell strokeWidth={2} className="w-4 h-4 text-secondary-text" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
+              <Bell strokeWidth={1.8} className="w-[18px] h-[18px] text-secondary-text" />
+              <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-primary" />
             </motion.button>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[13px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]">
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handleLogout}
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[14px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]"
+            >
               N
-            </div>
+            </motion.button>
           </div>
         </header>
 
@@ -359,11 +352,11 @@ function DashboardContent() {
         {/* ── Mobile Scroll Body ─────────────── */}
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
 
-          {/* HERO CARD — Mockup Style */}
+          {/* HERO CARD — Mockup Refinement */}
           <motion.div
             whileTap={{ scale: 0.985 }}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-5 flex flex-col justify-between h-[190px]"
+            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-5 flex flex-col justify-between h-[200px]"
           >
             {/* Gloss reflection glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
@@ -372,52 +365,90 @@ function DashboardContent() {
 
             {/* Top row */}
             <div className="flex justify-between items-start relative z-10">
-              <div className="space-y-1">
-                <h2 className="font-display font-bold text-[21px] leading-tight text-white tracking-tight">Create Agreement</h2>
-                <p className="text-[12.5px] text-white/75 font-medium leading-snug max-w-[200px]">
+              <div className="space-y-1 mt-0.5">
+                <h2 className="font-display font-bold text-[22px] leading-tight text-white tracking-tight">Create Agreement</h2>
+                <p className="text-[13px] text-white/75 font-medium leading-snug max-w-[210px]">
                   Secure C2C / B2B / B2C e-signing in minutes
                 </p>
               </div>
 
-              {/* Document + Pen Mock illustration */}
-              <div className="relative shrink-0 mr-1 mt-1">
-                <span className="absolute -top-3.5 -right-1 px-1.5 py-0.5 rounded-md bg-[#EAF7EE] text-primary font-bold text-[7.5px] uppercase tracking-wider scale-95 leading-none">
-                  ⚡ Instant Setup
+              {/* Document + Pen Custom SVG Mock Illustration */}
+              <div className="relative shrink-0 mr-1 -mt-1 flex flex-col items-end">
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/95 font-semibold text-[8px] uppercase tracking-wider scale-90 origin-top-right border border-white/10 mb-2.5">
+                  ⚡ INSTANT SETUP
                 </span>
-                <div className="w-[54px] h-[64px] bg-white/10 backdrop-blur-md rounded-lg border border-white/15 p-2 flex flex-col justify-between shadow-inner">
-                  <div className="w-6 h-1 bg-white/40 rounded-full" />
-                  <div className="w-8 h-1 bg-white/40 rounded-full" />
-                  <div className="w-5 h-1 bg-white/40 rounded-full" />
-                  <div className="flex justify-end pt-1">
-                    <Check className="w-3.5 h-3.5 text-white/80" strokeWidth={3} />
+                
+                {/* SVG Illustration resembling the document + shield + check + pen */}
+                <div className="relative w-[72px] h-[64px]">
+                  {/* Document Sheet */}
+                  <div className="absolute right-0 top-0 w-[42px] h-[52px] bg-white rounded-lg shadow-md p-1.5 flex flex-col justify-between border border-white/10">
+                    <div className="space-y-1 pt-0.5">
+                      <div className="w-[18px] h-[1.5px] bg-[#EFEFEF]" />
+                      <div className="w-[26px] h-[1.5px] bg-[#EFEFEF]" />
+                      <div className="w-[22px] h-[1.5px] bg-[#EFEFEF]" />
+                      <div className="w-[14px] h-[1.5px] bg-[#EFEFEF]" />
+                    </div>
+                    {/* Scribbled signature */}
+                    <svg className="w-6 h-2 text-[#0A5C36]/80 self-end mr-0.5 mb-0.5" viewBox="0 0 24 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 6c3-3 5-1 8-3s4-2 7 1 3-3 5-1" />
+                    </svg>
+                  </div>
+                  
+                  {/* Shield over document */}
+                  <div className="absolute left-1.5 top-[18px] w-[26px] h-[30px] rounded-[6px] bg-[#1A8A3C] border-2 border-white flex items-center justify-center shadow-lg">
+                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.8} />
+                  </div>
+
+                  {/* Pen pointing to signature */}
+                  <div className="absolute right-[-10px] top-[14px] w-[6px] h-[34px] bg-[#053D24] border border-white/20 rounded-full rotate-[25deg] shadow-md origin-bottom flex flex-col justify-between p-[1px]">
+                    <div className="w-full h-1 bg-[#D4AF37] rounded-full" />
+                    <div className="w-full h-[3px] bg-white/20" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bottom row */}
-            <div className="flex items-center justify-between mt-auto pt-2 relative z-10 border-t border-white/10">
+            <div className="flex items-end justify-between mt-auto pt-2.5 relative z-10 border-t border-white/10 w-full">
               {/* Counters */}
-              <div className="flex items-center gap-3 text-[11px] font-semibold text-white/90">
-                <div className="flex flex-col items-center">
-                  <span className="text-[14px] font-bold">12</span>
-                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Active</span>
+              <div className="flex items-center gap-2.5 text-white">
+                {/* 1. Active */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
+                    <FileText strokeWidth={2.4} className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex flex-col text-left leading-none">
+                    <span className="text-[13px] font-bold">12</span>
+                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Active</span>
+                  </div>
                 </div>
-                <div className="w-[1px] h-6 bg-white/15" />
-                <div className="flex flex-col items-center">
-                  <span className="text-[14px] font-bold">02</span>
-                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Pending</span>
+                
+                {/* 2. Pending */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
+                    <Clock strokeWidth={2.4} className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex flex-col text-left leading-none">
+                    <span className="text-[13px] font-bold">02</span>
+                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Pending</span>
+                  </div>
                 </div>
-                <div className="w-[1px] h-6 bg-white/15" />
-                <div className="flex flex-col items-center">
-                  <span className="text-[14px] font-bold">08</span>
-                  <span className="text-[9px] text-white/60 uppercase tracking-wider">Completed</span>
+
+                {/* 3. Completed */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
+                    <Check strokeWidth={2.8} className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex flex-col text-left leading-none">
+                    <span className="text-[13px] font-bold">08</span>
+                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Completed</span>
+                  </div>
                 </div>
               </div>
 
               {/* Start Button */}
-              <button className="flex items-center gap-1.5 bg-white text-primary px-4 py-2 rounded-full font-bold text-[12.5px] shadow-md hover:bg-white/95 transition-all">
-                Start New <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5" />
+              <button className="flex items-center justify-center gap-1 bg-white text-[#0A5C36] px-4.5 py-2.5 rounded-full font-bold text-[13.5px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all">
+                Start New <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
               </button>
             </div>
           </motion.div>
