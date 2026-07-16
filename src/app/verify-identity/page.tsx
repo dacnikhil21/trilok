@@ -110,9 +110,6 @@ function VerifyIdentityContent() {
   // 1. Aadhaar screen content
   const renderAadhaarContent = () => (
     <div className="space-y-4">
-      <p className="text-[13px] text-secondary-text font-medium text-center leading-relaxed">
-        Authenticate your signature identity instantly using government eKYC records.
-      </p>
       <Input
         label="Aadhaar Card Number"
         type="text"
@@ -160,10 +157,6 @@ function VerifyIdentityContent() {
   // 3. DPDP Consent screen content
   const renderConsentContent = () => (
     <div className="space-y-4 text-left">
-      <p className="text-[12.5px] text-secondary-text font-medium leading-relaxed">
-        The Digital Personal Data Protection (DPDP) Act, 2023 requires explicit consent to process your credentials.
-      </p>
-
       {/* Realistic DPDP Terms Scrollbox */}
       <div className="max-h-[140px] overflow-y-auto border border-border rounded-[12px] p-3 text-[11px] text-secondary-text font-medium leading-relaxed space-y-2 bg-[#FBFBFA]">
         <h4 className="font-bold text-foreground">Consent Notice (DPDP Act, 2023)</h4>
@@ -186,10 +179,6 @@ function VerifyIdentityContent() {
   // 4. Permissions screen content
   const renderPermissionsContent = () => (
     <div className="space-y-3">
-      <p className="text-[13px] text-secondary-text font-medium text-center leading-relaxed mb-1">
-        Trilok requires authorization to complete your secure digital signature.
-      </p>
-
       {/* Permissions items */}
       <div className="space-y-2.5">
         {[

@@ -38,9 +38,6 @@ export default function LoginPage() {
 
   const cardContent = (
     <div className="space-y-4">
-      <p className="text-[13px] text-secondary-text font-medium text-center leading-relaxed">
-        Verify your identity securely with our OTP authorization.
-      </p>
       <Input
         label="Mobile Number"
         type="tel"

@@ -29,20 +29,7 @@ export function OnboardingLayout({
   onBackClick
 }: OnboardingLayoutProps) {
   return (
-    <div className="flex flex-col flex-1 w-full max-w-[420px] mx-auto min-h-screen px-5 pt-3 pb-8 justify-between">
-      {/* 1. Status Bar area */}
-      <div className="h-6 flex items-center justify-between w-full text-[12.5px] text-secondary-text/45 font-bold tracking-wider px-1">
-        <span>10:11 AM</span>
-        <div className="flex items-center gap-1.5">
-          <span>5G</span>
-          <div className="w-5 h-2.5 rounded-sm border border-secondary-text/35 flex items-center p-0.5">
-            <div className="w-3.5 h-full bg-secondary-text/65 rounded-[1px]" />
-          </div>
-        </div>
-      </div>
-
-      {/* 32px Gap */}
-      <div className="h-8" />
+    <div className="flex flex-col flex-1 w-full max-w-[420px] mx-auto min-h-screen px-5 pt-4 pb-8 justify-between">
 
       {/* 2. Trilok Brand Area */}
       <div className="relative flex flex-col items-center justify-center">

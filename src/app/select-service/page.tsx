@@ -40,9 +40,6 @@ export default function SelectServicePage() {
 
   const cardContent = (
     <div className="space-y-3">
-      <p className="text-[13px] text-secondary-text font-medium text-center leading-relaxed mb-1">
-        Select the configuration type that fits your workspace requirements.
-      </p>
 
       <div className="flex flex-col gap-2.5">
         {SERVICES.map((srv) => {
