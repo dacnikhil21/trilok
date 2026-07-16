@@ -21,7 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="relative w-full">
         <div
           className={cn(
-            "relative flex items-center w-full min-h-[64px] rounded-[var(--radius-sm)] border bg-surface px-4 transition-all duration-200",
+            "relative flex items-center w-full min-h-[54px] rounded-[var(--radius-sm)] border bg-surface px-4 transition-all duration-200",
             focused ? "border-primary shadow-sm" : "border-border",
             error ? "border-error text-error" : "",
             className

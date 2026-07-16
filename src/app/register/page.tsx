@@ -144,7 +144,7 @@ function RegisterFormContent() {
   return (
     <AppContainer centered>
       {/* Branding Logo Block */}
-      <div className="flex flex-col items-center justify-center space-y-2 mb-4">
+      <div className="flex flex-col items-center justify-center space-y-1.5 mb-3">
         <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
           <ShieldCheck strokeWidth={2.4} className="h-5.5 w-5.5 text-primary" />
         </div>
@@ -155,9 +155,9 @@ function RegisterFormContent() {
       </div>
 
       {/* Progress Stepper - Unifies onboarding wizard */}
-      <ProgressStepper currentStep={0} totalSteps={5} className="mb-6" />
+      <ProgressStepper currentStep={0} totalSteps={5} className="mb-4" />
 
-      <PageHeader title={config.title} subtitle={config.subheading} className="mb-6 text-center" />
+      <PageHeader title={config.title} subtitle={config.subheading} className="mb-4 text-center" />
 
       <form onSubmit={handleSubmit} className="flex flex-col flex-1">
         <AnimatePresence mode="wait">
@@ -173,7 +173,7 @@ function RegisterFormContent() {
               exit={{ opacity: 0, x: 10 }}
               className="space-y-4 flex flex-col flex-1 justify-between"
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {moduleType === "b2b" ? (
                   // B2B PAGE 1
                   <>
@@ -201,7 +201,7 @@ function RegisterFormContent() {
                       <label className="text-[13px] font-bold tracking-wide uppercase text-secondary-text">Business Logo</label>
                       <div 
                         onClick={() => setB2bLogo("enterprise_logo.png")}
-                        className={`h-20 rounded-[12px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${b2bLogo ? "border-primary bg-primary/[0.01]" : "border-border hover:border-primary/20"}`}
+                        className={`h-14 rounded-[12px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${b2bLogo ? "border-primary bg-primary/[0.01]" : "border-border hover:border-primary/20"}`}
                       >
                         {b2bLogo ? (
                           <span className="flex items-center gap-1.5 text-primary text-[13px] font-bold"><Check className="w-4.5 h-4.5" strokeWidth={3} /> {b2bLogo}</span>
@@ -269,7 +269,7 @@ function RegisterFormContent() {
                       <label className="text-[13px] font-bold tracking-wide uppercase text-secondary-text">Brand Logo</label>
                       <div 
                         onClick={() => setB2cLogo("merchant_logo.png")}
-                        className={`h-20 rounded-[12px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${b2cLogo ? "border-primary bg-primary/[0.01]" : "border-border hover:border-primary/20"}`}
+                        className={`h-14 rounded-[12px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${b2cLogo ? "border-primary bg-primary/[0.01]" : "border-border hover:border-primary/20"}`}
                       >
                         {b2cLogo ? (
                           <span className="flex items-center gap-1.5 text-primary text-[13px] font-bold"><Check className="w-4.5 h-4.5" strokeWidth={3} /> {b2cLogo}</span>
@@ -313,7 +313,7 @@ function RegisterFormContent() {
                 )}
               </div>
 
-              <div className="mt-8">
+              <div className="mt-5">
                 <Button type="button" onClick={handleNextPage} size="lg" className="w-full h-14 flex items-center justify-center gap-2">
                   Continue Onboarding
                   <ArrowRight className="w-4.5 h-4.5" />
@@ -470,7 +470,7 @@ function RegisterFormContent() {
                 )}
               </div>
 
-              <div className="flex gap-4 mt-8">
+              <div className="flex gap-3 mt-5">
                 <Button type="button" variant="secondary" onClick={() => setFormPage(1)} className="h-14 px-5">
                   <ArrowLeft className="w-5 h-5 text-secondary-text" />
                 </Button>

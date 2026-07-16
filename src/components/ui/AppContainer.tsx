@@ -73,7 +73,7 @@ export function AppContainer({ children, className = "", centered = false }: App
             transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
             className={`w-full h-full sm:h-auto sm:max-w-[480px] flex flex-col bg-transparent sm:bg-surface/50 sm:backdrop-blur-[24px] sm:rounded-[var(--radius-xl)] sm:shadow-[var(--shadow-level-2)] sm:border sm:border-white/20 overflow-hidden ${className}`}
           >
-            <div className="flex flex-col flex-1 px-6 pt-10 pb-10 sm:p-10 lg:p-12">
+            <div className="flex flex-col flex-1 px-5 pt-6 pb-6 sm:p-10 lg:p-12">
               {children}
             </div>
           </motion.div>

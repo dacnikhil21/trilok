@@ -123,7 +123,7 @@ function VerifyIdentityContent() {
   return (
     <AppContainer centered>
       {/* Platform Branding logo block */}
-      <div className="flex flex-col items-center justify-center space-y-2 mb-6">
+      <div className="flex flex-col items-center justify-center space-y-1.5 mb-3">
         <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-[var(--shadow-level-1)]">
           <ShieldCheck strokeWidth={2.4} className="h-5.5 w-5.5 text-primary" />
         </div>
@@ -139,7 +139,7 @@ function VerifyIdentityContent() {
 
       <div className="flex flex-col flex-1">
         {/* Stepper indicator */}
-        <ProgressStepper currentStep={STEPS_MAP[step]} totalSteps={5} className="mb-6" />
+        <ProgressStepper currentStep={STEPS_MAP[step]} totalSteps={5} className="mb-4" />
 
         <AnimatePresence mode="wait">
           {/* STEP 1: Aadhaar eKYC Verification */}
@@ -185,7 +185,7 @@ function VerifyIdentityContent() {
                 )}
               </div>
 
-              <div className="mt-auto pt-8">
+              <div className="mt-auto pt-4">
                 {!isOtpSent ? (
                   <Button
                     onClick={sendAadhaarOtp}

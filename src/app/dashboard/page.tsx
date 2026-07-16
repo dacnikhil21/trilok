@@ -344,10 +344,10 @@ function DashboardContent() {
       {/* MOBILE LAYOUT (< 1024px) */}
       <div className="lg:hidden flex flex-col min-h-screen">
         
-        {/* Mobile Header (Max Height 90px) */}
-        <header className="h-[90px] flex items-center justify-between border-b border-border/30 px-4">
+        {/* Mobile Header */}
+        <header className="h-[62px] flex items-center justify-between border-b border-border/30 px-4">
           <div className="flex flex-col">
-            <span className="text-[12px] text-secondary-text font-bold uppercase tracking-wider leading-none">
+            <span className="text-[11px] text-secondary-text font-bold uppercase tracking-wider leading-none">
               {greeting},
             </span>
             <div className="flex items-center gap-2 mt-1">
@@ -377,7 +377,7 @@ function DashboardContent() {
         </header>
 
         {/* Mobile Content body */}
-        <div className="flex-1 p-4 space-y-6">
+        <div className="flex-1 px-4 pt-4 pb-28 space-y-4 overflow-y-auto">
           
           {/* Hero Card */}
           <motion.button 
@@ -385,7 +385,7 @@ function DashboardContent() {
             whileTap={{ scale: 0.99 }}
             transition={appleSpring}
             onClick={handleCreateNew}
-            className="relative w-full p-6 rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[175px] shadow-[0_16px_36px_-6px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
+            className="relative w-full p-4.5 rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[144px] shadow-[0_14px_32px_-6px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
           >
             <div className="sweep-overlay" />
             <div className="w-11 h-11 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
@@ -394,7 +394,7 @@ function DashboardContent() {
             
             <div className="flex justify-between items-end w-full">
               <div className="space-y-1">
-                <h3 className="font-display font-bold text-[22px] leading-tight">Create Agreement</h3>
+                <h3 className="font-display font-bold text-[20px] leading-tight">Create Agreement</h3>
                 <p className="text-[13px] text-surface/85 font-medium max-w-[240px]">Create legally binding digital agreements.</p>
               </div>
               <div className="flex items-center gap-1 text-[13px] font-bold tracking-wider uppercase bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-full border border-white/25">
@@ -412,7 +412,7 @@ function DashboardContent() {
                 {pendingActions.map((act) => (
                   <div
                     key={act.id}
-                    className="min-w-[220px] max-w-[220px] p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[115px] shadow-[var(--shadow-level-1)] shrink-0"
+                    className="min-w-[200px] max-w-[200px] p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[100px] shadow-[var(--shadow-level-1)] shrink-0"
                   >
                     <div className="flex justify-between items-start">
                       <span className="px-2 py-0.5 rounded-full bg-warning/8 text-warning text-[9px] font-bold uppercase tracking-wider">{act.type}</span>
@@ -436,9 +436,9 @@ function DashboardContent() {
             </div>
             <div className="space-y-2.5">
               {recentAgreements.map((agreement) => (
-                <div 
+                <div
                   key={agreement.id}
-                  className="p-4 bg-surface border border-border rounded-[16px] flex items-center justify-between shadow-[var(--shadow-level-1)]"
+                  className="px-3.5 py-3 bg-surface border border-border rounded-[14px] flex items-center justify-between shadow-[var(--shadow-level-1)]"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-primary/[0.03] border border-primary/5 text-primary flex items-center justify-center shrink-0">
@@ -467,20 +467,20 @@ function DashboardContent() {
           {/* Quick Actions grid */}
           <div className="space-y-3">
             <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[90px] shadow-[var(--shadow-level-1)]">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
                 <FileText strokeWidth={2} className="w-5 h-5 text-primary" />
                 <span className="text-[13.5px] font-semibold text-foreground">Templates</span>
               </div>
-              <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[90px] shadow-[var(--shadow-level-1)]">
+              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
                 <Inbox strokeWidth={2} className="w-5 h-5 text-primary" />
                 <span className="text-[13.5px] font-semibold text-foreground">Drafts</span>
               </div>
-              <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[90px] shadow-[var(--shadow-level-1)]">
+              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
                 <Scan strokeWidth={2} className="w-5 h-5 text-primary" />
                 <span className="text-[13.5px] font-semibold text-foreground">Scan Document</span>
               </div>
-              <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[90px] shadow-[var(--shadow-level-1)]">
+              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
                 <HelpCircle strokeWidth={2} className="w-5 h-5 text-primary" />
                 <span className="text-[13.5px] font-semibold text-foreground">Help Center</span>
               </div>
@@ -490,7 +490,7 @@ function DashboardContent() {
           {/* Activity Timeline */}
           <div className="space-y-3">
             <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Activity</h3>
-            <div className="bg-surface/50 border border-border rounded-[16px] p-4 space-y-4 shadow-[var(--shadow-level-1)]">
+            <div className="bg-surface/50 border border-border rounded-[16px] p-3.5 space-y-3 shadow-[var(--shadow-level-1)]">
               {activities.map((act, idx) => (
                 <div key={act.id} className="flex gap-3 text-[13px] relative">
                   {idx < activities.length - 1 && (
