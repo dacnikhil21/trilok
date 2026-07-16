@@ -2,21 +2,18 @@
 
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { 
-  Plus, FileText, Inbox, ShieldCheck, Home, Settings, Bell, 
-  Clock, ArrowUpRight, ChevronRight, CheckCircle2, AlertTriangle,
-  Layers, Scan, HelpCircle, Activity, User, ChevronUp, LogOut
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  Plus, FileText, Inbox, ShieldCheck, Home, Bell,
+  ArrowUpRight, ChevronRight, CheckCircle2,
+  Scan, HelpCircle, Activity, LogOut, Zap, TrendingUp
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
-import { PageHeader } from "@/components/ui/PageHeader"
-import { SectionTitle } from "@/components/ui/SectionTitle"
-import { StatusCard } from "@/components/ui/StatusCard"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BottomNavigation } from "@/components/ui/BottomNavigation"
 
-// Mock data reflecting premium content
+// ─── Data ─────────────────────────────────────────────────────────────────────
 const AGREEMENTS_BY_MODULE = {
   c2c: [
     { id: "agr-01", title: "Residential Lease Agreement", party: "Rohan Kapoor", date: "12 Jul 2026", status: "Active", amount: "₹24,000/mo" },
@@ -68,6 +65,35 @@ const ACTIVITY_LOG = {
   ]
 }
 
+// ─── Status badge helper ───────────────────────────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    "Active": "bg-[#EAF7EE] text-[#1A8A3C]",
+    "Pending Signature": "bg-[#FFF4E0] text-[#B76E00]",
+    "Completed": "bg-[#F0F0EE] text-[#5E6368]",
+  }
+  return (
+    <span className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wider ${map[status] ?? "bg-[#F0F0EE] text-foreground"}`}>
+      {status}
+    </span>
+  )
+}
+
+// ─── Section Header ────────────────────────────────────────────────────────────
+function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <h2 className="font-display font-bold text-[11px] text-secondary-text uppercase tracking-[0.08em]">{title}</h2>
+      {action && (
+        <button onClick={onAction} className="text-[11px] text-primary font-bold uppercase tracking-wider hover:opacity-70 transition-opacity">
+          {action}
+        </button>
+      )}
+    </div>
+  )
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 function DashboardContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -78,51 +104,34 @@ function DashboardContent() {
 
   const config = React.useMemo(() => {
     switch (moduleType) {
-      case "b2b":
-        return {
-          title: "Trilok B2B",
-          subtitle: "Enterprise Contract Suite",
-        }
-      case "b2c":
-        return {
-          title: "Trilok B2C",
-          subtitle: "Merchant Agreement Portal",
-        }
-      case "c2c":
-      default:
-        return {
-          title: "Trilok C2C",
-          subtitle: "Peer-to-Peer Agreement Hub",
-        }
+      case "b2b": return { title: "Trilok B2B", subtitle: "Enterprise Contract Suite" }
+      case "b2c": return { title: "Trilok B2C", subtitle: "Merchant Agreement Portal" }
+      default:    return { title: "Trilok C2C", subtitle: "Peer-to-Peer Agreement Hub" }
     }
   }, [moduleType])
 
   const greeting = React.useMemo(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) return "Good Morning"
-    if (hour < 17) return "Good Afternoon"
-    return "Good Evening"
+    const h = new Date().getHours()
+    return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"
   }, [])
 
   const recentAgreements = (AGREEMENTS_BY_MODULE[moduleType] || AGREEMENTS_BY_MODULE.c2c).slice(0, 3)
   const pendingActions = PENDING_ACTIONS[moduleType] || PENDING_ACTIONS.c2c
   const activities = ACTIVITY_LOG[moduleType] || ACTIVITY_LOG.c2c
 
-  const handleCreateNew = () => {
-    router.push(`/register?module=${moduleType}`)
-  }
+  const handleCreateNew = () => router.push(`/register?module=${moduleType}`)
+  const handleLogout = () => router.push("/login")
 
-  const handleLogout = () => {
-    router.push("/login")
-  }
-
-  const appleSpring = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 } as const
+  const spring = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 } as const
 
   return (
     <AppContainer>
-      {/* DESKTOP LAYOUT (>= 1024px) */}
+
+      {/* ═══════════════════════════════════════
+          DESKTOP LAYOUT (≥ 1024px)
+      ═══════════════════════════════════════ */}
       <div className="hidden lg:flex flex-row min-h-screen">
-        {/* Left Sidebar Navigation */}
+        {/* Sidebar */}
         <aside className="w-64 bg-surface/30 backdrop-blur-[24px] border-r border-border/40 p-6 justify-between flex flex-col shrink-0">
           <div className="space-y-8">
             <div className="flex items-center gap-2.5 px-2">
@@ -131,44 +140,31 @@ function DashboardContent() {
               </div>
               <span className="font-display font-bold text-[18px] tracking-tight text-foreground">Trilok</span>
             </div>
-            
             <nav className="space-y-1">
-              <button
-                onClick={() => setActiveTab("home")}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200 ${activeTab === "home" ? "bg-primary/8 text-primary shadow-sm" : "text-secondary-text hover:text-foreground hover:bg-divider/40"}`}
-              >
-                <Home strokeWidth={2.2} className="w-4.5 h-4.5" />
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab("agreements")}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200 ${activeTab === "agreements" ? "bg-primary/8 text-primary shadow-sm" : "text-secondary-text hover:text-foreground hover:bg-divider/40"}`}
-              >
-                <FileText strokeWidth={2.2} className="w-4.5 h-4.5" />
-                My Agreements
-              </button>
-              <button
-                onClick={() => setActiveTab("activity")}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200 ${activeTab === "activity" ? "bg-primary/8 text-primary shadow-sm" : "text-secondary-text hover:text-foreground hover:bg-divider/40"}`}
-              >
-                <Activity strokeWidth={2.2} className="w-4.5 h-4.5" />
-                Activity
-              </button>
+              {[
+                { id: "home", label: "Overview", Icon: Home },
+                { id: "agreements", label: "My Agreements", Icon: FileText },
+                { id: "activity", label: "Activity", Icon: Activity },
+              ].map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200 ${activeTab === id ? "bg-primary/8 text-primary shadow-sm" : "text-secondary-text hover:text-foreground hover:bg-divider/40"}`}
+                >
+                  <Icon strokeWidth={2.2} className="w-4.5 h-4.5" />
+                  {label}
+                </button>
+              ))}
             </nav>
           </div>
-
-          <button 
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3.5 py-2.5 text-error hover:bg-error/5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200"
-          >
+          <button onClick={handleLogout} className="flex items-center gap-3 px-3.5 py-2.5 text-error hover:bg-error/5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200">
             <LogOut strokeWidth={2.2} className="w-4.5 h-4.5" />
             Sign Out
           </button>
         </aside>
 
-        {/* Main Desktop Grid Workspace */}
+        {/* Main */}
         <main className="flex-1 flex flex-col min-w-0">
-          {/* Desktop Top Header Toolbar */}
           <header className="h-[90px] bg-surface/30 backdrop-blur-[24px] border-b border-border/30 px-8 flex items-center justify-between sticky top-0 z-30">
             <div className="flex flex-col">
               <span className="text-[12px] text-secondary-text font-bold uppercase tracking-wider leading-none">{greeting},</span>
@@ -179,35 +175,24 @@ function DashboardContent() {
                 </span>
               </div>
             </div>
-
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-[13px] font-semibold text-foreground leading-none">{config.title}</p>
                 <p className="text-[11px] text-secondary-text mt-1">{config.subtitle}</p>
               </div>
-              
               <button className="p-2.5 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border">
                 <Bell strokeWidth={2.2} className="w-4.5 h-4.5" />
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
               </button>
-
-              <div className="w-10 h-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[14px] border border-primary/10 shadow-sm">
-                N
-              </div>
+              <div className="w-10 h-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[14px] border border-primary/10 shadow-sm">N</div>
             </div>
           </header>
 
-          {/* Desktop Content Body Layout */}
           <div className="flex-1 p-8 space-y-8 overflow-y-auto max-w-6xl w-full">
-            
-            {/* ROW 1: Hero & Quick Actions side-by-side */}
+            {/* Hero + Quick Actions */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              
-              {/* Emerald Create Agreement Card */}
-              <motion.button 
-                whileHover={{ y: -4, scale: 1.002 }}
-                whileTap={{ scale: 0.995 }}
-                transition={appleSpring}
+              <motion.button
+                whileHover={{ y: -4, scale: 1.002 }} whileTap={{ scale: 0.995 }} transition={spring}
                 onClick={handleCreateNew}
                 className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
               >
@@ -221,38 +206,28 @@ function DashboardContent() {
                     <p className="text-[14px] text-surface/85 font-medium max-w-[340px]">Create legally binding digital agreements in seconds.</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-[13px] font-bold tracking-wider uppercase bg-white/10 hover:bg-white/20 transition-colors px-5 py-2.5 rounded-full border border-white/25">
-                    Start Creation
-                    <ArrowUpRight strokeWidth={2.5} className="w-4.5 h-4.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    Start Creation <ArrowUpRight strokeWidth={2.5} className="w-4.5 h-4.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
                 </div>
               </motion.button>
 
-              {/* Quick Actions (Medium visual card panel) */}
               <div className="grid grid-cols-2 gap-4 h-[200px]">
-                <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
-                  <FileText strokeWidth={2} className="w-5 h-5 text-primary" />
-                  <span className="text-[13.5px] font-semibold text-foreground">Templates</span>
-                </div>
-                <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
-                  <Inbox strokeWidth={2} className="w-5 h-5 text-primary" />
-                  <span className="text-[13.5px] font-semibold text-foreground">Drafts</span>
-                </div>
-                <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
-                  <Scan strokeWidth={2} className="w-5 h-5 text-primary" />
-                  <span className="text-[13.5px] font-semibold text-foreground">Scan Doc</span>
-                </div>
-                <div className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
-                  <HelpCircle strokeWidth={2} className="w-5 h-5 text-primary" />
-                  <span className="text-[13.5px] font-semibold text-foreground">Help Center</span>
-                </div>
+                {[
+                  { Icon: FileText, label: "Templates" },
+                  { Icon: Inbox, label: "Drafts" },
+                  { Icon: Scan, label: "Scan Doc" },
+                  { Icon: HelpCircle, label: "Help Center" },
+                ].map(({ Icon, label }) => (
+                  <div key={label} className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
+                    <Icon strokeWidth={2} className="w-5 h-5 text-primary" />
+                    <span className="text-[13.5px] font-semibold text-foreground">{label}</span>
+                  </div>
+                ))}
               </div>
-
             </div>
 
-            {/* ROW 2: Pending Actions & Activity log side-by-side */}
+            {/* Pending + Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              {/* Pending Actions list */}
               <div className="space-y-4">
                 <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Pending Action Feed</h3>
                 <div className="space-y-3">
@@ -272,15 +247,12 @@ function DashboardContent() {
                 </div>
               </div>
 
-              {/* Activity Timeline */}
               <div className="space-y-4">
                 <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Activity Timeline</h3>
                 <div className="bg-surface/50 border border-border rounded-[16px] p-5 space-y-4 shadow-[var(--shadow-level-1)]">
                   {activities.map((act, idx) => (
                     <div key={act.id} className="flex gap-4 text-[13.5px] relative">
-                      {idx < activities.length - 1 && (
-                        <span className="absolute left-2.5 top-6 bottom-[-20px] w-[1px] bg-border" />
-                      )}
+                      {idx < activities.length - 1 && <span className="absolute left-2.5 top-6 bottom-[-20px] w-[1px] bg-border" />}
                       <div className="w-5 h-5 rounded-full bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                       </div>
@@ -295,14 +267,13 @@ function DashboardContent() {
                   ))}
                 </div>
               </div>
-
             </div>
 
-            {/* ROW 3: Full-width Recent Agreements */}
+            {/* Recent Agreements */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Recent Agreements Desk</h3>
-                <button className="text-[12px] text-primary hover:text-[#084D2D] font-bold tracking-wider uppercase">View all agreements</button>
+                <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Recent Agreements</h3>
+                <button className="text-[12px] text-primary hover:text-[#084D2D] font-bold tracking-wider uppercase">View all</button>
               </div>
               <Card className="divide-y divide-divider overflow-hidden">
                 {recentAgreements.map((agreement) => (
@@ -313,7 +284,7 @@ function DashboardContent() {
                       </div>
                       <div className="min-w-0">
                         <h4 className="font-semibold text-foreground text-[15px] truncate">{agreement.title}</h4>
-                        <p className="text-[12.5px] text-secondary-text font-medium mt-0.5">Party: {agreement.party} • Created {agreement.date}</p>
+                        <p className="text-[12.5px] text-secondary-text font-medium mt-0.5">Party: {agreement.party} • {agreement.date}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-6 shrink-0">
@@ -322,13 +293,7 @@ function DashboardContent() {
                         <span className="text-[10.5px] text-secondary-text font-bold">Covenant Value</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                          agreement.status === "Active" ? "bg-verified text-success" :
-                          agreement.status === "Pending Signature" ? "bg-[#FFF2E0] text-[#B76E00]" :
-                          "bg-[#EFEFEF] text-foreground"
-                        }`}>
-                          {agreement.status}
-                        </span>
+                        <StatusBadge status={agreement.status} />
                         <ChevronRight strokeWidth={2.4} className="w-4.5 h-4.5 text-secondary-text" />
                       </div>
                     </div>
@@ -336,175 +301,190 @@ function DashboardContent() {
                 ))}
               </Card>
             </div>
-
           </div>
         </main>
       </div>
 
-      {/* MOBILE LAYOUT (< 1024px) */}
+      {/* ═══════════════════════════════════════
+          MOBILE LAYOUT (< 1024px)
+      ═══════════════════════════════════════ */}
       <div className="lg:hidden flex flex-col min-h-screen">
-        
-        {/* Mobile Header */}
-        <header className="h-[62px] flex items-center justify-between border-b border-border/30 px-4">
-          <div className="flex flex-col">
-            <span className="text-[11px] text-secondary-text font-bold uppercase tracking-wider leading-none">
-              {greeting},
-            </span>
-            <div className="flex items-center gap-2 mt-1">
-              <h1 className="text-[22px] font-display font-bold text-foreground leading-tight tracking-tight">
-                Nikhil
-              </h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-verified text-success text-[10px] font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-3 h-3" />
-                Verified
+
+        {/* ── Mobile Header ─────────────────── */}
+        <header className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border/20">
+          <div>
+            <p className="text-[10.5px] text-secondary-text font-bold uppercase tracking-[0.12em] leading-none mb-0.5">
+              {greeting} 👋
+            </p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-[24px] font-display font-bold text-foreground leading-none tracking-tight">Nikhil</h1>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[9.5px] font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-3 h-3" /> Verified
               </span>
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button 
+          <div className="flex items-center gap-2.5">
+            <motion.button
+              whileTap={{ scale: 0.92 }}
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2.5 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border"
+              className="w-10 h-10 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-[var(--shadow-level-1)]"
             >
-              <Bell strokeWidth={2.2} className="w-4.5 h-4.5" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
-            </button>
-
-            <div className="w-9 h-9 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[13px] border border-primary/10 shadow-sm">
+              <Bell strokeWidth={2} className="w-4.5 h-4.5 text-secondary-text" />
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary" />
+            </motion.button>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[15px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]">
               N
             </div>
           </div>
         </header>
 
-        {/* Mobile Content body */}
-        <div className="flex-1 px-4 pt-4 pb-28 space-y-4 overflow-y-auto">
-          
-          {/* Hero Card */}
-          <motion.button 
-            whileHover={{ y: -4, scale: 1.002 }}
-            whileTap={{ scale: 0.99 }}
-            transition={appleSpring}
+        {/* ── Mobile Scroll Body ─────────────── */}
+        <div className="flex-1 overflow-y-auto pb-32 px-4 pt-5 space-y-5">
+
+          {/* HERO CARD */}
+          <motion.button
+            whileHover={{ y: -3 }} whileTap={{ scale: 0.975 }} transition={spring}
             onClick={handleCreateNew}
-            className="relative w-full p-4.5 rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[144px] shadow-[0_14px_32px_-6px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
+            className="relative w-full rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#095230] text-surface text-left overflow-hidden group cursor-pointer shadow-[0_12px_40px_-8px_rgba(10,92,54,0.30)] border border-primary/15"
           >
             <div className="sweep-overlay" />
-            <div className="w-11 h-11 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
-              <Plus strokeWidth={2.6} className="w-5.5 h-5.5 text-surface" />
-            </div>
-            
-            <div className="flex justify-between items-end w-full">
-              <div className="space-y-1">
-                <h3 className="font-display font-bold text-[20px] leading-tight">Create Agreement</h3>
-                <p className="text-[13px] text-surface/85 font-medium max-w-[240px]">Create legally binding digital agreements.</p>
+            {/* Subtle dot pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+
+            <div className="relative px-5 pt-5 pb-5 flex flex-col gap-4">
+              {/* Top row */}
+              <div className="flex items-start justify-between">
+                <div className="w-11 h-11 rounded-[14px] bg-white/12 backdrop-blur-md border border-white/18 flex items-center justify-center">
+                  <Plus strokeWidth={2.6} className="w-5.5 h-5.5 text-white" />
+                </div>
+                <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-white/60 bg-white/8 px-2.5 py-1 rounded-full border border-white/12">
+                  <Zap className="w-3 h-3" /> Instant
+                </span>
               </div>
-              <div className="flex items-center gap-1 text-[13px] font-bold tracking-wider uppercase bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-full border border-white/25">
-                Start
-                <ArrowUpRight strokeWidth={2.5} className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+
+              {/* Content */}
+              <div>
+                <h2 className="font-display font-bold text-[22px] leading-tight text-white mb-1">
+                  Create Agreement
+                </h2>
+                <p className="text-[13px] text-white/75 font-medium leading-snug max-w-[240px]">
+                  Legally binding digital agreements, ready in seconds.
+                </p>
+              </div>
+
+              {/* CTA */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-[11px] text-white/55 font-semibold">
+                  <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> eKYC Verified</span>
+                  <span className="flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> Blockchain Logged</span>
+                </div>
+                <motion.div
+                  whileHover={{ x: 2, y: -2 }}
+                  className="flex items-center gap-1.5 text-[12px] font-bold tracking-wider uppercase text-white bg-white/12 hover:bg-white/20 transition-colors px-4 py-2.5 rounded-full border border-white/20"
+                >
+                  Start <ArrowUpRight strokeWidth={2.5} className="w-4 h-4" />
+                </motion.div>
               </div>
             </div>
           </motion.button>
 
-          {/* Pending Actions swiper */}
+          {/* PENDING ACTIONS */}
           {pendingActions.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Pending Actions ({pendingActions.length})</h3>
-              <div className="flex overflow-x-auto scrollbar-none gap-4 pb-2 -mx-4 px-4">
-                {pendingActions.map((act) => (
-                  <div
+            <div>
+              <SectionHeader title={`Pending Actions (${pendingActions.length})`} action="See All" />
+              <div className="flex overflow-x-auto scrollbar-none gap-3 -mx-4 px-4 pb-1">
+                {pendingActions.map((act, i) => (
+                  <motion.div
                     key={act.id}
-                    className="min-w-[200px] max-w-[200px] p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[100px] shadow-[var(--shadow-level-1)] shrink-0"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.07, type: "spring", stiffness: 300, damping: 24 }}
+                    className="min-w-[195px] max-w-[195px] p-4 bg-surface border border-border rounded-[18px] flex flex-col justify-between h-[108px] shadow-[var(--shadow-level-1)] shrink-0 cursor-pointer hover:border-warning/30 transition-all"
                   >
                     <div className="flex justify-between items-start">
-                      <span className="px-2 py-0.5 rounded-full bg-warning/8 text-warning text-[9px] font-bold uppercase tracking-wider">{act.type}</span>
-                      <span className="text-[10px] text-secondary-text font-semibold">{act.time}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[9px] font-bold uppercase tracking-wider">{act.type}</span>
+                      <span className="text-[9.5px] text-secondary-text font-bold">{act.time}</span>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground text-[13.5px] truncate">{act.title}</h4>
+                      <h4 className="font-bold text-foreground text-[13.5px] leading-snug truncate">{act.title}</h4>
                       <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{act.status}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Recent Agreements stack */}
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Recent Agreements</h3>
-              <button className="text-[11.5px] text-primary hover:text-[#084D2D] font-bold tracking-wider uppercase">View All</button>
-            </div>
-            <div className="space-y-2.5">
-              {recentAgreements.map((agreement) => (
-                <div
+          {/* RECENT AGREEMENTS */}
+          <div>
+            <SectionHeader title="Recent Agreements" action="View All" />
+            <div className="rounded-[18px] overflow-hidden border border-border shadow-[var(--shadow-level-1)] bg-surface divide-y divide-divider">
+              {recentAgreements.map((agreement, i) => (
+                <motion.div
                   key={agreement.id}
-                  className="px-3.5 py-3 bg-surface border border-border rounded-[14px] flex items-center justify-between shadow-[var(--shadow-level-1)]"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
+                  className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-background/40 transition-colors duration-200 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-primary/[0.03] border border-primary/5 text-primary flex items-center justify-center shrink-0">
-                      <FileText strokeWidth={1.8} className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-foreground text-[14.5px] truncate">{agreement.title}</h4>
-                      <p className="text-[11.5px] text-secondary-text mt-0.5 font-medium">Party: {agreement.party} • {agreement.date}</p>
-                    </div>
+                  <div className="w-9 h-9 rounded-[12px] bg-primary/5 border border-primary/8 flex items-center justify-center shrink-0">
+                    <FileText strokeWidth={1.8} className="w-4.5 h-4.5 text-primary" />
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                      agreement.status === "Active" ? "bg-verified text-success" :
-                      agreement.status === "Pending Signature" ? "bg-[#FFF2E0] text-[#B76E00]" :
-                      "bg-[#EFEFEF] text-foreground"
-                    }`}>
-                      {agreement.status}
-                    </span>
-                    <ChevronRight strokeWidth={2.4} className="w-4 h-4 text-secondary-text" />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-foreground text-[14px] truncate leading-snug">{agreement.title}</h4>
+                    <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{agreement.party} · {agreement.date}</p>
                   </div>
-                </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <StatusBadge status={agreement.status} />
+                    <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5 text-secondary-text/50" />
+                  </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          {/* Quick Actions grid */}
-          <div className="space-y-3">
-            <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
-                <FileText strokeWidth={2} className="w-5 h-5 text-primary" />
-                <span className="text-[13.5px] font-semibold text-foreground">Templates</span>
-              </div>
-              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
-                <Inbox strokeWidth={2} className="w-5 h-5 text-primary" />
-                <span className="text-[13.5px] font-semibold text-foreground">Drafts</span>
-              </div>
-              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
-                <Scan strokeWidth={2} className="w-5 h-5 text-primary" />
-                <span className="text-[13.5px] font-semibold text-foreground">Scan Document</span>
-              </div>
-              <div className="p-3.5 bg-surface border border-border rounded-[16px] flex flex-col justify-between h-[76px] shadow-[var(--shadow-level-1)]">
-                <HelpCircle strokeWidth={2} className="w-5 h-5 text-primary" />
-                <span className="text-[13.5px] font-semibold text-foreground">Help Center</span>
-              </div>
+          {/* QUICK ACTIONS */}
+          <div>
+            <SectionHeader title="Quick Actions" />
+            <div className="grid grid-cols-4 gap-2.5">
+              {[
+                { Icon: FileText, label: "Templates" },
+                { Icon: Inbox, label: "Drafts" },
+                { Icon: Scan, label: "Scan" },
+                { Icon: HelpCircle, label: "Help" },
+              ].map(({ Icon, label }, i) => (
+                <motion.div
+                  key={label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.05, type: "spring", stiffness: 350, damping: 24 }}
+                  whileTap={{ scale: 0.92 }}
+                  className="flex flex-col items-center gap-2 py-3.5 bg-surface border border-border rounded-[16px] cursor-pointer hover:border-primary/20 hover:shadow-[var(--shadow-level-1)] transition-all"
+                >
+                  <div className="w-9 h-9 rounded-[10px] bg-primary/6 flex items-center justify-center">
+                    <Icon strokeWidth={2} className="w-4.5 h-4.5 text-primary" />
+                  </div>
+                  <span className="text-[10.5px] font-bold text-secondary-text text-center leading-none">{label}</span>
+                </motion.div>
+              ))}
             </div>
           </div>
 
-          {/* Activity Timeline */}
-          <div className="space-y-3">
-            <h3 className="font-display font-bold text-[13px] text-secondary-text uppercase tracking-wider">Activity</h3>
-            <div className="bg-surface/50 border border-border rounded-[16px] p-3.5 space-y-3 shadow-[var(--shadow-level-1)]">
+          {/* ACTIVITY */}
+          <div>
+            <SectionHeader title="Activity" />
+            <div className="bg-surface border border-border rounded-[18px] divide-y divide-divider shadow-[var(--shadow-level-1)] overflow-hidden">
               {activities.map((act, idx) => (
-                <div key={act.id} className="flex gap-3 text-[13px] relative">
-                  {idx < activities.length - 1 && (
-                    <span className="absolute left-2.5 top-6 bottom-[-16px] w-[1px] bg-border" />
-                  )}
-                  <div className="w-5 h-5 rounded-full bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <div key={act.id} className="flex gap-3.5 px-4 py-3.5 items-start">
+                  <div className="w-6 h-6 rounded-full bg-primary/8 border border-primary/12 flex items-center justify-center shrink-0 mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                   </div>
                   <div className="flex-1 flex justify-between gap-2 min-w-0">
                     <div className="min-w-0">
-                      <p className="font-semibold text-foreground truncate">{act.message}</p>
-                      <p className="text-[11.5px] text-secondary-text mt-0.5 truncate">{act.details}</p>
+                      <p className="font-semibold text-foreground text-[13.5px] truncate">{act.message}</p>
+                      <p className="text-[11px] text-secondary-text mt-0.5 font-medium truncate">{act.details}</p>
                     </div>
-                    <span className="text-[11px] text-secondary-text font-medium shrink-0">{act.time}</span>
+                    <span className="text-[10.5px] text-secondary-text font-bold shrink-0">{act.time}</span>
                   </div>
                 </div>
               ))}
@@ -513,10 +493,10 @@ function DashboardContent() {
 
         </div>
 
-        {/* Floating Mobile Bottom Navigation Deck */}
-        <BottomNavigation 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
+        {/* Bottom Navigation */}
+        <BottomNavigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
           onLogout={handleLogout}
           unreadCount={pendingActions.length}
         />
