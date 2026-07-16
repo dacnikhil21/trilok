@@ -33,7 +33,7 @@ export function AppContainer({ children, className = "", centered = false }: App
 
       {/* ── DEVELOPER QUICK SKIP FAB ──────────────────────────────────────────── */}
       {/* Compact round FAB that expands UPWARD — never overflows the screen */}
-      <div className="fixed bottom-5 right-4 z-50 flex flex-col-reverse items-end gap-2">
+      <div className="fixed bottom-[96px] right-4 z-50 flex flex-col-reverse items-end gap-2">
 
         {/* FAB Toggle Button */}
         <motion.button

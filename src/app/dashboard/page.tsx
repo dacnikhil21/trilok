@@ -311,28 +311,16 @@ function DashboardContent() {
       <div className="lg:hidden flex flex-col min-h-screen">
 
         {/* ── Mobile Header ─────────────────── */}
-        <header className="relative flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20">
-          {/* Left: greeting + name */}
-          <div>
-            <p className="text-[10px] text-secondary-text font-bold uppercase tracking-[0.12em] leading-none mb-0.5">
-              {greeting} 👋
-            </p>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-[21px] font-display font-bold text-foreground leading-none tracking-tight">Nikhil</h1>
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[8.5px] font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-2.5 h-2.5" /> Verified
-              </span>
+        <header className="flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20 bg-surface/30 backdrop-blur-md">
+          {/* Left: Trilok branding (replaces user name) */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8.5 h-8.5 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
+              <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
             </div>
-          </div>
-
-          {/* Center: Trilok brand mark — absolutely centered in the header */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
-            <div className="w-6 h-6 rounded-full bg-primary/8 border border-primary/12 flex items-center justify-center">
-              <ShieldCheck strokeWidth={2.2} className="w-3.5 h-3.5 text-primary" />
+            <div className="flex flex-col">
+              <span className="font-display font-bold text-[18px] tracking-tight text-foreground leading-none">Trilok</span>
+              <span className="text-[9px] text-secondary-text font-bold uppercase tracking-[0.08em] mt-0.5">Secure · eKYC</span>
             </div>
-            <span className="font-display font-bold text-[15px] tracking-tight text-foreground leading-none">
-              Trilok
-            </span>
           </div>
 
           {/* Right: bell + avatar */}
@@ -355,33 +343,40 @@ function DashboardContent() {
         {/* ── Mobile Scroll Body ─────────────── */}
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
 
-          {/* HERO CARD — compact premium row-style */}
-          <motion.button
-            whileHover={{ y: -2 }} whileTap={{ scale: 0.977 }} transition={spring}
+          {/* HERO CARD — Apple Wallet Premium Card */}
+          <motion.div
+            whileTap={{ scale: 0.985 }}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[20px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#095230] text-white text-left overflow-hidden cursor-pointer shadow-[0_8px_28px_-6px_rgba(10,92,54,0.32)] border border-primary/15"
+            className="relative w-full rounded-[22px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20"
           >
-            <div className="sweep-overlay" />
-            <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
+            {/* Gloss reflection glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[140px] h-[140px] bg-white/[0.035] rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
 
-            <div className="relative flex items-center gap-4 px-5 py-4">
-              {/* Icon */}
-              <div className="w-10 h-10 rounded-[13px] bg-white/12 border border-white/18 flex items-center justify-center shrink-0">
-                <Plus strokeWidth={2.6} className="w-5 h-5 text-white" />
+            <div className="p-5 flex flex-col justify-between min-h-[142px]">
+              {/* Top Row: Icon badge & Status Pill */}
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-[14px] bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center shadow-inner">
+                  <Plus strokeWidth={2.6} className="w-5 h-5 text-white" />
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] font-bold uppercase tracking-wider border border-white/10">
+                  Instant Setup
+                </span>
               </div>
 
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <h2 className="font-display font-bold text-[18px] leading-tight text-white">Create Agreement</h2>
-                <p className="text-[12px] text-white/70 font-medium leading-snug mt-0.5">Legally binding · eKYC verified · Instant</p>
-              </div>
-
-              {/* CTA */}
-              <div className="flex items-center gap-1 text-[11.5px] font-bold tracking-wider uppercase text-white bg-white/12 px-3.5 py-2 rounded-full border border-white/20 shrink-0">
-                Start <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5 ml-0.5" />
+              {/* Bottom Row: Title, Subtitle, and Pill Start Button */}
+              <div className="flex justify-between items-end mt-4">
+                <div className="space-y-0.5">
+                  <h2 className="font-display font-bold text-[20px] leading-tight text-white tracking-tight">Create Agreement</h2>
+                  <p className="text-[12px] text-white/70 font-medium tracking-wide">Secure C2C / B2B / B2C e-signing</p>
+                </div>
+                <div className="flex items-center gap-1 bg-white text-primary px-4 py-2 rounded-full font-bold text-[12px] shadow-md hover:opacity-90 transition-opacity">
+                  Start <ArrowUpRight strokeWidth={2.5} className="w-3.5 h-3.5" />
+                </div>
               </div>
             </div>
-          </motion.button>
+          </motion.div>
 
 
           {/* PENDING ACTIONS */}

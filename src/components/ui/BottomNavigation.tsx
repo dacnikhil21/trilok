@@ -67,8 +67,8 @@ export function BottomNavigation({
   }
 
   return (
-    // Floating pill container — `bottom-5 left-4 right-4` gives the Instagram-style lift
-    <div className={`lg:hidden fixed bottom-5 left-4 right-4 z-40 ${className}`}>
+    // Floating pill container — centered exactly using left-1/2 and -translate-x-1/2
+    <div className={`lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[390px] z-40 ${className}`}>
 
       {/* Center elevated Create FAB — sits above the floating pill */}
       <div className="absolute left-1/2 -translate-x-1/2 -top-[26px] z-50 flex flex-col items-center">
@@ -86,7 +86,7 @@ export function BottomNavigation({
       </div>
 
       {/* Floating pill nav bar — identical visual to the previous Instagram style */}
-      <nav className="h-[60px] backdrop-blur-[28px] bg-surface/80 border border-white/25 rounded-[var(--radius-md)] flex items-center px-2 shadow-[var(--shadow-level-3)]">
+      <nav className="h-[60px] backdrop-blur-[28px] bg-surface/85 border border-border/60 rounded-[var(--radius-md)] flex items-center px-2 shadow-[var(--shadow-level-3)]">
         {/* Left two tabs */}
         <div className="flex flex-1">
           {leftTabs.map(renderTab)}
