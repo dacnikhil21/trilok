@@ -70,21 +70,6 @@ export function BottomNavigation({
     // Floating pill container — centered exactly using left-1/2 and -translate-x-1/2
     <div className={`lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-[390px] z-40 ${className}`}>
 
-      {/* Center elevated Create FAB — sits above the floating pill */}
-      <div className="absolute left-1/2 -translate-x-1/2 -top-[26px] z-50 flex flex-col items-center">
-        <motion.button
-          onClick={onCreateNew}
-          whileTap={{ scale: 0.86 }}
-          whileHover={{ scale: 1.08, y: -2 }}
-          transition={{ type: "spring", stiffness: 420, damping: 20 }}
-          className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#0D7343] to-[#0A5C36] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(10,92,54,0.45)] border-[3px] border-background"
-          aria-label="Create Agreement"
-        >
-          <Plus strokeWidth={2.8} className="w-[22px] h-[22px]" />
-        </motion.button>
-        <span className="text-[8.5px] font-bold text-primary mt-[3px] leading-none tracking-wide">Create</span>
-      </div>
-
       {/* Floating pill nav bar — identical visual to the previous Instagram style */}
       <nav className="h-[60px] backdrop-blur-[28px] bg-surface/85 border border-border/60 rounded-[var(--radius-md)] flex items-center px-2 shadow-[var(--shadow-level-3)]">
         {/* Left two tabs */}
@@ -92,8 +77,20 @@ export function BottomNavigation({
           {leftTabs.map(renderTab)}
         </div>
 
-        {/* Center gap reserved for the elevated FAB */}
-        <div className="w-[60px] shrink-0" />
+        {/* Center Button — vertically aligned inside the nav bar */}
+        <div className="flex flex-col items-center justify-center w-[64px] shrink-0">
+          <motion.button
+            onClick={onCreateNew}
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0D7343] to-[#0A5C36] text-white flex items-center justify-center shadow-[0_3px_10px_rgba(10,92,54,0.30)] border border-white/10"
+            aria-label="Create Agreement"
+          >
+            <Plus strokeWidth={2.8} className="w-[20px] h-[20px]" />
+          </motion.button>
+          <span className="text-[8.5px] font-bold text-primary mt-1 leading-none tracking-wide">Create</span>
+        </div>
 
         {/* Right two tabs */}
         <div className="flex flex-1">
