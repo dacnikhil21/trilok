@@ -390,7 +390,7 @@ function DashboardContent() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.07, type: "spring", stiffness: 300, damping: 24 }}
-                    className="min-w-[195px] max-w-[195px] p-4 bg-surface border border-border rounded-[18px] flex flex-col justify-between h-[108px] shadow-[var(--shadow-level-1)] shrink-0 cursor-pointer hover:border-warning/30 transition-all"
+                    className="min-w-[220px] max-w-[220px] p-4 bg-surface border border-border rounded-[18px] flex flex-col justify-between h-[108px] shadow-[var(--shadow-level-1)] shrink-0 cursor-pointer hover:border-warning/30 transition-all"
                   >
                     <div className="flex justify-between items-start">
                       <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[9px] font-bold uppercase tracking-wider">{act.type}</span>
