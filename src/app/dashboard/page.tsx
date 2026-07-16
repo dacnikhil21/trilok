@@ -182,27 +182,27 @@ function DashboardContent() {
               description="Your Aadhaar eKYC is verified. You are authorized to construct, legally stamp, and sign agreements inside the workspace."
             />
 
-            {/* 2. HERO CREATE AGREEMENT CARD (Largest Element - Focal Point) */}
+            {/* 2. HERO CREATE AGREEMENT CARD (Compact, Mobile-First) */}
             <motion.button 
-              whileHover={{ y: -4, scale: 1.005 }}
+              whileHover={{ y: -3, scale: 1.002 }}
               whileTap={{ scale: 0.995 }}
               transition={appleSpring}
-              className="relative w-full p-8 rounded-[var(--radius-md)] bg-gradient-to-br from-[#0A5C36] via-[#0E7345] to-[#0A5C36] text-surface text-left flex flex-col justify-between min-h-[220px] shadow-[0_20px_48px_-8px_rgba(10,92,54,0.25)] border border-primary/20 overflow-hidden group"
+              className="relative w-full p-5 sm:p-6 rounded-[var(--radius-md)] bg-gradient-to-br from-[#0A5C36] via-[#0E7345] to-[#0A5C36] text-surface text-left flex flex-col justify-between min-h-[140px] sm:min-h-[150px] shadow-[0_12px_30px_-6px_rgba(10,92,54,0.2)] border border-primary/20 overflow-hidden group"
             >
               {/* Apple light sweep reflection */}
               <div className="sweep-overlay" />
               
-              <div className="w-14 h-14 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
-                <Plus strokeWidth={2.6} className="w-7 h-7 text-surface" />
+              <div className="w-10 h-10 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
+                <Plus strokeWidth={2.4} className="w-5 h-5 text-surface" />
               </div>
               
-              <div className="space-y-2">
-                <h3 className="font-display font-bold text-[26px] leading-tight flex items-center gap-2">
+              <div className="space-y-1 mt-4">
+                <h3 className="font-display font-bold text-[20px] sm:text-[22px] leading-tight flex items-center gap-1.5">
                   Create Agreement
-                  <ArrowUpRight strokeWidth={2.8} className="w-6 h-6 opacity-80 transition-transform duration-300 group-hover:translate-x-1.5 group-hover:-translate-y-1.5" />
+                  <ArrowUpRight strokeWidth={2.5} className="w-4.5 h-4.5 opacity-80 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </h3>
-                <p className="text-[14.5px] text-surface/85 font-medium leading-relaxed max-w-[480px]">
-                  Draft a legally-compliant contract tailored for your specific transaction type. Stamped and executed dynamically.
+                <p className="text-[13px] text-surface/85 font-medium leading-normal max-w-[420px]">
+                  Draft a legally-compliant contract tailored for your specific transaction type.
                 </p>
               </div>
             </motion.button>
