@@ -313,7 +313,7 @@ function RegisterFormContent() {
                 )}
               </div>
 
-              <div className="mt-5">
+              <div className="mt-6">
                 <Button type="button" onClick={handleNextPage} size="lg" className="w-full h-14 flex items-center justify-center gap-2">
                   Continue Onboarding
                   <ArrowRight className="w-4.5 h-4.5" />
@@ -470,7 +470,7 @@ function RegisterFormContent() {
                 )}
               </div>
 
-              <div className="flex gap-3 mt-5">
+              <div className="flex gap-3 mt-6">
                 <Button type="button" variant="secondary" onClick={() => setFormPage(1)} className="h-14 px-5">
                   <ArrowLeft className="w-5 h-5 text-secondary-text" />
                 </Button>
