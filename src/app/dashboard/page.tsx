@@ -311,32 +311,46 @@ function DashboardContent() {
       <div className="lg:hidden flex flex-col min-h-screen">
 
         {/* ── Mobile Header ─────────────────── */}
-        <header className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border/20">
+        <header className="relative flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20">
+          {/* Left: greeting + name */}
           <div>
-            <p className="text-[10.5px] text-secondary-text font-bold uppercase tracking-[0.12em] leading-none mb-0.5">
+            <p className="text-[10px] text-secondary-text font-bold uppercase tracking-[0.12em] leading-none mb-0.5">
               {greeting} 👋
             </p>
-            <div className="flex items-center gap-2">
-              <h1 className="text-[24px] font-display font-bold text-foreground leading-none tracking-tight">Nikhil</h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[9.5px] font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-3 h-3" /> Verified
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-[21px] font-display font-bold text-foreground leading-none tracking-tight">Nikhil</h1>
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#EAF7EE] text-[#1A8A3C] text-[8.5px] font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-2.5 h-2.5" /> Verified
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2.5">
+
+          {/* Center: Trilok brand mark — absolutely centered in the header */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none">
+            <div className="w-6 h-6 rounded-full bg-primary/8 border border-primary/12 flex items-center justify-center">
+              <ShieldCheck strokeWidth={2.2} className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <span className="font-display font-bold text-[15px] tracking-tight text-foreground leading-none">
+              Trilok
+            </span>
+          </div>
+
+          {/* Right: bell + avatar */}
+          <div className="flex items-center gap-2">
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={() => setShowNotifications(!showNotifications)}
-              className="w-10 h-10 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-[var(--shadow-level-1)]"
+              className="w-9 h-9 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-[var(--shadow-level-1)]"
             >
-              <Bell strokeWidth={2} className="w-4.5 h-4.5 text-secondary-text" />
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary" />
+              <Bell strokeWidth={2} className="w-4 h-4 text-secondary-text" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
             </motion.button>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[15px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[13px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]">
               N
             </div>
           </div>
         </header>
+
 
         {/* ── Mobile Scroll Body ─────────────── */}
         <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
