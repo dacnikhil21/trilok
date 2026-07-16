@@ -9,41 +9,50 @@ import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { StatusCard } from "@/components/ui/StatusCard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ShieldCheck, Camera, MapPin, Check, Lock, RefreshCw, Sparkles } from "lucide-react"
+import { 
+  ShieldCheck, Camera, MapPin, Check, Lock, RefreshCw, 
+  Sparkles, Bell, Eye, Database, FileText, Smartphone, CheckCircle2, Clock
+} from "lucide-react"
 
-type Step = "consent" | "aadhaar" | "permissions" | "selfie"
+type Step = "aadhaar" | "aadhaar-success" | "consent" | "permissions" | "recorded"
 
 const STEPS_MAP: Record<Step, number> = {
-  consent: 0,
-  aadhaar: 1,
-  permissions: 2,
-  selfie: 3,
+  aadhaar: 0,
+  "aadhaar-success": 1,
+  consent: 2,
+  permissions: 3,
+  recorded: 4,
 }
 
-function VerifyIdentityForm() {
+function VerifyIdentityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = searchParams.get("module") || "c2c"
 
-  const [step, setStep] = React.useState<Step>("consent")
-  const [consentChecked, setConsentChecked] = React.useState(false)
+  const [step, setStep] = React.useState<Step>("aadhaar")
 
-  // Aadhaar states
+  // Aadhaar eKYC states
   const [aadhaarNumber, setAadhaarNumber] = React.useState("")
   const [aadhaarOtp, setAadhaarOtp] = React.useState("")
   const [isOtpSent, setIsOtpSent] = React.useState(false)
   const [isAadhaarVerifying, setIsAadhaarVerifying] = React.useState(false)
 
-  // Permission states
+  // Consent states (Screen 01)
+  const [consents, setConsents] = React.useState({
+    collectPersonalInfo: false,
+    ekycVerification: false,
+    gpsCapture: false,
+    cameraAccess: false,
+    termsAccepted: false,
+  })
+
+  // Permission states (Screen 02)
   const [gpsGranted, setGpsGranted] = React.useState(false)
   const [cameraGranted, setCameraGranted] = React.useState(false)
+  const [notifGranted, setNotifGranted] = React.useState(false)
   const [isGpsLoading, setIsGpsLoading] = React.useState(false)
   const [isCameraLoading, setIsCameraLoading] = React.useState(false)
-
-  // Selfie states
-  const [selfieCaptured, setSelfieCaptured] = React.useState(false)
-  const [isCapturing, setIsCapturing] = React.useState(false)
-  const [capturedImage, setCapturedImage] = React.useState<string | null>(null)
+  const [isNotifLoading, setIsNotifLoading] = React.useState(false)
 
   const handleAadhaarChange = (val: string) => {
     const digits = val.replace(/\D/g, "").slice(0, 12)
@@ -61,7 +70,7 @@ function VerifyIdentityForm() {
     setTimeout(() => {
       setIsOtpSent(true)
       setIsAadhaarVerifying(false)
-    }, 1200)
+    }, 1000)
   }
 
   const verifyAadhaarOtp = () => {
@@ -69,8 +78,8 @@ function VerifyIdentityForm() {
     setIsAadhaarVerifying(true)
     setTimeout(() => {
       setIsAadhaarVerifying(false)
-      setStep("permissions")
-    }, 1500)
+      setStep("aadhaar-success")
+    }, 1200)
   }
 
   const requestGps = () => {
@@ -78,7 +87,7 @@ function VerifyIdentityForm() {
     setTimeout(() => {
       setGpsGranted(true)
       setIsGpsLoading(false)
-    }, 800)
+    }, 600)
   }
 
   const requestCamera = () => {
@@ -86,77 +95,54 @@ function VerifyIdentityForm() {
     setTimeout(() => {
       setCameraGranted(true)
       setIsCameraLoading(false)
-    }, 800)
+    }, 600)
   }
 
-  const triggerSelfieCapture = () => {
-    setIsCapturing(true)
+  const requestNotif = () => {
+    setIsNotifLoading(true)
     setTimeout(() => {
-      setCapturedImage("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%230A5C36' opacity='0.15'/><path d='M50,30 A15,15 0 0,0 35,45 A15,15 0 0,0 50,60 A15,15 0 0,0 65,45 A15,15 0 0,0 50,30 Z' fill='%230A5C36'/><path d='M20,80 C20,65 30,55 50,55 C70,55 80,65 80,80 Z' fill='%230A5C36'/></svg>")
-      setSelfieCaptured(true)
-      setIsCapturing(false)
-    }, 1200)
+      setNotifGranted(true)
+      setIsNotifLoading(false)
+    }, 600)
   }
 
-  const completeVerification = () => {
-    router.push(`/verification-success?module=${moduleType}`)
+  const toggleConsent = (key: keyof typeof consents) => {
+    setConsents((prev) => ({ ...prev, [key]: !prev[key] }))
   }
+
+  const allConsentsChecked = Object.values(consents).every(Boolean)
+
+  const deviceId = React.useMemo(() => {
+    return "TRILOK-MBL-78X9"
+  }, [])
+
+  const timestamp = React.useMemo(() => {
+    return new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+  }, [step])
 
   return (
     <AppContainer centered>
-      <PageHeader 
-        title="Secure Verification" 
-        subtitle="We protect your identity with institutional-grade security protocols." 
-        showLogo
-      />
+      {/* Platform Branding logo block */}
+      <div className="flex flex-col items-center justify-center space-y-2 mb-6">
+        <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-[var(--shadow-level-1)]">
+          <ShieldCheck strokeWidth={2.4} className="h-5.5 w-5.5 text-primary" />
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[19px] font-display font-bold tracking-tight text-foreground leading-none">
+            Trilok
+          </span>
+          <span className="text-[9.5px] font-bold tracking-widest uppercase text-secondary-text mt-1.5">
+            Secure • Verified • Trusted
+          </span>
+        </div>
+      </div>
+
       <div className="flex flex-col flex-1">
-        {/* Stepper component */}
-        <ProgressStepper currentStep={STEPS_MAP[step]} totalSteps={4} />
+        {/* Stepper indicator */}
+        <ProgressStepper currentStep={STEPS_MAP[step]} totalSteps={5} className="mb-6" />
 
         <AnimatePresence mode="wait">
-          {/* STEP 1: DPDP Consent */}
-          {step === "consent" && (
-            <motion.div
-              key="consent"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col flex-1 space-y-6"
-            >
-              <StatusCard
-                variant="success"
-                icon={ShieldCheck}
-                title="DPDP Act Protection"
-                description="Under the Indian Digital Personal Data Protection (DPDP) Act, your details are fully encrypted. We act solely as a secure processor for executing your digital agreements."
-              />
-
-              <div className="p-4 bg-surface border border-border rounded-[var(--radius-md)] flex items-start gap-3 mt-4 shadow-[var(--shadow-level-1)]">
-                <input
-                  type="checkbox"
-                  id="dpdp-consent"
-                  checked={consentChecked}
-                  onChange={(e) => setConsentChecked(e.target.checked)}
-                  className="w-5 h-5 mt-1 rounded text-primary focus:ring-primary border-border cursor-pointer accent-[#0A5C36]"
-                />
-                <label htmlFor="dpdp-consent" className="text-[14px] font-medium text-foreground cursor-pointer leading-snug select-none">
-                  I consent to sharing my Aadhaar identity and location data securely for the purpose of agreement authentication.
-                </label>
-              </div>
-
-              <div className="mt-auto pt-8">
-                <Button
-                  onClick={() => setStep("aadhaar")}
-                  disabled={!consentChecked}
-                  size="lg"
-                  className="w-full h-14"
-                >
-                  Agree & Continue
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 2: Aadhaar eKYC */}
+          {/* STEP 1: Aadhaar eKYC Verification */}
           {step === "aadhaar" && (
             <motion.div
               key="aadhaar"
@@ -165,12 +151,12 @@ function VerifyIdentityForm() {
               exit={{ opacity: 0, x: -20 }}
               className="flex flex-col flex-1 space-y-6"
             >
+              <PageHeader 
+                title="Aadhaar Verification" 
+                subtitle="Authenticate your signature identity instantly using government eKYC records."
+              />
+
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-primary font-semibold text-[14px]">
-                  <Lock className="w-4 h-4" />
-                  <span>Aadhaar Secure eKYC</span>
-                </div>
-                
                 {!isOtpSent ? (
                   <Input
                     label="Aadhaar Card Number"
@@ -183,9 +169,9 @@ function VerifyIdentityForm() {
                   />
                 ) : (
                   <div className="space-y-4">
-                    <div className="text-[14px] text-secondary-text mb-2 font-medium">
-                      An OTP has been sent to the mobile number registered with your Aadhaar ending in ****
-                    </div>
+                    <p className="text-[13px] text-secondary-text font-medium leading-relaxed">
+                      OTP has been dispatched to the mobile number registered with your Aadhaar ending in ****
+                    </p>
                     <Input
                       label="6-Digit Aadhaar OTP"
                       type="text"
@@ -224,9 +210,9 @@ function VerifyIdentityForm() {
                     <button 
                       type="button" 
                       onClick={() => setIsOtpSent(false)}
-                      className="text-center text-[14px] text-secondary-text hover:text-foreground font-medium transition-colors"
+                      className="text-center text-[13px] text-secondary-text hover:text-foreground font-semibold transition-colors"
                     >
-                      Edit Aadhaar Number
+                      Edit Aadhaar
                     </button>
                   </div>
                 )}
@@ -234,7 +220,125 @@ function VerifyIdentityForm() {
             </motion.div>
           )}
 
-          {/* STEP 3: Permissions Panel */}
+          {/* STEP 2: Identity Verified Transition */}
+          {step === "aadhaar-success" && (
+            <motion.div
+              key="aadhaar-success"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col flex-1 space-y-6 text-center py-4"
+            >
+              <div className="mx-auto w-16 h-16 rounded-full bg-verified flex items-center justify-center border border-primary/20 shadow-sm mb-2">
+                <Check strokeWidth={3} className="w-8 h-8 text-primary" />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-[24px] font-display font-bold text-foreground">Identity Verified</h2>
+                <p className="text-[14px] text-secondary-text max-w-xs mx-auto font-medium leading-relaxed">
+                  Your identity has been successfully validated against Aadhaar database registers.
+                </p>
+              </div>
+
+              <div className="p-4 bg-divider/40 border border-border rounded-[16px] text-left space-y-2.5">
+                <div className="flex justify-between text-[13px] font-medium">
+                  <span className="text-secondary-text">Full Name</span>
+                  <span className="text-foreground">Nikhil Dachepalli</span>
+                </div>
+                <div className="flex justify-between text-[13px] font-medium border-t border-divider pt-2.5">
+                  <span className="text-secondary-text">Verification Method</span>
+                  <span className="text-foreground">Aadhaar eKYC API</span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-8">
+                <Button onClick={() => setStep("consent")} size="lg" className="w-full h-14">
+                  Proceed to Privacy Consent
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: DPDP Consent (Screen 01) */}
+          {step === "consent" && (
+            <motion.div
+              key="consent"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex flex-col flex-1 space-y-6"
+            >
+              <PageHeader
+                title="Data Privacy & Consent"
+                subtitle="To comply with the Digital Personal Data Protection (DPDP) Act, 2023, we require your consent before processing your identity and agreement information."
+              />
+
+              <div className="bg-surface border border-border rounded-[16px] p-5 shadow-[var(--shadow-level-1)] space-y-4">
+                {/* Checkbox 1 */}
+                <div className="flex items-start gap-3 cursor-pointer" onClick={() => toggleConsent("collectPersonalInfo")}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consents.collectPersonalInfo ? "bg-primary border-primary" : "border-border"}`}>
+                    {consents.collectPersonalInfo && <Check className="w-3.5 h-3.5 text-surface" strokeWidth={3} />}
+                  </div>
+                  <span className="text-[13px] font-semibold text-foreground leading-snug select-none">
+                    I consent to Trilok collecting and processing my personal information for identity verification.
+                  </span>
+                </div>
+
+                {/* Checkbox 2 */}
+                <div className="flex items-start gap-3 cursor-pointer border-t border-divider pt-3" onClick={() => toggleConsent("ekycVerification")}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consents.ekycVerification ? "bg-primary border-primary" : "border-border"}`}>
+                    {consents.ekycVerification && <Check className="w-3.5 h-3.5 text-surface" strokeWidth={3} />}
+                  </div>
+                  <span className="text-[13px] font-semibold text-foreground leading-snug select-none">
+                    I consent to Aadhaar eKYC verification for secure agreement authentication.
+                  </span>
+                </div>
+
+                {/* Checkbox 3 */}
+                <div className="flex items-start gap-3 cursor-pointer border-t border-divider pt-3" onClick={() => toggleConsent("gpsCapture")}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consents.gpsCapture ? "bg-primary border-primary" : "border-border"}`}>
+                    {consents.gpsCapture && <Check className="w-3.5 h-3.5 text-surface" strokeWidth={3} />}
+                  </div>
+                  <span className="text-[13px] font-semibold text-foreground leading-snug select-none">
+                    I allow GPS location capture for legal audit purposes.
+                  </span>
+                </div>
+
+                {/* Checkbox 4 */}
+                <div className="flex items-start gap-3 cursor-pointer border-t border-divider pt-3" onClick={() => toggleConsent("cameraAccess")}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consents.cameraAccess ? "bg-primary border-primary" : "border-border"}`}>
+                    {consents.cameraAccess && <Check className="w-3.5 h-3.5 text-surface" strokeWidth={3} />}
+                  </div>
+                  <span className="text-[13px] font-semibold text-foreground leading-snug select-none">
+                    I allow camera access for live identity verification.
+                  </span>
+                </div>
+
+                {/* Checkbox 5 */}
+                <div className="flex items-start gap-3 cursor-pointer border-t border-divider pt-3" onClick={() => toggleConsent("termsAccepted")}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consents.termsAccepted ? "bg-primary border-primary" : "border-border"}`}>
+                    {consents.termsAccepted && <Check className="w-3.5 h-3.5 text-surface" strokeWidth={3} />}
+                  </div>
+                  <span className="text-[13px] font-semibold text-foreground leading-snug select-none">
+                    I agree to the Privacy Policy, Terms & Conditions and DPDP Policy.
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-8">
+                <Button 
+                  onClick={() => setStep("permissions")} 
+                  disabled={!allConsentsChecked} 
+                  size="lg" 
+                  className="w-full h-14"
+                >
+                  Confirm Consent
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: Permissions Required (Screen 02) */}
           {step === "permissions" && (
             <motion.div
               key="permissions"
@@ -243,58 +347,87 @@ function VerifyIdentityForm() {
               exit={{ opacity: 0, x: -20 }}
               className="flex flex-col flex-1 space-y-6"
             >
-              <h3 className="font-display font-bold text-[20px] text-foreground tracking-tight">Secure System Checks</h3>
-              <p className="text-[14px] text-secondary-text -mt-2 font-medium">
-                We require browser confirmations to ensure jurisdiction parameters are verified under legal agreement guidelines.
-              </p>
+              <PageHeader
+                title="Permissions Required"
+                subtitle="To complete secure agreement creation, Trilok requires access to the following services."
+              />
 
               <div className="space-y-4">
-                {/* GPS Status Card */}
-                <StatusCard
-                  variant={gpsGranted ? "success" : "info"}
-                  icon={gpsGranted ? Check : MapPin}
-                  title="Geographic Stamping"
-                  description="Verifies signature jurisdiction to enforce valid state-level stamp duty."
-                  actionNode={
-                    !gpsGranted && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={requestGps}
-                        loading={isGpsLoading}
-                      >
-                        Allow
-                      </Button>
-                    )
-                  }
-                />
+                {/* Camera card */}
+                <div className={`p-4 bg-surface border rounded-[16px] flex items-center justify-between shadow-[var(--shadow-level-1)] transition-all ${cameraGranted ? "border-primary/20 bg-primary/[0.01]" : "border-border"}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${cameraGranted ? "bg-primary/8 text-primary" : "bg-divider text-secondary-text"}`}>
+                      <Camera className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[14.5px] leading-none">Camera</h4>
+                      <p className="text-[11.5px] text-secondary-text mt-1 font-semibold">Required for Live Selfie Verification</p>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant={cameraGranted ? "ghost" : "secondary"} 
+                    className="h-9 px-3.5 text-[12px] font-bold" 
+                    onClick={requestCamera} 
+                    loading={isCameraLoading}
+                    disabled={cameraGranted}
+                  >
+                    {cameraGranted ? "Allowed" : "Allow"}
+                  </Button>
+                </div>
 
-                {/* Camera Status Card */}
-                <StatusCard
-                  variant={cameraGranted ? "success" : "info"}
-                  icon={cameraGranted ? Check : Camera}
-                  title="Liveness Protection"
-                  description="Authenticates a real-time matching selfie, securing against identity theft."
-                  actionNode={
-                    !cameraGranted && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={requestCamera}
-                        loading={isCameraLoading}
-                      >
-                        Allow
-                      </Button>
-                    )
-                  }
-                />
+                {/* GPS card */}
+                <div className={`p-4 bg-surface border rounded-[16px] flex items-center justify-between shadow-[var(--shadow-level-1)] transition-all ${gpsGranted ? "border-primary/20 bg-primary/[0.01]" : "border-border"}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${gpsGranted ? "bg-primary/8 text-primary" : "bg-divider text-secondary-text"}`}>
+                      <MapPin className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[14.5px] leading-none">GPS Location</h4>
+                      <p className="text-[11.5px] text-secondary-text mt-1 font-semibold">Required for Agreement Audit Trail</p>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant={gpsGranted ? "ghost" : "secondary"} 
+                    className="h-9 px-3.5 text-[12px] font-bold" 
+                    onClick={requestGps} 
+                    loading={isGpsLoading}
+                    disabled={gpsGranted}
+                  >
+                    {gpsGranted ? "Allowed" : "Allow"}
+                  </Button>
+                </div>
+
+                {/* Notifications card */}
+                <div className={`p-4 bg-surface border rounded-[16px] flex items-center justify-between shadow-[var(--shadow-level-1)] transition-all ${notifGranted ? "border-primary/20 bg-primary/[0.01]" : "border-border"}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${notifGranted ? "bg-primary/8 text-primary" : "bg-divider text-secondary-text"}`}>
+                      <Bell className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[14.5px] leading-none">Notifications</h4>
+                      <p className="text-[11.5px] text-secondary-text mt-1 font-semibold">Receive Agreement Status Updates</p>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant={notifGranted ? "ghost" : "secondary"} 
+                    className="h-9 px-3.5 text-[12px] font-bold" 
+                    onClick={requestNotif} 
+                    loading={isNotifLoading}
+                    disabled={notifGranted}
+                  >
+                    {notifGranted ? "Allowed" : "Allow"}
+                  </Button>
+                </div>
               </div>
 
               <div className="mt-auto pt-8">
-                <Button
-                  onClick={() => setStep("selfie")}
-                  disabled={!gpsGranted || !cameraGranted}
-                  size="lg"
+                <Button 
+                  onClick={() => setStep("recorded")} 
+                  disabled={!gpsGranted || !cameraGranted || !notifGranted} 
+                  size="lg" 
                   className="w-full h-14"
                 >
                   Continue
@@ -303,83 +436,82 @@ function VerifyIdentityForm() {
             </motion.div>
           )}
 
-          {/* STEP 4: Live Selfie */}
-          {step === "selfie" && (
+          {/* STEP 5: Consent Recorded Success (Screen 03) */}
+          {step === "recorded" && (
             <motion.div
-              key="selfie"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
+              key="recorded"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
               className="flex flex-col flex-1 space-y-6"
             >
-              <div className="flex flex-col items-center justify-center space-y-6 py-4">
-                <div className="relative">
-                  {/* Selfie Camera Ring */}
-                  <div className="w-48 h-48 rounded-full border-4 border-primary/20 overflow-hidden flex items-center justify-center bg-foreground/5 relative">
-                    {capturedImage ? (
-                      <img src={capturedImage} alt="Captured Selfie" className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera className="w-12 h-12 text-secondary-text/40" />
-                    )}
-
-                    {isCapturing && (
-                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center animate-pulse">
-                        <RefreshCw className="w-10 h-10 animate-spin text-primary" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  {selfieCaptured && (
-                    <div className="absolute -bottom-2 right-4 w-8 h-8 rounded-full bg-primary text-surface flex items-center justify-center shadow-[var(--shadow-level-1)]">
-                      <Check className="w-4 h-4" />
-                    </div>
-                  )}
+              <div className="text-center py-2 space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-verified flex items-center justify-center border border-primary/20 shadow-sm">
+                  <CheckCircle2 strokeWidth={2.4} className="w-8 h-8 text-primary" />
                 </div>
-
-                <div className="text-center space-y-2 max-w-[280px]">
-                  <h4 className="font-display font-bold text-[18px]">Position your face</h4>
-                  <p className="text-[13px] text-secondary-text font-medium">
-                    Align your head inside the circle. Ensure good lighting and remove glasses/hats.
+                <div className="space-y-1">
+                  <h2 className="text-[24px] font-display font-bold text-foreground">Consent Successfully Recorded</h2>
+                  <p className="text-[13px] text-secondary-text max-w-xs mx-auto font-semibold leading-relaxed">
+                    Your consent has been securely recorded under the Digital Personal Data Protection Act (2023).
                   </p>
                 </div>
               </div>
 
-              <div className="mt-auto pt-8 flex gap-4">
-                {!selfieCaptured ? (
-                  <Button
-                    onClick={triggerSelfieCapture}
-                    disabled={isCapturing}
-                    loading={isCapturing}
-                    size="lg"
-                    className="w-full h-14"
-                  >
-                    Capture Secure Selfie
-                  </Button>
-                ) : (
-                  <div className="w-full flex gap-4">
-                    <Button
-                      onClick={() => {
-                        setSelfieCaptured(false)
-                        setCapturedImage(null)
-                      }}
-                      variant="secondary"
-                      className="flex-1 h-14 text-foreground font-semibold"
-                    >
-                      Retake
-                    </Button>
-                    <Button
-                      onClick={completeVerification}
-                      className="flex-1 h-14"
-                    >
-                      Submit Verification
-                    </Button>
-                  </div>
-                )}
+              {/* Premium Audit Card */}
+              <div className="p-5 bg-surface border border-border rounded-[20px] shadow-[var(--shadow-level-1)] space-y-4">
+                <div className="flex justify-between items-center text-[13px] font-semibold border-b border-divider pb-3">
+                  <span className="text-secondary-text flex items-center gap-1.5"><FileText className="w-4 h-4 text-primary" /> Consent Version</span>
+                  <span className="text-foreground">v2.4.1 (DPDP-2023)</span>
+                </div>
+                
+                <div className="flex justify-between items-center text-[13px] font-semibold border-b border-divider pb-3">
+                  <span className="text-secondary-text flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> Timestamp</span>
+                  <span className="text-foreground text-[12px]">{timestamp}</span>
+                </div>
+
+                <div className="flex justify-between items-center text-[13px] font-semibold border-b border-divider pb-3">
+                  <span className="text-secondary-text flex items-center gap-1.5"><Smartphone className="w-4 h-4 text-primary" /> Device ID</span>
+                  <span className="text-foreground">{deviceId}</span>
+                </div>
+
+                <div className="flex justify-between items-center text-[13px] font-semibold border-b border-divider pb-3">
+                  <span className="text-secondary-text flex items-center gap-1.5"><MapPin className="w-4 h-4 text-primary" /> GPS Status</span>
+                  <span className="text-foreground flex items-center gap-1 text-[12px] text-success"><Check className="w-3.5 h-3.5" /> Stamped & Audited</span>
+                </div>
+
+                <div className="flex justify-between items-center text-[13px] font-semibold border-b border-divider pb-3">
+                  <span className="text-secondary-text flex items-center gap-1.5"><Database className="w-4 h-4 text-primary" /> Data Processing</span>
+                  <span className="text-foreground flex items-center gap-1 text-[12px] text-success"><Check className="w-3.5 h-3.5" /> Encrypted (AES-256)</span>
+                </div>
+
+                <div className="flex justify-between items-center text-[13px] font-semibold">
+                  <span className="text-secondary-text flex items-center gap-1.5"><Eye className="w-4 h-4 text-primary" /> Audit Logging</span>
+                  <span className="text-foreground flex items-center gap-1 text-[12px] text-success"><Check className="w-3.5 h-3.5" /> Active & Immutable</span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-8">
+                <Button 
+                  onClick={() => router.push(`/dashboard?module=${moduleType}`)} 
+                  size="lg" 
+                  className="w-full h-14"
+                >
+                  Continue to Dashboard
+                </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* FOOTER DPDP LINKS */}
+      <footer className="mt-10 pt-4 border-t border-divider flex items-center justify-center gap-4 text-[12px] font-bold text-secondary-text tracking-wide uppercase">
+        <button className="hover:text-primary transition-colors">Privacy Policy</button>
+        <span className="text-border">•</span>
+        <button className="hover:text-primary transition-colors">Terms & Conditions</button>
+        <span className="text-border">•</span>
+        <button className="hover:text-primary transition-colors">DPDP Policy</button>
+      </footer>
     </AppContainer>
   )
 }
@@ -391,7 +523,7 @@ export default function VerifyIdentityPage() {
         <span className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     }>
-      <VerifyIdentityForm />
+      <VerifyIdentityContent />
     </React.Suspense>
   )
 }
