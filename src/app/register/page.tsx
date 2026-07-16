@@ -412,11 +412,6 @@ function RegisterFormContent() {
 
   return (
     <AppContainer centered>
-      {/* Visual onboarding progress timeline */}
-      <div className="w-full max-w-[420px] mx-auto pt-2 px-6">
-        <ProgressStepper currentStep={0} totalSteps={5} />
-      </div>
-
       <OnboardingLayout
         title={config.title}
         subtitle={config.subheading}
@@ -425,6 +420,7 @@ function RegisterFormContent() {
         onButtonClick={handleSubmit}
         isButtonLoading={isLoading}
         showBackButton
+        stepperStep={0}
         onBackClick={() => {
           if (formPage === 2) {
             setFormPage(1)

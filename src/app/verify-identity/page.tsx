@@ -349,11 +349,6 @@ function VerifyIdentityContent() {
 
   return (
     <AppContainer centered>
-      {/* Onboarding Wizard Stepper */}
-      <div className="w-full max-w-[420px] mx-auto pt-2 px-6">
-        <ProgressStepper currentStep={stepNumber} totalSteps={5} />
-      </div>
-
       <OnboardingLayout
         title={pageConfig.title}
         subtitle={pageConfig.subtitle}
@@ -363,6 +358,7 @@ function VerifyIdentityContent() {
         isButtonDisabled={isButtonDisabled}
         isButtonLoading={isLoading}
         showBackButton={step !== "success"}
+        stepperStep={stepNumber}
         onBackClick={() => {
           if (step === "otp") setStep("aadhaar")
           else if (step === "consent") setStep("otp")
