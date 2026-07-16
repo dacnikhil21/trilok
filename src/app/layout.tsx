@@ -13,7 +13,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "eSaleAgreement | Secure • Verified • Trusted",
+  title: "Trilok | Secure • Verified • Trusted",
   description: "Indian Digital Agreement Platform",
 };
 

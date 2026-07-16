@@ -20,7 +20,7 @@ export function PageHeader({ title, subtitle, showLogo = false, className = "" }
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[19px] font-display font-bold tracking-tight text-foreground leading-none">
-              eSaleAgreement
+              Trilok
             </span>
             <span className="text-[9.5px] font-bold tracking-widest uppercase text-secondary-text mt-1.5">
               Secure • Verified • Trusted

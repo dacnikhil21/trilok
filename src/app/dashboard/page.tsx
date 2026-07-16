@@ -58,22 +58,29 @@ function DashboardContent() {
     switch (moduleType) {
       case "b2b":
         return {
-          title: "B2B Agreement Desk",
-          subtitle: "Enterprise Portal • Acme Corp",
+          title: "Trilok B2B",
+          subtitle: "Enterprise Contract Suite",
         }
       case "b2c":
         return {
-          title: "Merchant Workspace",
-          subtitle: "B2C Business Portal • Retailer Console",
+          title: "Trilok B2C",
+          subtitle: "Merchant Agreement Portal",
         }
       case "c2c":
       default:
         return {
-          title: "Personal Workspace",
-          subtitle: "C2C Agreement Portal • Individual",
+          title: "Trilok C2C",
+          subtitle: "Peer-to-Peer Agreement Hub",
         }
     }
   }, [moduleType])
+
+  const greeting = React.useMemo(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Good Morning 👋"
+    if (hour < 17) return "Good Afternoon 👋"
+    return "Good Evening 👋"
+  }, [])
 
   const recentAgreements = AGREEMENTS_BY_MODULE[moduleType] || AGREEMENTS_BY_MODULE.c2c
   const pendingInvs = PENDING_INVITATIONS[moduleType] || PENDING_INVITATIONS.c2c
@@ -94,7 +101,7 @@ function DashboardContent() {
               <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10">
                 <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
               </div>
-              <span className="font-display font-bold text-[18px] tracking-tight text-foreground">eSaleAgreement</span>
+              <span className="font-display font-bold text-[18px] tracking-tight text-foreground">Trilok</span>
             </div>
             
             <nav className="space-y-1">
@@ -141,29 +148,26 @@ function DashboardContent() {
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 flex flex-col min-w-0 pb-28 lg:pb-0 z-10">
           {/* HEADER */}
-          <header className="bg-surface/30 backdrop-blur-[24px] border-b border-border/30 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-            <div className="flex items-center gap-3 lg:gap-0">
-              <div className="lg:hidden p-2 bg-primary/8 rounded-full border border-primary/10 shadow-sm">
-                <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
+          <header className="bg-surface/30 backdrop-blur-[24px] border-b border-border/30 px-6 py-5 sticky top-0 z-30">
+            <div className="flex items-center justify-between w-full max-w-4xl mx-auto">
+              <div className="space-y-1">
+                <p className="text-[13px] text-secondary-text font-bold tracking-wider uppercase leading-none">{greeting}</p>
+                <h2 className="text-[28px] font-display font-bold text-foreground leading-tight tracking-tight">Nikhil</h2>
+                <p className="text-[11px] text-primary font-bold tracking-wider uppercase mt-1">{config.title} • {config.subtitle}</p>
               </div>
-              <PageHeader 
-                title={config.title} 
-                subtitle={config.subtitle} 
-                className="mb-0 space-y-0"
-              />
-            </div>
 
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 text-secondary-text hover:text-foreground hover:bg-divider/40 rounded-full transition-colors relative"
-              >
-                <Bell strokeWidth={2.2} className="w-4.5 h-4.5" />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
-              </button>
+              <div className="flex items-center gap-3.5">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="p-2.5 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border"
+                >
+                  <Bell strokeWidth={2.2} className="w-5 h-5" />
+                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary" />
+                </button>
 
-              <div className="w-8.5 h-8.5 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[13px] border border-primary/10 shadow-sm">
-                U
+                <div className="w-10 h-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[14px] border border-primary/10 shadow-sm">
+                  N
+                </div>
               </div>
             </div>
           </header>
