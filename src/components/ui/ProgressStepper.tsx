@@ -10,20 +10,19 @@ interface ProgressStepperProps {
 
 export function ProgressStepper({ currentStep, totalSteps, className = "" }: ProgressStepperProps) {
   return (
-    <div className={`flex items-center gap-2 mb-8 bg-divider p-1.5 rounded-[var(--radius-sm)] ${className}`}>
+    <div className={`flex items-center gap-1.5 w-full ${className}`}>
       {Array.from({ length: totalSteps }).map((_, idx) => {
-        const isActive = idx === currentStep
-        const isCompleted = idx < currentStep
+        const isFilled = idx <= currentStep
         
         return (
           <div
             key={idx}
-            className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-              isActive ? "bg-primary" : isCompleted ? "bg-primary/20" : "bg-border/60"
+            className={`h-[3px] flex-1 rounded-full transition-all duration-500 ease-out ${
+              isFilled ? "bg-primary" : "bg-divider"
             }`}
           />
         )
       })}
     </div>
-  )
+  );
 }
