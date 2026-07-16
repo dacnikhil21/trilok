@@ -65,9 +65,23 @@ export default function LoginPage() {
         isButtonDisabled={isButtonDisabled}
         isButtonLoading={isLoading}
         bottomHelperText={
-          <span className="text-[12.5px] text-secondary-text/80">
-            By continuing, you agree to our <button className="font-semibold text-foreground underline hover:text-primary">Terms</button> & <button className="font-semibold text-foreground underline hover:text-primary">Privacy Policy</button>
-          </span>
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-[13px] text-secondary-text font-medium">
+              Don&apos;t have an account?{" "}
+              <button 
+                type="button" 
+                onClick={() => router.push("/select-service")} 
+                className="text-primary font-bold hover:underline cursor-pointer"
+              >
+                Register account
+              </button>
+            </span>
+            <span className="text-[12.5px] text-secondary-text/60">
+              By continuing, you agree to our{" "}
+              <button className="font-semibold text-foreground underline hover:text-primary">Terms</button> &{" "}
+              <button className="font-semibold text-foreground underline hover:text-primary">Privacy Policy</button>
+            </span>
+          </div>
         }
       />
     </AppContainer>

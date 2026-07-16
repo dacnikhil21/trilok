@@ -85,6 +85,7 @@ function RegisterFormContent() {
       if (!b2cCategory) newErrors.b2cCategory = "Business Category is required"
     } else {
       if (!c2cName.trim()) newErrors.c2cName = "Full Name is required"
+      if (c2cMobile.length !== 10) newErrors.c2cMobile = "Mobile number must be 10 digits"
       if (c2cEmail.trim() && !/\S+@\S+\.\S+/.test(c2cEmail)) newErrors.c2cEmail = "Invalid email format"
     }
 
@@ -266,9 +267,9 @@ function RegisterFormContent() {
           type="tel"
           prefixNode="+91"
           value={c2cMobile}
-          readOnly
-          disabled
-          className="bg-divider/20 cursor-not-allowed opacity-80"
+          onChange={(e) => { setC2cMobile(e.target.value.replace(/\D/g, "").slice(0, 10)); delete errors.c2cMobile; }}
+          error={errors.c2cMobile}
+          required
         />
         <Input
           label="Email Address (Optional)"

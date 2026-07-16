@@ -93,7 +93,7 @@ export default function OtpPage() {
       </p>
 
       {/* OTP Boxes Grid */}
-      <div className="flex justify-between gap-2.5">
+      <div className="flex justify-between gap-1.5">
         {otp.map((digit, idx) => (
           <input
             key={idx}
@@ -106,7 +106,7 @@ export default function OtpPage() {
             onKeyDown={(e) => handleKeyDown(e, idx)}
             onPaste={handlePaste}
             ref={(el) => { inputRefs.current[idx] = el }}
-            className="w-11 h-13 rounded-[12px] border border-border bg-surface text-center font-display font-bold text-[20px] text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all shadow-sm"
+            className="w-[38px] h-[48px] rounded-[10px] border border-border bg-surface text-center font-display font-bold text-[18px] text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all shadow-sm"
           />
         ))}
       </div>

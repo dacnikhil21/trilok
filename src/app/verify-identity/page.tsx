@@ -58,9 +58,8 @@ function VerifyIdentityContent() {
       case "permissions":
         return 3
       case "liveness":
-        return 4
       case "success":
-        return 5
+        return 4
     }
   }, [step])
 
