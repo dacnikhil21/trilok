@@ -308,7 +308,7 @@ function DashboardContent() {
       {/* ═══════════════════════════════════════
           MOBILE LAYOUT (< 1024px)
       ═══════════════════════════════════════ */}
-      <div className="lg:hidden flex flex-col min-h-screen bg-[#FBFBFA]">
+      <div className="lg:hidden flex flex-col h-[100dvh] bg-[#FBFBFA] overflow-hidden">
 
         {/* ── Mobile Header ─────────────────── */}
         <header className="flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20 bg-surface/30 backdrop-blur-md">
