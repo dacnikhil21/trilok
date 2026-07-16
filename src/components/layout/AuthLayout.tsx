@@ -10,41 +10,40 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
   return (
-    <main className="flex min-h-screen w-full flex-col bg-background lg:bg-[#F9F9F7]">
+    <main className="flex min-h-screen w-full flex-col bg-background">
       {/* 
-        Desktop: Enterprise workspace feel with subtle radial gradient.
-        Mobile: Clean Soft Ivory canvas.
+        Enterprise radial background layer.
       */}
-      <div className="absolute inset-0 z-0 hidden lg:block bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface via-background to-background opacity-80" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background opacity-70 pointer-events-none" />
       
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-0 lg:p-8">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-0 sm:p-6 lg:p-8">
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full h-full lg:h-auto lg:max-w-[480px] flex flex-col bg-surface lg:rounded-[var(--radius-xl)] lg:shadow-[var(--shadow-level-2)] overflow-hidden"
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full h-full sm:h-auto sm:max-w-[480px] flex flex-col bg-transparent sm:bg-surface sm:rounded-[var(--radius-xl)] sm:shadow-[var(--shadow-level-2)] sm:border sm:border-border/50 overflow-hidden"
         >
-          {/* Header Area */}
-          <div className="flex flex-col flex-1 px-6 pt-safe-top pb-safe-bottom lg:p-12">
-            <div className="flex flex-col items-center justify-center space-y-2 mb-12 mt-10 lg:mt-0">
-              <h1 className="text-[20px] font-display font-bold tracking-tight text-foreground flex items-center gap-2">
-                <ShieldCheck className="h-6 w-6 text-primary" />
+          {/* Header & Body Area */}
+          <div className="flex flex-col flex-1 px-6 pt-8 pb-10 sm:p-10 lg:p-12">
+            <div className="flex flex-col items-center justify-center space-y-1.5 mb-10">
+              <h1 className="text-[22px] font-display font-bold tracking-tight text-foreground flex items-center gap-2">
+                <ShieldCheck strokeWidth={2.5} className="h-6 w-6 text-primary" />
                 eSaleAgreement
               </h1>
-              <p className="text-[12px] font-medium tracking-widest uppercase text-secondary-text">
+              <p className="text-[11px] font-bold tracking-widest uppercase text-secondary-text">
                 Secure • Verified • Trusted
               </p>
             </div>
 
             {(heading || subheading) && (
-              <div className="mb-10 space-y-3">
+              <div className="mb-8 space-y-2.5">
                 {heading && (
-                  <h2 className="text-[32px] font-display font-bold leading-tight text-foreground">
+                  <h2 className="text-[28px] font-display font-bold leading-tight text-foreground tracking-tight">
                     {heading}
                   </h2>
                 )}
                 {subheading && (
-                  <p className="text-[16px] text-secondary-text leading-relaxed">
+                  <p className="text-[15px] text-secondary-text leading-relaxed">
                     {subheading}
                   </p>
                 )}
