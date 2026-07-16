@@ -57,7 +57,7 @@ export default function LoginPage() {
   return (
     <AppContainer centered>
       <OnboardingLayout
-        title="Welcome back"
+        title="Login"
         subtitle="Enter your mobile number to access your secure digital agreements."
         cardContent={cardContent}
         buttonText="Continue"
