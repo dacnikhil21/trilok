@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { AuthLayout } from "@/components/layout/AuthLayout"
+import { AppContainer } from "@/components/ui/AppContainer"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Button } from "@/components/ui/button"
 import { ShieldCheck, ArrowRight, Sparkles } from "lucide-react"
 
@@ -17,7 +18,7 @@ function VerificationSuccessForm() {
   }
 
   return (
-    <AuthLayout>
+    <AppContainer centered>
       <div className="flex flex-col items-center justify-center flex-1 py-6 text-center">
         {/* Animated Checked Circle and Verified Badge */}
         <div className="relative mb-8">
@@ -52,11 +53,11 @@ function VerificationSuccessForm() {
             Verified Account
           </div>
           
-          <h2 className="text-[28px] font-display font-bold leading-tight text-foreground">
+          <h2 className="text-[28px] font-display font-bold leading-tight text-foreground tracking-tight">
             Identity Verified
           </h2>
           
-          <p className="text-[15px] text-secondary-text max-w-sm mx-auto leading-relaxed">
+          <p className="text-[15px] text-secondary-text max-w-sm mx-auto leading-relaxed font-medium">
             Institutional-grade eKYC check complete. Your digital signature authority is successfully active on the network.
           </p>
         </motion.div>
@@ -78,7 +79,7 @@ function VerificationSuccessForm() {
           </Button>
         </motion.div>
       </div>
-    </AuthLayout>
+    </AppContainer>
   )
 }
 

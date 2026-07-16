@@ -3,12 +3,22 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { AuthLayout } from "@/components/layout/AuthLayout"
+import { AppContainer } from "@/components/ui/AppContainer"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { ProgressStepper } from "@/components/ui/ProgressStepper"
+import { StatusCard } from "@/components/ui/StatusCard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ShieldCheck, Camera, MapPin, Check, Lock, Sparkles, RefreshCw } from "lucide-react"
+import { ShieldCheck, Camera, MapPin, Check, Lock, RefreshCw, Sparkles } from "lucide-react"
 
 type Step = "consent" | "aadhaar" | "permissions" | "selfie"
+
+const STEPS_MAP: Record<Step, number> = {
+  consent: 0,
+  aadhaar: 1,
+  permissions: 2,
+  selfie: 3,
+}
 
 function VerifyIdentityForm() {
   const searchParams = useSearchParams()
@@ -93,18 +103,15 @@ function VerifyIdentityForm() {
   }
 
   return (
-    <AuthLayout 
-      heading="Secure Verification" 
-      subheading="We protect your identity with institutional-grade security protocols."
-    >
+    <AppContainer centered>
+      <PageHeader 
+        title="Secure Verification" 
+        subtitle="We protect your identity with institutional-grade security protocols." 
+        showLogo
+      />
       <div className="flex flex-col flex-1">
-        {/* Progress indicator */}
-        <div className="flex items-center gap-2 mb-8 bg-[#F4F4F4] p-1.5 rounded-[var(--radius-sm)]">
-          <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step === "consent" ? "bg-primary" : "bg-primary/20"}`} />
-          <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step === "aadhaar" ? "bg-primary" : step !== "consent" ? "bg-primary/20" : "bg-border"}`} />
-          <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step === "permissions" ? "bg-primary" : (step === "selfie") ? "bg-primary/20" : "bg-border"}`} />
-          <div className={`h-2 flex-1 rounded-full transition-all duration-300 ${step === "selfie" ? "bg-primary" : "bg-border"}`} />
-        </div>
+        {/* Stepper component */}
+        <ProgressStepper currentStep={STEPS_MAP[step]} totalSteps={4} />
 
         <AnimatePresence mode="wait">
           {/* STEP 1: DPDP Consent */}
@@ -116,17 +123,14 @@ function VerifyIdentityForm() {
               exit={{ opacity: 0, x: -20 }}
               className="flex flex-col flex-1 space-y-6"
             >
-              <div className="p-6 bg-primary/[0.03] border border-primary/10 rounded-[var(--radius-md)] flex gap-4">
-                <ShieldCheck className="w-8 h-8 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-display font-bold text-[18px] text-foreground mb-1">DPDP Act Protection</h3>
-                  <p className="text-[14px] text-secondary-text leading-relaxed">
-                    Under the Indian Digital Personal Data Protection (DPDP) Act, your details are fully encrypted. We act solely as a secure processor for executing your digital agreements.
-                  </p>
-                </div>
-              </div>
+              <StatusCard
+                variant="success"
+                icon={ShieldCheck}
+                title="DPDP Act Protection"
+                description="Under the Indian Digital Personal Data Protection (DPDP) Act, your details are fully encrypted. We act solely as a secure processor for executing your digital agreements."
+              />
 
-              <div className="p-4 bg-surface border border-border rounded-[var(--radius-md)] flex items-start gap-3 mt-4">
+              <div className="p-4 bg-surface border border-border rounded-[var(--radius-md)] flex items-start gap-3 mt-4 shadow-[var(--shadow-level-1)]">
                 <input
                   type="checkbox"
                   id="dpdp-consent"
@@ -179,7 +183,7 @@ function VerifyIdentityForm() {
                   />
                 ) : (
                   <div className="space-y-4">
-                    <div className="text-[14px] text-secondary-text mb-2">
+                    <div className="text-[14px] text-secondary-text mb-2 font-medium">
                       An OTP has been sent to the mobile number registered with your Aadhaar ending in ****
                     </div>
                     <Input
@@ -220,7 +224,7 @@ function VerifyIdentityForm() {
                     <button 
                       type="button" 
                       onClick={() => setIsOtpSent(false)}
-                      className="text-center text-[14px] text-secondary-text hover:text-foreground font-medium"
+                      className="text-center text-[14px] text-secondary-text hover:text-foreground font-medium transition-colors"
                     >
                       Edit Aadhaar Number
                     </button>
@@ -239,59 +243,51 @@ function VerifyIdentityForm() {
               exit={{ opacity: 0, x: -20 }}
               className="flex flex-col flex-1 space-y-6"
             >
-              <h3 className="font-display font-bold text-[20px] text-foreground">Secure System Checks</h3>
-              <p className="text-[14px] text-secondary-text -mt-2">
+              <h3 className="font-display font-bold text-[20px] text-foreground tracking-tight">Secure System Checks</h3>
+              <p className="text-[14px] text-secondary-text -mt-2 font-medium">
                 We require browser confirmations to ensure jurisdiction parameters are verified under legal agreement guidelines.
               </p>
 
               <div className="space-y-4">
-                {/* GPS Card */}
-                <div className={`p-5 rounded-[var(--radius-md)] border-2 transition-all flex items-start gap-4 ${gpsGranted ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-surface"}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${gpsGranted ? "bg-primary text-surface" : "bg-[#F4F4F4] text-secondary-text"}`}>
-                    {gpsGranted ? <Check className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground text-[16px] mb-1">Geographic Stamping</h4>
-                    <p className="text-[13px] text-secondary-text leading-relaxed">
-                      Verifies signature jurisdiction to enforce valid state-level stamp duty.
-                    </p>
-                  </div>
-                  {!gpsGranted && (
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={requestGps}
-                      loading={isGpsLoading}
-                      className="mt-1"
-                    >
-                      Allow
-                    </Button>
-                  )}
-                </div>
+                {/* GPS Status Card */}
+                <StatusCard
+                  variant={gpsGranted ? "success" : "info"}
+                  icon={gpsGranted ? Check : MapPin}
+                  title="Geographic Stamping"
+                  description="Verifies signature jurisdiction to enforce valid state-level stamp duty."
+                  actionNode={
+                    !gpsGranted && (
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={requestGps}
+                        loading={isGpsLoading}
+                      >
+                        Allow
+                      </Button>
+                    )
+                  }
+                />
 
-                {/* Camera Card */}
-                <div className={`p-5 rounded-[var(--radius-md)] border-2 transition-all flex items-start gap-4 ${cameraGranted ? "border-primary/20 bg-primary/[0.02]" : "border-border bg-surface"}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${cameraGranted ? "bg-primary text-surface" : "bg-[#F4F4F4] text-secondary-text"}`}>
-                    {cameraGranted ? <Check className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground text-[16px] mb-1">Liveness Protection</h4>
-                    <p className="text-[13px] text-secondary-text leading-relaxed">
-                      Authenticates a real-time matching selfie, securing against identity theft.
-                    </p>
-                  </div>
-                  {!cameraGranted && (
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={requestCamera}
-                      loading={isCameraLoading}
-                      className="mt-1"
-                    >
-                      Allow
-                    </Button>
-                  )}
-                </div>
+                {/* Camera Status Card */}
+                <StatusCard
+                  variant={cameraGranted ? "success" : "info"}
+                  icon={cameraGranted ? Check : Camera}
+                  title="Liveness Protection"
+                  description="Authenticates a real-time matching selfie, securing against identity theft."
+                  actionNode={
+                    !cameraGranted && (
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={requestCamera}
+                        loading={isCameraLoading}
+                      >
+                        Allow
+                      </Button>
+                    )
+                  }
+                />
               </div>
 
               <div className="mt-auto pt-8">
@@ -342,7 +338,7 @@ function VerifyIdentityForm() {
 
                 <div className="text-center space-y-2 max-w-[280px]">
                   <h4 className="font-display font-bold text-[18px]">Position your face</h4>
-                  <p className="text-[13px] text-secondary-text">
+                  <p className="text-[13px] text-secondary-text font-medium">
                     Align your head inside the circle. Ensure good lighting and remove glasses/hats.
                   </p>
                 </div>
@@ -384,7 +380,7 @@ function VerifyIdentityForm() {
           )}
         </AnimatePresence>
       </div>
-    </AuthLayout>
+    </AppContainer>
   )
 }
 

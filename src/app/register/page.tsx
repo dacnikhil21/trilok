@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { AuthLayout } from "@/components/layout/AuthLayout"
+import { AppContainer } from "@/components/ui/AppContainer"
+import { PageHeader } from "@/components/ui/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -66,7 +67,8 @@ function RegisterForm() {
   }
 
   return (
-    <AuthLayout heading={config.title} subheading={config.subheading}>
+    <AppContainer centered>
+      <PageHeader title={config.title} subtitle={config.subheading} showLogo />
       <form onSubmit={handleSubmit} className="flex flex-col flex-1">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -128,7 +130,7 @@ function RegisterForm() {
           </Button>
         </motion.div>
       </form>
-    </AuthLayout>
+    </AppContainer>
   )
 }
 
