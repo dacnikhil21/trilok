@@ -17,7 +17,7 @@ import {
 type Step = "aadhaar" | "aadhaar-success" | "consent" | "permissions" | "recorded"
 
 const STEPS_MAP: Record<Step, number> = {
-  aadhaar: 0,
+  aadhaar: 1,
   "aadhaar-success": 1,
   consent: 2,
   permissions: 3,
