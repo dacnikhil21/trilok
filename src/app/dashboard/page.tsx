@@ -194,7 +194,7 @@ function DashboardContent() {
               <motion.button
                 whileHover={{ y: -4, scale: 1.002 }} whileTap={{ scale: 0.995 }} transition={spring}
                 onClick={handleCreateNew}
-                className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
+                className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-primary)] to-[var(--color-primary-light)] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(24,69,90,0.25)] border border-primary/20 overflow-hidden group cursor-pointer"
               >
                 <div className="sweep-overlay" />
                 <div className="w-12 h-12 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
@@ -273,7 +273,7 @@ function DashboardContent() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Recent Agreements</h3>
-                <button className="text-[12px] text-primary hover:text-[#084D2D] font-bold tracking-wider uppercase">View all</button>
+                <button className="text-[12px] text-primary hover:opacity-80 font-bold tracking-wider uppercase">View all</button>
               </div>
               <Card className="divide-y divide-divider overflow-hidden">
                 {recentAgreements.map((agreement) => (

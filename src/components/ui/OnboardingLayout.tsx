@@ -80,7 +80,7 @@ export function OnboardingLayout({
       <div className="h-4" />
 
       {/* 4. Primary Content Card */}
-      <div className="bg-surface border border-border/40 rounded-[16px] p-5 shadow-[0_6px_24px_rgba(0,0,0,0.02)] space-y-4">
+      <div className="bg-surface border border-border rounded-[16px] p-5 shadow-[0_6px_24px_rgba(0,0,0,0.02)] space-y-4">
         {cardContent}
       </div>
 
@@ -93,7 +93,7 @@ export function OnboardingLayout({
           type="button"
           onClick={onButtonClick}
           disabled={isButtonDisabled || isButtonLoading}
-          className="w-full h-[56px] rounded-[16px] bg-primary text-surface font-semibold text-[16px] transition-all active:scale-[0.98] shadow-[0_4px_14px_rgba(10,92,54,0.18)] hover:bg-[#084D2D] disabled:pointer-events-none disabled:bg-[#EFEFEF] disabled:text-[#A0A5AA] flex items-center justify-center"
+          className="w-full h-[56px] rounded-[16px] bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-light)] text-surface font-semibold text-[16px] transition-all active:scale-[0.98] shadow-[0_4px_14px_rgba(24,69,90,0.25)] hover:opacity-90 disabled:pointer-events-none disabled:bg-[#EFEFEF] disabled:text-[#A0A5AA] flex items-center justify-center"
         >
           {isButtonLoading ? (
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-surface border-t-transparent" />

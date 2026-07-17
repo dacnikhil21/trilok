@@ -25,7 +25,7 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
             initial={false}
             animate={{ width: `${(currentStep / (totalSteps - 1)) * 100}%` }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="h-full bg-primary rounded-full"
+            className="h-full bg-[#0A5C36] rounded-full"
           />
         </div>
 

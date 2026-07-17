@@ -66,30 +66,20 @@ function VerifyIdentityContent() {
   const handleButtonClick = () => {
     setError("")
     if (step === "aadhaar") {
-      if (aadhaarNumber.length !== 12) {
-        setError("Aadhaar Number must be exactly 12 digits.")
-        return
-      }
       setIsLoading(true)
       setTimeout(() => {
         setIsLoading(false)
         setStep("otp")
       }, 1000)
     } else if (step === "otp") {
-      if (aadhaarOtp.length !== 6) {
-        setError("OTP code must be exactly 6 digits.")
-        return
-      }
       setIsLoading(true)
       setTimeout(() => {
         setIsLoading(false)
         setStep("consent")
       }, 1200)
     } else if (step === "consent") {
-      if (!dpdpChecked) return
       setStep("permissions")
     } else if (step === "permissions") {
-      if (!gpsAllowed || !cameraAllowed || !notifAllowed) return
       setStep("liveness")
     } else if (step === "liveness") {
       if (!livenessCaptured) {
@@ -327,13 +317,8 @@ function VerifyIdentityContent() {
   }, [step, livenessCaptured])
 
   const isButtonDisabled = React.useMemo(() => {
-    if (step === "aadhaar" && aadhaarNumber.length !== 12) return true
-    if (step === "otp" && aadhaarOtp.length !== 6) return true
-    if (step === "consent" && !dpdpChecked) return true
-    if (step === "permissions" && (!gpsAllowed || !cameraAllowed || !notifAllowed)) return true
-    if (step === "liveness" && scanning) return true
     return false
-  }, [step, aadhaarNumber, aadhaarOtp, dpdpChecked, gpsAllowed, cameraAllowed, notifAllowed, scanning])
+  }, [])
 
   const renderStepContent = () => {
     switch (step) {

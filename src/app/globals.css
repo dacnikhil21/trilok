@@ -11,14 +11,16 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: #FFFFFF;
-  --color-primary: #0A5C36; /* Deep Emerald */
+  --color-primary: #18455A; /* Premium Deep Teal/Ocean Blue from user screenshot */
+  --color-primary-light: #2A738E; /* Lighter shade for gradient effect */
+  --color-primary-text: #18455A; /* Dark Teal for Headings */
   --color-secondary-text: #6F767E; /* Muted Slate */
-  --color-success: #28A745;
+  --color-success: #1E9E40;
   --color-warning: #F5A623;
   --color-error: #D32F2F;
-  --color-border: rgba(26, 29, 31, 0.35);
-  --color-divider: rgba(26, 29, 31, 0.08);
-  --color-verified: #EAF7EE;
+  --color-border: rgba(4, 27, 74, 0.15); /* Softer borders */
+  --color-divider: rgba(4, 27, 74, 0.08);
+  --color-verified: #F0F4FA; /* Light Blue background */
   --color-gold: #D4AF37;
   
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

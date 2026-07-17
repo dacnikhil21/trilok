@@ -73,51 +73,13 @@ function RegisterFormContent() {
   }, [])
 
   const handleNextPage = () => {
-    const newErrors: Record<string, string> = {}
-    if (moduleType === "b2b") {
-      if (!b2bName.trim()) newErrors.b2bName = "Company Name is required"
-      if (b2bGst.trim().length !== 15) newErrors.b2bGst = "GSTIN must be 15 chars"
-      if (b2bPan.trim().length !== 10) newErrors.b2bPan = "Company PAN must be 10 chars"
-      if (!b2bType) newErrors.b2bType = "Business Type is required"
-    } else if (moduleType === "b2c") {
-      if (!b2cName.trim()) newErrors.b2cName = "Business Name is required"
-      if (b2cGst.trim().length !== 15) newErrors.b2cGst = "GSTIN must be 15 chars"
-      if (!b2cCategory) newErrors.b2cCategory = "Business Category is required"
-    } else {
-      if (!c2cName.trim()) newErrors.c2cName = "Full Name is required"
-      if (c2cMobile.length !== 10) newErrors.c2cMobile = "Mobile number must be 10 digits"
-      if (c2cEmail.trim() && !/\S+@\S+\.\S+/.test(c2cEmail)) newErrors.c2cEmail = "Invalid email format"
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
     setErrors({})
     setFormPage(2)
   }
 
   const validateFinal = () => {
-    const newErrors: Record<string, string> = {}
-    if (moduleType === "b2b") {
-      if (!b2bSignatory.trim()) newErrors.b2bSignatory = "Signatory Name is required"
-      if (!b2bEmail.trim()) newErrors.b2bEmail = "Official Email is required"
-      if (b2bMobile.length !== 10) newErrors.b2bMobile = "Mobile must be 10 digits"
-      if (!b2bAddress.trim()) newErrors.b2bAddress = "Company Address is required"
-      if (!b2bLogo) newErrors.b2bLogo = "Company logo is required"
-    } else if (moduleType === "b2c") {
-      if (!b2cOwnerName.trim()) newErrors.b2cOwnerName = "Owner Name is required"
-      if (!b2cEmail.trim()) newErrors.b2cEmail = "Official Email is required"
-      if (b2cMobile.length !== 10) newErrors.b2cMobile = "Mobile must be 10 digits"
-      if (!b2cAddress.trim()) newErrors.b2cAddress = "Store Address is required"
-      if (!b2cLogo) newErrors.b2cLogo = "Brand logo is required"
-    } else {
-      if (!c2cAddress.trim()) newErrors.c2cAddress = "Address is required"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors({})
+    return true
   }
 
   const handleSubmit = () => {
