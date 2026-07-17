@@ -62,7 +62,6 @@ export default function OtpPage() {
     setError("")
   }
 
-  // Format time to MM:SS
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0')
     const s = (seconds % 60).toString().padStart(2, '0')
@@ -78,17 +77,17 @@ export default function OtpPage() {
 
   return (
     <AppContainer centered>
-      <div className="w-full max-w-md mx-auto px-6 py-10 flex flex-col min-h-screen bg-surface">
+      <div className="w-full flex flex-col h-full bg-surface pt-4 pb-2">
         
         {/* Header */}
-        <div className="text-center mt-6 mb-8">
-          <h1 className="text-[28px] font-bold text-primary-text mb-4">Verify OTP</h1>
-          <p className="text-[16px] text-secondary-text">Enter the 6-digit OTP sent to</p>
-          <p className="text-[18px] font-bold text-primary-text mt-1">{mobile}</p>
+        <div className="text-center mt-2 mb-8">
+          <h1 className="text-[26px] font-bold text-primary mb-2 tracking-tight">Verify OTP</h1>
+          <p className="text-[14px] text-secondary-text font-medium">Enter the 6-digit OTP sent to</p>
+          <p className="text-[16px] font-bold text-primary mt-1">{mobile}</p>
         </div>
 
         {/* OTP Boxes */}
-        <div className="flex justify-between gap-2 mb-8 px-2">
+        <div className="flex justify-between gap-2 mb-6 px-4">
           {[0, 1, 2, 3, 4, 5].map((index) => {
             const isActive = otp.length === index
             return (
@@ -96,7 +95,7 @@ export default function OtpPage() {
                 key={index}
                 className={`w-[48px] h-[56px] flex items-center justify-center rounded-[12px] border text-[24px] font-bold ${
                   isActive 
-                    ? 'border-primary text-primary' 
+                    ? 'border-primary text-primary shadow-sm' 
                     : otp[index] 
                       ? 'border-border text-primary-text' 
                       : 'border-border text-transparent'
@@ -109,26 +108,26 @@ export default function OtpPage() {
         </div>
 
         {error && (
-          <p className="text-[14px] text-error font-semibold text-center mb-4">{error}</p>
+          <p className="text-[13px] text-error font-semibold text-center mb-4">{error}</p>
         )}
 
         {/* Resend Timer */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <button
             onClick={handleResend}
             disabled={timer > 0}
-            className={`text-[15px] font-bold ${timer > 0 ? 'text-primary' : 'text-primary hover:opacity-80'}`}
+            className={`text-[14px] font-bold transition-opacity ${timer > 0 ? 'text-primary' : 'text-primary hover:opacity-80'}`}
           >
             {timer > 0 ? `Resend OTP in ${formatTime(timer)}` : "Resend OTP"}
           </button>
         </div>
 
         {/* Trust Note */}
-        <div className="flex items-center justify-center gap-3 mb-10">
-          <div className="w-8 h-8 rounded-full bg-success flex items-center justify-center text-white shrink-0">
+        <div className="flex items-center justify-center gap-3 mb-6 px-4">
+          <div className="w-[34px] h-[34px] rounded-full bg-[#EAF7ED] flex items-center justify-center text-[#1E9E40] shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-          <p className="text-[15px] text-primary-text font-medium text-left">
+          <p className="text-[13px] text-primary-text font-semibold text-left leading-[1.3]">
             Your data is safe and secure<br/>with us.
           </p>
         </div>
@@ -136,20 +135,20 @@ export default function OtpPage() {
         <div className="flex-1" />
 
         {/* Custom Numpad */}
-        <div className="grid grid-cols-3 gap-x-4 gap-y-4 mb-4">
+        <div className="grid grid-cols-3 gap-x-4 gap-y-3 px-2">
           {numpadKeys.map((key, index) => (
-            <div key={index} className="flex justify-center h-[60px]">
+            <div key={index} className="flex justify-center h-[56px]">
               {key === "" ? null : key === "backspace" ? (
                 <button
                   onClick={() => handleNumpadClick(key)}
-                  className="w-[85px] h-full rounded-[12px] bg-white flex items-center justify-center text-primary-text shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-95 transition-transform"
+                  className="w-full max-w-[90px] h-full rounded-[14px] bg-[#F7F9FB] flex items-center justify-center text-primary-text shadow-sm active:scale-95 transition-transform"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
                 </button>
               ) : (
                 <button
                   onClick={() => handleNumpadClick(key)}
-                  className="w-[85px] h-full rounded-[12px] bg-white flex items-center justify-center text-[26px] font-bold text-primary-text shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-95 transition-transform"
+                  className="w-full max-w-[90px] h-full rounded-[14px] bg-[#F7F9FB] flex items-center justify-center text-[24px] font-bold text-primary-text shadow-sm active:scale-95 transition-transform"
                 >
                   {key}
                 </button>

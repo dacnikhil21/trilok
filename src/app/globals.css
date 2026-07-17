@@ -11,9 +11,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: #FFFFFF;
-  --color-primary: #18455A; /* Premium Deep Teal/Ocean Blue from user screenshot */
-  --color-primary-light: #2A738E; /* Lighter shade for gradient effect */
-  --color-primary-text: #18455A; /* Dark Teal for Headings */
+  --color-primary: #0033A0; /* Deep Blue */
+  --color-primary-text: #041B4A;
   --color-secondary-text: #6F767E; /* Muted Slate */
   --color-success: #1E9E40;
   --color-warning: #F5A623;
