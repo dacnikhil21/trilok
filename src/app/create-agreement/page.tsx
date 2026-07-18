@@ -125,7 +125,7 @@ function CreateAgreementContent() {
 
   const steps = [
     { id: 1, title: "Select Your Role", component: <RoleSelectionStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 2, title: "Product Details", component: <ProductDetailsStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 2, title: "Product Details", component: <ProductDetailsStep data={formData} updateData={updateData} onNext={() => {}} /> },
     { id: 3, title: "Terms & Conditions", component: <PaymentDeliveryStep data={formData} updateData={updateData} onNext={nextStep} /> },
     { id: 4, title: "Agreement Review", component: <BuyerReviewStep data={formData} onNext={nextStep} /> },
     { id: 5, title: "Other Party Details", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },

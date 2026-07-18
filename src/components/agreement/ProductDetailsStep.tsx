@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronDown, Camera, Plus, CheckCircle2 } from "lucide-react"
+import { ChevronDown, Camera, Plus, CheckCircle2, Sparkles } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -211,12 +211,17 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
         
         {/* Add Multiple Products Button */}
         <div className="pt-2">
-          <Button 
-            variant="ghost" 
-            className="w-full text-[#0033A0] font-bold text-[14px] border border-dashed border-[#0033A0]/30 hover:bg-[#0033A0]/5 h-12 rounded-[12px]"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add Another Product
-          </Button>
+          <div className="relative w-full max-w-[320px] mx-auto">
+            <Button 
+              variant="ghost" 
+              className="w-full text-[#0033A0] font-bold text-[14px] border border-dashed border-[#0033A0]/30 hover:bg-[#0033A0]/5 h-[50px] rounded-[12px]"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Another Product
+            </Button>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-10 h-10 bg-[#E5EDFF] border-2 border-white rounded-full shadow-sm flex items-center justify-center pointer-events-none">
+               <Sparkles className="w-5 h-5 text-[#0033A0]" strokeWidth={2} />
+            </div>
+          </div>
         </div>
 
       </div>
