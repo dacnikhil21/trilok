@@ -1,8 +1,7 @@
 import * as React from "react"
-import { CheckCircle2 } from "lucide-react"
+import { ShieldCheck, ArrowRight } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 
 type Props = {
   data: AgreementData
@@ -11,89 +10,50 @@ type Props = {
 }
 
 export function OtpVerificationStep({ data, updateData, onNext }: Props) {
-  const isComplete = data.otp.length === 6
-
-  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '').slice(0, 6)
-    updateData({ otp: val })
-  }
+  const isValid = (data.invitedPartyOtp || "").length === 6
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
       
       {/* Title */}
       <div className="text-center mt-2 mb-8">
-        <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight">
-          Verify OTP
-        </h2>
-        <p className="text-[13px] text-gray-500 mt-2 font-medium max-w-[220px] mx-auto">
-          Enter the OTP sent to<br/>
-          <span className="font-bold text-[#041B4A]">+91 {data.customerMobile || "91234 56789"}</span>
-        </p>
-      </div>
-
-      {/* OTP Inputs */}
-      <div className="flex justify-between items-center w-full px-2">
-        {[0, 1, 2, 3, 4, 5].map((index) => (
-          <div key={index} className="w-[45px] h-[50px] relative">
-            <Input
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={data.otp[index] || ""}
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, '')
-                if (val) {
-                  const newOtp = data.otp.split('')
-                  newOtp[index] = val
-                  updateData({ otp: newOtp.join('') })
-                  
-                  // Auto focus next
-                  if (index < 5) {
-                    const nextInput = document.getElementById(`otp-${index + 1}`)
-                    nextInput?.focus()
-                  }
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Backspace' && !data.otp[index] && index > 0) {
-                  const prevInput = document.getElementById(`otp-${index - 1}`)
-                  prevInput?.focus()
-                }
-              }}
-              id={`otp-${index}`}
-              className="absolute inset-0 text-center text-[18px] font-bold bg-white border-gray-200 focus:border-[#0033A0] focus:ring-2 focus:ring-[#0033A0]/20 rounded-[12px] shadow-sm transition-all"
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Resend */}
-      <div className="mt-8 text-center">
-        <p className="text-[13px] font-bold text-[#0033A0] cursor-pointer hover:underline">
-          Resend OTP in 00:30
-        </p>
-      </div>
-
-      {/* Success Status (Matches UI Mock) */}
-      <div className={`mt-6 transition-all duration-300 ${isComplete ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}`}>
-        <div className="flex items-center gap-3 bg-[#EAF7EE] p-3.5 rounded-[12px] border border-[#DCFCE7]">
-          <div className="w-5 h-5 rounded-full bg-[#16A34A] flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-          </div>
-          <p className="text-[12px] font-bold text-[#166534] leading-snug">
-            Customer Verified<br/>Successfully
-          </p>
+        <div className="inline-block bg-[#0033A0]/10 text-[#0033A0] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-3">
+          Assisted Identity Verification
         </div>
+        <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight mb-2">
+          Enter OTP
+        </h2>
+        <p className="text-[13px] text-gray-500 font-medium max-w-[260px] mx-auto">
+          Ask {data.invitedPartyName || "the other party"} for the 6-digit OTP sent to their Aadhaar-linked mobile.
+        </p>
+      </div>
+
+      {/* OTP Input Mock (Simple 1 field for speed) */}
+      <div className="flex justify-center mb-8">
+        <input 
+          type="tel"
+          maxLength={6}
+          value={data.invitedPartyOtp || ""}
+          onChange={(e) => updateData({ invitedPartyOtp: e.target.value.replace(/\D/g, '') })}
+          className="w-full max-w-[240px] text-center text-[32px] tracking-[0.5em] font-bold text-[#041B4A] h-16 border-b-2 border-gray-300 focus:border-[#0033A0] focus:outline-none bg-transparent transition-colors placeholder:text-gray-200"
+          placeholder="------"
+        />
+      </div>
+
+      <div className="text-center mb-8">
+        <button className="text-[13px] font-bold text-[#0033A0] hover:underline">
+          Resend OTP
+        </button>
       </div>
 
       {/* Footer Button */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-6 pb-4">
         <Button 
           onClick={onNext}
+          disabled={!isValid}
           className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
-          Next
+          Verify Identity
         </Button>
       </div>
 

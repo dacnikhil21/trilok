@@ -1,5 +1,5 @@
 import * as React from "react"
-import { MessageSquare, User, Loader2 } from "lucide-react"
+import { MessageSquare, User, Loader2, Link as LinkIcon, Smartphone } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,14 +11,14 @@ type Props = {
 }
 
 export function WhatsAppInviteStep({ data, updateData, onNext }: Props) {
-  const [sending, setSending] = React.useState(false)
+  const [sending, setSending] = React.useState<string | null>(null)
 
-  const handleSend = () => {
-    setSending(true)
+  const handleSend = (method: string) => {
+    setSending(method)
     setTimeout(() => {
-      setSending(false)
-      onNext() // Move to buyer verification simulation
-    }, 2000)
+      setSending(null)
+      onNext() // Move to WaitingForResponseStep
+    }, 1500)
   }
 
   const otherRole = data.role === "seller" ? "Buyer" : "Seller"
@@ -29,74 +29,83 @@ export function WhatsAppInviteStep({ data, updateData, onNext }: Props) {
       {/* Title */}
       <div className="text-center mt-2 mb-8">
         <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight">
-          Invite {otherRole}
+          Other Party Details
         </h2>
         <p className="text-[13px] text-gray-500 mt-2 font-medium max-w-[240px] mx-auto">
-          Send the agreement details to the {otherRole.toLowerCase()} via WhatsApp for review and Aadhaar verification.
+          Enter the {otherRole.toLowerCase()}'s details to send them a secure invitation link.
         </p>
       </div>
 
       {/* Form */}
       <div className="space-y-5">
         <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">{otherRole} WhatsApp Number</label>
+          <label className="text-[13px] font-bold text-[#041B4A]">{otherRole} Name</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] font-semibold text-[#041B4A]">+91</span>
             <Input 
-              type="tel"
-              value={data.buyerMobile}
-              onChange={(e) => updateData({ buyerMobile: e.target.value.replace(/\D/g, '').slice(0, 10) })}
-              placeholder="91234 56789"
-              className="pl-12 pr-10 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
+              type="text"
+              value={data.invitedPartyName}
+              onChange={(e) => updateData({ invitedPartyName: e.target.value })}
+              placeholder={`e.g. Ramesh Kumar`}
+              className="pl-12 pr-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500">
-              <MessageSquare className="w-5 h-5" strokeWidth={2} />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <User className="w-5 h-5" />
             </div>
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">{otherRole} Name</label>
+          <label className="text-[13px] font-bold text-[#041B4A]">{otherRole} Mobile Number</label>
           <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] font-semibold text-[#041B4A]">+91</span>
             <Input 
-              type="text"
-              value={data.buyerName}
-              onChange={(e) => updateData({ buyerName: e.target.value })}
-              placeholder={`e.g. Priya Verma`}
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
+              type="tel"
+              value={data.invitedPartyMobile}
+              onChange={(e) => updateData({ invitedPartyMobile: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+              placeholder="91234 56789"
+              className="pl-12 pr-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-              <User className="w-5 h-5" strokeWidth={2} />
-            </div>
           </div>
         </div>
+
       </div>
 
-      <div className="mt-8 text-center bg-blue-50/50 p-4 rounded-[12px] border border-blue-100">
-        <p className="text-[12px] font-medium text-blue-800">
-          <strong>Demo Note:</strong> Clicking Send will simulate the {otherRole} receiving the link and opening it to complete their Aadhaar verification.
-        </p>
-      </div>
-
-      {/* Footer Button */}
-      <div className="mt-auto pt-6">
+      {/* Action Buttons */}
+      <div className="mt-auto mb-8 space-y-3 pt-6">
         <Button 
-          onClick={handleSend}
-          disabled={sending}
-          className="w-full h-[52px] bg-[#25D366] hover:bg-[#1DA851] text-white rounded-[14px] text-[16px] font-bold shadow-lg gap-2"
+          onClick={() => handleSend("whatsapp")}
+          disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
+          className="w-full h-[52px] bg-[#1E9E40] hover:bg-[#198735] text-white rounded-[14px] text-[16px] font-bold shadow-lg shadow-[#1E9E40]/20 flex items-center justify-center gap-2"
         >
-          {sending ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Sending Invite...
-            </>
+          {sending === "whatsapp" ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <MessageSquare className="w-5 h-5" />
-              Send WhatsApp Invite
+              <MessageSquare className="w-5 h-5" strokeWidth={2} />
+              Send via WhatsApp
             </>
           )}
         </Button>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Button 
+            variant="outline"
+            onClick={() => handleSend("sms")}
+            disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
+            className="w-full h-[52px] border-2 border-gray-200 text-[#041B4A] hover:bg-gray-50 rounded-[14px] text-[15px] font-bold"
+          >
+            {sending === "sms" ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Smartphone className="w-4 h-4 mr-2" /> Send SMS</>}
+          </Button>
+
+          <Button 
+            variant="outline"
+            onClick={() => handleSend("link")}
+            disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
+            className="w-full h-[52px] border-2 border-gray-200 text-[#041B4A] hover:bg-gray-50 rounded-[14px] text-[15px] font-bold"
+          >
+            {sending === "link" ? <Loader2 className="w-5 h-5 animate-spin" /> : <><LinkIcon className="w-4 h-4 mr-2" /> Share Link</>}
+          </Button>
+        </div>
       </div>
 
     </div>

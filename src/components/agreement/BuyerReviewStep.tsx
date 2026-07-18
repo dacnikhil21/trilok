@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, ShieldAlert, CheckCircle2, User, FileText } from "lucide-react"
+import { ShieldAlert, CheckCircle2, User, FileText, Send } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 
@@ -9,22 +9,18 @@ type Props = {
 }
 
 export function BuyerReviewStep({ data, onNext }: Props) {
-  const otherRole = data.role === "seller" ? "Buyer" : "Seller"
-  const sellerName = data.role === "seller" ? data.customerName || "Ramesh Kumar Sharma" : "Ramesh Kumar Sharma"
+  const roleDisplay = data.role === "buyer" ? "Buyer" : "Seller"
 
   return (
     <div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
       
-      {/* Simulation Header */}
+      {/* Header */}
       <div className="text-center mt-2 mb-6">
-        <div className="inline-block bg-[#0033A0]/10 text-[#0033A0] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-3">
-          {otherRole} Perspective
-        </div>
         <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight mb-2">
-          Review Agreement Invitation
+          Agreement Review
         </h2>
         <p className="text-[13px] text-gray-500 font-medium max-w-[260px] mx-auto">
-          Please review the details below. Accept to proceed with Aadhaar verification.
+          Review the agreement details before sending the invitation.
         </p>
       </div>
 
@@ -37,11 +33,11 @@ export function BuyerReviewStep({ data, onNext }: Props) {
             <User className="w-6 h-6 text-[#0033A0]" />
           </div>
           <div>
-            <p className="text-[12px] font-bold text-gray-500 uppercase tracking-wide">Initiated By</p>
-            <p className="text-[16px] font-bold text-[#041B4A]">{sellerName}</p>
+            <p className="text-[12px] font-bold text-gray-500 uppercase tracking-wide">Your Role: {roleDisplay}</p>
+            <p className="text-[16px] font-bold text-[#041B4A]">{data.customerName || "Creator Name"}</p>
             <div className="flex items-center gap-1 mt-1">
                <CheckCircle2 className="w-3.5 h-3.5 text-[#1E9E40]" />
-               <p className="text-[11px] font-bold text-[#1E9E40]">Aadhaar Verified</p>
+               <p className="text-[11px] font-bold text-[#1E9E40]">Ready to Send</p>
             </div>
           </div>
         </div>
@@ -50,53 +46,63 @@ export function BuyerReviewStep({ data, onNext }: Props) {
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-2">
              <FileText className="w-4 h-4 text-[#0033A0]" />
-             <h3 className="text-[14px] font-bold text-[#041B4A]">Agreement Details</h3>
+             <h3 className="text-[14px] font-bold text-[#041B4A]">Product & Terms</h3>
           </div>
           
           <div className="bg-gray-50 rounded-lg p-3 space-y-2">
             <div className="flex justify-between">
               <span className="text-[12px] text-gray-500 font-medium">Product</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.productName || "Plastic Nozzle"}</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.productName || "-"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Model / Brand</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.brand} {data.model}</span>
+              <span className="text-[12px] text-gray-500 font-medium">Model / S.N.</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right truncate max-w-[150px]">{data.model || "-"} {data.serialNumber ? `(${data.serialNumber})` : ""}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[12px] text-gray-500 font-medium">Quantity</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.quantity || "1000 Pieces"}</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.quantity || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[12px] text-gray-500 font-medium">Price</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right">₹{data.saleAmount || "0"}</span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
+              <span className="text-[12px] text-gray-500 font-medium">Condition</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.condition || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[12px] text-gray-500 font-medium">Warranty</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.warranty || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[12px] text-gray-500 font-medium">Return Policy</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.returnPolicy || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[12px] text-gray-500 font-medium">Payment Term</span>
+              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.paymentTerms || "-"}</span>
             </div>
           </div>
+        </div>
 
-          <div className="bg-green-50 border border-green-100 rounded-lg p-4 flex justify-between items-center mt-3">
-            <span className="text-[13px] font-bold text-[#166534]">Total Amount</span>
-            <span className="text-[18px] font-black text-[#166534]">₹ {data.saleAmount || "45,00,000"}</span>
-          </div>
+        {/* Security Notice */}
+        <div className="bg-amber-50 rounded-lg p-3 flex gap-3 border border-amber-100">
+          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
+            Please ensure all details are correct. Once the invitation is sent, these terms cannot be changed unless the other party rejects them.
+          </p>
         </div>
 
       </div>
 
-      {/* Security Alert */}
-      <div className="mt-6 flex items-start gap-3 bg-[#FFF9E6] border border-[#FDE047] p-3.5 rounded-[12px]">
-        <ShieldAlert className="w-5 h-5 text-[#B45309] shrink-0" strokeWidth={2.5} />
-        <p className="text-[11px] font-semibold text-[#B45309] leading-snug">
-          By accepting, you will be required to authenticate your identity via Aadhaar OTP to sign this agreement.
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="mt-6 space-y-3 pb-6 shrink-0">
+      {/* Footer Buttons */}
+      <div className="mt-6 pt-4 bg-[#fcfcfc] space-y-3 pb-4">
         <Button 
           onClick={onNext}
-          className="w-full h-[52px] bg-[#1E9E40] hover:bg-[#168833] text-white rounded-[14px] text-[16px] font-bold shadow-lg gap-2"
+          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
-          <Check className="w-5 h-5" /> Accept Agreement
+          Continue
         </Button>
-        <button 
-          className="w-full h-[52px] text-red-500 text-[15px] font-bold hover:bg-red-50 rounded-[14px] transition-colors"
-        >
-          Reject
-        </button>
       </div>
 
     </div>

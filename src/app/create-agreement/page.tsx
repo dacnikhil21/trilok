@@ -8,17 +8,18 @@ import { AppContainer } from "@/components/ui/AppContainer"
 
 // Import steps
 import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
-import { CustomerDetailsStep } from "@/components/agreement/CustomerDetailsStep"
+import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
+import { PaymentDeliveryStep } from "@/components/agreement/PaymentDeliveryStep"
+import { BuyerReviewStep } from "@/components/agreement/BuyerReviewStep"
+import { WhatsAppInviteStep } from "@/components/agreement/WhatsAppInviteStep"
+import { WaitingForResponseStep } from "@/components/agreement/WaitingForResponseStep"
+import { AcceptanceSuccessStep } from "@/components/agreement/AcceptanceSuccessStep"
 import { AadhaarAuthStep } from "@/components/agreement/AadhaarAuthStep"
 import { OtpVerificationStep } from "@/components/agreement/OtpVerificationStep"
-import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
-import { ProductPhotosStep } from "@/components/agreement/ProductPhotosStep"
-import { PaymentDeliveryStep } from "@/components/agreement/PaymentDeliveryStep"
-import { WhatsAppInviteStep } from "@/components/agreement/WhatsAppInviteStep"
-import { BuyerReviewStep } from "@/components/agreement/BuyerReviewStep"
-import { BuyerVerificationStep } from "@/components/agreement/BuyerVerificationStep"
 import { PartiesPhotosStep } from "@/components/agreement/PartiesPhotosStep"
+import { GpsVerificationStep } from "@/components/agreement/GpsVerificationStep"
 import { ReviewSignStep } from "@/components/agreement/ReviewSignStep"
+import { PaymentStep } from "@/components/agreement/PaymentStep"
 import { FinalAgreementNote } from "@/components/agreement/FinalAgreementNote"
 
 export type AgreementData = {
@@ -42,6 +43,21 @@ export type AgreementData = {
   balance: string
   deliveryDate: string
   deliveryLocation: string
+  serialNumber: string
+  warranty: string
+  condition: string
+  description: string
+  productPhotos: string[]
+  returnPolicy: string
+  warrantyTerms: string
+  additionalClauses: string
+  paymentTerms: string
+  creatorSelfie: string
+  invitedPartySelfie: string
+  creatorLocation: string
+  invitedPartyLocation: string
+  dpdpConsent: boolean
+  eSignStatus: string
 }
 
 function CreateAgreementContent() {
@@ -70,7 +86,22 @@ function CreateAgreementContent() {
     advancePaid: "",
     balance: "",
     deliveryDate: "",
-    deliveryLocation: ""
+    deliveryLocation: "",
+    serialNumber: "",
+    warranty: "",
+    condition: "",
+    description: "",
+    productPhotos: [],
+    returnPolicy: "",
+    warrantyTerms: "",
+    additionalClauses: "",
+    paymentTerms: "",
+    creatorSelfie: "",
+    invitedPartySelfie: "",
+    creatorLocation: "",
+    invitedPartyLocation: "",
+    dpdpConsent: false,
+    eSignStatus: ""
   })
 
   const updateData = (updates: Partial<AgreementData>) => {
@@ -83,25 +114,26 @@ function CreateAgreementContent() {
   const handleBack = () => {
     if (currentStep === 1) {
       router.push(`/dashboard?module=${moduleType}`)
-    } else if (currentStep < 13) {
+    } else if (currentStep < 16) {
       prevStep()
     }
   }
 
   const steps = [
     { id: 1, title: "Select Your Role", component: <RoleSelectionStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 2, title: "Your Details", component: <CustomerDetailsStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 3, title: "Your Aadhaar Auth", component: <AadhaarAuthStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 4, title: "Verify OTP", component: <OtpVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 5, title: "Product Details", component: <ProductDetailsStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 6, title: "Product Photos", component: <ProductPhotosStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 7, title: "Payment & Delivery", component: <PaymentDeliveryStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 8, title: "Invite Buyer", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 9, title: "Review Agreement", component: <BuyerReviewStep data={formData} onNext={nextStep} /> },
-    { id: 10, title: "Buyer Verification", component: <BuyerVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 11, title: "Parties Photos", component: <PartiesPhotosStep data={formData} onNext={nextStep} /> },
-    { id: 12, title: "Sign Agreement", component: <ReviewSignStep data={formData} onNext={nextStep} /> },
-    { id: 13, title: "", component: <FinalAgreementNote data={formData} onHome={() => router.push(`/dashboard?module=${moduleType}`)} /> },
+    { id: 2, title: "Product Details", component: <ProductDetailsStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 3, title: "Terms & Conditions", component: <PaymentDeliveryStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 4, title: "Agreement Review", component: <BuyerReviewStep data={formData} onNext={nextStep} /> },
+    { id: 5, title: "Other Party Details", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 6, title: "Waiting For Response", component: <WaitingForResponseStep onNext={nextStep} /> },
+    { id: 7, title: "Acceptance Success", component: <AcceptanceSuccessStep data={formData} onNext={nextStep} /> },
+    { id: 8, title: "Assisted Identity Verification", component: <AadhaarAuthStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 9, title: "Enter OTP", component: <OtpVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 10, title: "Live Selfie Verification", component: <PartiesPhotosStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 11, title: "GPS Verification", component: <GpsVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 12, title: "Final Review", component: <ReviewSignStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 13, title: "Agreement Fee", component: <PaymentStep data={formData} onNext={nextStep} /> },
+    { id: 14, title: "", component: <FinalAgreementNote data={formData} onHome={() => router.push(`/dashboard?module=${moduleType}`)} /> },
   ]
 
   const currentStepData = steps.find(s => s.id === currentStep)
@@ -110,7 +142,7 @@ function CreateAgreementContent() {
     <AppContainer>
       <div className="flex flex-col h-[100dvh] bg-[#fcfcfc] overflow-hidden">
         {/* Header (Hidden on final success step) */}
-        {currentStep < 13 && (
+        {currentStep < 14 && (
           <header className="flex items-center h-[60px] px-4 shrink-0 bg-white sticky top-0 z-10 shadow-sm border-b border-border/50">
             <button 
               onClick={handleBack}

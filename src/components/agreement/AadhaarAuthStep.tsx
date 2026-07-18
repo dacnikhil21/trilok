@@ -11,7 +11,7 @@ type Props = {
 }
 
 export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
-  const isValid = data.aadhaarNumber.length >= 12
+  const isValid = (data.invitedPartyAadhaar || "").length >= 12
   const [tab, setTab] = React.useState<"aadhaar" | "vid">("aadhaar")
 
   return (
@@ -19,8 +19,11 @@ export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
       
       {/* Title */}
       <div className="text-center mt-2 mb-6">
+        <div className="inline-block bg-[#0033A0]/10 text-[#0033A0] px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-3">
+          Assisted Identity Verification
+        </div>
         <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight mb-4">
-          Customer Aadhaar Verification
+          Verify {data.invitedPartyName || "Other Party"}
         </h2>
         
         {/* Aadhaar Logo Mock */}
@@ -37,8 +40,8 @@ export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
           </div>
         </div>
 
-        <p className="text-[13px] text-gray-500 mt-2 font-medium max-w-[220px] mx-auto">
-          Customer verifies their identity using Aadhaar
+        <p className="text-[13px] text-gray-500 mt-2 font-medium max-w-[260px] mx-auto">
+          Enter their Aadhaar number. An OTP will be sent to their linked mobile number.
         </p>
       </div>
 
@@ -66,12 +69,12 @@ export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
       <div className="space-y-6">
         <div className="space-y-1.5">
           <label className="text-[13px] font-bold text-[#041B4A]">
-            {tab === "aadhaar" ? "Aadhaar Number" : "Virtual ID Number"}
+            {tab === "aadhaar" ? "Their Aadhaar Number" : "Their Virtual ID Number"}
           </label>
           <Input 
             type="tel"
-            value={data.aadhaarNumber}
-            onChange={(e) => updateData({ aadhaarNumber: e.target.value.replace(/\D/g, '').slice(0, tab === "aadhaar" ? 12 : 16) })}
+            value={data.invitedPartyAadhaar || ""}
+            onChange={(e) => updateData({ invitedPartyAadhaar: e.target.value.replace(/\D/g, '').slice(0, tab === "aadhaar" ? 12 : 16) })}
             placeholder={tab === "aadhaar" ? "XXXX XXXX 5678" : "XXXX XXXX XXXX 5678"}
             className="px-4 h-14 text-[16px] tracking-widest font-semibold rounded-[12px] border-gray-200"
           />
@@ -79,9 +82,10 @@ export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
 
         <Button 
           onClick={onNext}
+          disabled={!isValid}
           className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
-          Send OTP
+          Send OTP to {data.invitedPartyName || "Party"}
         </Button>
       </div>
 
@@ -93,14 +97,6 @@ export function AadhaarAuthStep({ data, updateData, onNext }: Props) {
           </div>
           <p className="text-[11px] font-semibold text-[#166534] leading-snug">
             Aadhaar details are secure and<br/>used only for this agreement.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 bg-[#F0FDF4] border border-[#DCFCE7] p-3.5 rounded-[12px]">
-          <div className="w-5 h-5 rounded-full bg-[#16A34A] flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
-          </div>
-          <p className="text-[11px] font-semibold text-[#166534] leading-snug">
-            No data is stored on our<br/>servers.
           </p>
         </div>
       </div>
