@@ -45,7 +45,7 @@ function VerifyIdentityContent() {
   const [scanning, setScanning] = React.useState(false)
 
   // Mock values
-  const deviceId = "TRILOK-MBL-88D4"
+  const deviceId = "ESALEAGREEMENT-MBL-88D4"
   const timestamp = React.useMemo(() => new Date().toLocaleString("en-IN"), [step])
 
   const stepNumber = React.useMemo(() => {
@@ -111,7 +111,7 @@ function VerifyIdentityContent() {
       />
       <div className="flex items-start gap-2.5 p-3 rounded-[12px] bg-divider/20 text-secondary-text border border-border/10 text-[11.5px] leading-relaxed">
         <Lock className="w-4 h-4 shrink-0 text-primary mt-0.5" />
-        <span>Trilok is certified as a sub-ASA user. Your data is encrypted and validated through UIDAI channels.</span>
+        <span>eSaleAgreement is certified as a sub-ASA user. Your data is encrypted and validated through UIDAI channels.</span>
       </div>
     </div>
   )
@@ -149,7 +149,7 @@ function VerifyIdentityContent() {
       {/* Realistic DPDP Terms Scrollbox */}
       <div className="max-h-[140px] overflow-y-auto border border-border rounded-[12px] p-3 text-[11px] text-secondary-text font-medium leading-relaxed space-y-2 bg-[#FBFBFA]">
         <h4 className="font-bold text-foreground">Consent Notice (DPDP Act, 2023)</h4>
-        <p>1. <strong>Purpose of Collection:</strong> Trilok shall process the Aadhaar identity parameters and GPS coordinates solely for verification, timestamp audit tracking, and digital agreement signature execution.</p>
+        <p>1. <strong>Purpose of Collection:</strong> eSaleAgreement shall process the Aadhaar identity parameters and GPS coordinates solely for verification, timestamp audit tracking, and digital agreement signature execution.</p>
         <p>2. <strong>Identity Matching:</strong> Your live selfie will be parsed locally to confirm compliance match with Aadhaar image registers.</p>
         <p>3. <strong>Storage & Encryption:</strong> Consent records, agreement tokens, and encryption metadata are logged immutably under standard cryptographic hashes.</p>
       </div>
@@ -159,7 +159,7 @@ function VerifyIdentityContent() {
           {dpdpChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
         </div>
         <span className="text-[12px] font-semibold text-foreground leading-snug select-none">
-          I confirm that I have read the consent terms and authorize Trilok to verify my identity and execute agreements.
+          I confirm that I have read the consent terms and authorize eSaleAgreement to verify my identity and execute agreements.
         </span>
       </div>
     </div>

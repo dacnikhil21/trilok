@@ -32,7 +32,7 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
               </div>
               <div className="flex flex-col items-center">
                 <h1 className="text-[20px] font-display font-bold tracking-tight text-foreground leading-none">
-                  Trilok
+                  eSaleAgreement
                 </h1>
                 <p className="text-[10px] font-bold tracking-widest uppercase text-secondary-text mt-1.5">
                   Secure • Verified • Trusted

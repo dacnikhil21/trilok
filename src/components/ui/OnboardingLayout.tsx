@@ -51,7 +51,7 @@ export function OnboardingLayout({
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-sm border border-divider/60 bg-[#F0F4F8]">
             <ShieldCheck strokeWidth={2.4} className="h-4 w-4 text-primary" />
             <span className="text-[14px] font-display font-bold tracking-tight text-primary-text leading-none">
-              Trilok
+              eSaleAgreement
             </span>
           </div>
         </div>

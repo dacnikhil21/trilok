@@ -4,8 +4,6 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 
-const STEP_LABELS = ["Register", "Verify", "Consent", "Access", "Audit"]
-
 interface ProgressStepperProps {
   currentStep: number
   totalSteps: number
@@ -20,12 +18,12 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
       {/* Node row */}
       <div className="flex items-center justify-between w-full relative px-2">
         {/* Background line that goes across the entire row behind the dots */}
-        <div className="absolute left-6 right-6 top-[13px] h-[2px] bg-border z-0 rounded-full overflow-hidden">
+        <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-border z-0 rounded-full overflow-hidden">
           <motion.div
             initial={false}
             animate={{ width: `${(currentStep / (totalSteps - 1)) * 100}%` }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="h-full bg-[#0A5C36] rounded-full"
+            className="h-full bg-primary rounded-full"
           />
         </div>
 
@@ -35,41 +33,29 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
           const isPending = idx > currentStep
 
           return (
-            <div key={idx} className="flex flex-col items-center relative z-10 shrink-0 w-12">
-              {/* Node Dot */}
+            <div key={idx} className="flex flex-col items-center relative z-10 shrink-0 w-8 h-8">
+              {/* Node Circle */}
               <motion.div
                 initial={false}
                 animate={{
-                  scale: isActive ? 1.15 : 1,
                   backgroundColor: isCompleted
-                    ? "#0A5C36"
+                    ? "var(--color-primary)"
                     : isActive
-                    ? "#0A5C36"
+                    ? "var(--color-primary)"
                     : "#FFFFFF",
-                  borderColor: isCompleted || isActive ? "#0A5C36" : "rgba(26,29,31,0.22)",
+                  borderColor: isCompleted || isActive ? "var(--color-primary)" : "var(--color-border)",
+                  color: isCompleted || isActive ? "#FFFFFF" : "var(--color-primary)",
                 }}
-                className="w-7 h-7 rounded-full border-2 flex items-center justify-center shadow-sm bg-surface"
+                className="w-7 h-7 rounded-full border-[1.5px] flex items-center justify-center shadow-sm bg-surface mx-auto"
               >
                 {isCompleted ? (
-                  <Check strokeWidth={3.8} className="w-3.5 h-3.5 text-white" />
-                ) : isActive ? (
-                  <motion.span
-                    animate={{ scale: [1, 1.3, 1] }}
-                    transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-                    className="w-2 h-2 rounded-full bg-white"
-                  />
+                  <Check strokeWidth={3.8} className="w-4 h-4 text-white" />
                 ) : (
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary-text/30" />
+                  <span className="text-[12px] font-bold mt-[1px]">
+                    {idx + 1}
+                  </span>
                 )}
               </motion.div>
-              {/* Label */}
-              <span
-                className={`text-[9px] font-bold mt-1.5 tracking-wider uppercase text-center transition-colors duration-300 ${
-                  isCompleted || isActive ? "text-primary" : "text-secondary-text/50"
-                }`}
-              >
-                {STEP_LABELS[idx]}
-              </span>
             </div>
           )
         })}
@@ -77,3 +63,4 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
     </div>
   )
 }
+
