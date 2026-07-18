@@ -64,7 +64,7 @@ export function AgreementCompletedStep({ data, onHome }: Props) {
           <Download className="w-5 h-5" /> Download PDF
         </Button>
         <Button 
-          variant="ghost"
+          variant="secondary"
           className="w-full h-[52px] border-2 border-gray-200 text-[#041B4A] hover:bg-gray-50 rounded-[14px] text-[16px] font-bold flex items-center justify-center gap-2"
         >
           <Share2 className="w-5 h-5" /> Share Agreement
