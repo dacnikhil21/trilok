@@ -47,7 +47,7 @@ export function WaitingForResponseStep({ onNext }: Props) {
         </div>
         <Button 
           onClick={onNext}
-          variant="outline"
+          variant="secondary"
           className="w-full h-[52px] border-2 border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 rounded-[14px] text-[14px] font-bold shadow-sm"
         >
           Simulate Acceptance <ArrowRight className="w-4 h-4 ml-2" />

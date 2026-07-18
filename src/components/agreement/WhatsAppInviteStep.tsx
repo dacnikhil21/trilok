@@ -89,7 +89,7 @@ export function WhatsAppInviteStep({ data, updateData, onNext }: Props) {
 
         <div className="grid grid-cols-2 gap-3">
           <Button 
-            variant="outline"
+            variant="secondary"
             onClick={() => handleSend("sms")}
             disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
             className="w-full h-[52px] border-2 border-gray-200 text-[#041B4A] hover:bg-gray-50 rounded-[14px] text-[15px] font-bold"
@@ -98,7 +98,7 @@ export function WhatsAppInviteStep({ data, updateData, onNext }: Props) {
           </Button>
 
           <Button 
-            variant="outline"
+            variant="secondary"
             onClick={() => handleSend("link")}
             disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
             className="w-full h-[52px] border-2 border-gray-200 text-[#041B4A] hover:bg-gray-50 rounded-[14px] text-[15px] font-bold"

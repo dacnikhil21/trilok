@@ -72,7 +72,7 @@ export function PartiesPhotosStep({ data, updateData, onNext }: Props) {
             </div>
 
             <Button 
-              variant="outline"
+              variant="secondary"
               onClick={() => toggleUpload(photo.key)}
               className={`w-full h-[44px] rounded-[10px] text-[14px] font-bold ${
                 uploaded[photo.key] 

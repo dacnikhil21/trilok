@@ -54,6 +54,10 @@ export type AgreementData = {
   invitedPartyLocation: string
   dpdpConsent: boolean
   eSignStatus: string
+  invitedPartyName: string
+  invitedPartyMobile: string
+  invitedPartyAadhaar: string
+  invitedPartyOtp: string
 }
 
 function CreateAgreementContent() {
@@ -97,7 +101,11 @@ function CreateAgreementContent() {
     creatorLocation: "",
     invitedPartyLocation: "",
     dpdpConsent: false,
-    eSignStatus: ""
+    eSignStatus: "",
+    invitedPartyName: "",
+    invitedPartyMobile: "",
+    invitedPartyAadhaar: "",
+    invitedPartyOtp: ""
   })
 
   const updateData = (updates: Partial<AgreementData>) => {

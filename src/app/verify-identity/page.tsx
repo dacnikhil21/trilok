@@ -223,6 +223,8 @@ function VerifyIdentityContent() {
     </div>
   )
 
+  const renderAadhaarOtpContent = () => null
+
   // 3. DPDP Consent screen content
   const renderConsentContent = () => (
     <div className="space-y-4 text-left">
