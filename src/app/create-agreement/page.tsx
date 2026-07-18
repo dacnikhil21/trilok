@@ -44,7 +44,7 @@ export type AgreementData = {
   deliveryLocation: string
 }
 
-export default function CreateAgreementPage() {
+function CreateAgreementContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const moduleType = searchParams.get("module") || "c2c"
@@ -139,5 +139,17 @@ export default function CreateAgreementPage() {
         </div>
       </div>
     </AppContainer>
+  )
+}
+
+export default function CreateAgreementPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex min-h-[100dvh] items-center justify-center bg-[#FBFBFA]">
+        <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#0033A0] border-t-transparent" />
+      </div>
+    }>
+      <CreateAgreementContent />
+    </React.Suspense>
   )
 }
