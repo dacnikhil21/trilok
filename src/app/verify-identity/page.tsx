@@ -95,10 +95,6 @@ function VerifyIdentityContent() {
           setStep("upload-ekyc")
           break
         case "upload-ekyc":
-          if (!uploads.front || !uploads.back || !uploads.selfie) {
-            setError("Please complete all uploads.")
-            return
-          }
           setError("")
           setStep("consent")
           break
@@ -191,11 +187,10 @@ function VerifyIdentityContent() {
     </div>
   )
 
-  // 3. Upload eKYC content
   const renderUploadEkycContent = () => (
-    <div className="flex flex-col space-y-6 animate-in fade-in zoom-in-95 duration-300">
+    <div className="flex flex-col space-y-6 animate-in fade-in zoom-in-95 duration-300 pb-4">
       {/* Tabs */}
-      <div className="flex w-full bg-[#F7F9FB] rounded-[12px] p-1 mb-2">
+      <div className="flex w-full bg-[#F7F9FB] rounded-[12px] p-1">
         <button 
           onClick={() => setActiveTab("aadhaar")}
           className={`flex-1 py-3 text-[14.5px] font-bold rounded-[10px] transition-all ${
@@ -214,94 +209,143 @@ function VerifyIdentityContent() {
               : "text-[#64748B] hover:text-[#041B4A]"
           }`}
         >
-          Virtual ID (VID)
+          Virtual ID
         </button>
       </div>
 
       {error && <p className="text-[12.5px] text-error font-bold text-center mt-[-10px]">{error}</p>}
 
-      {/* Upload grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Front Upload */}
-        <div className="flex flex-col gap-2">
-          <div 
-            onClick={() => {
-              setUploads(prev => ({ ...prev, front: true }))
-              setError("")
-            }}
-            className={`w-full aspect-[1.6/1] rounded-[14px] border-[1.5px] border-dashed flex flex-col items-center justify-center p-3 relative overflow-hidden transition-all cursor-pointer group ${uploads.front ? "bg-[#F4F9FF] border-[#0033A0]/40" : "bg-white border-[#E2E8F0] hover:border-[#0033A0]/30 hover:bg-[#F8FAFC]"}`}
-          >
-            <div className="absolute inset-0 p-3 opacity-30 flex flex-col pointer-events-none">
-              <div className="flex items-center gap-2 mb-2 border-b border-[#94A3B8]/30 pb-1">
-                <div className="w-5 h-5 rounded-full bg-[#E2E8F0] flex items-center justify-center shrink-0 overflow-hidden">
-                  <div className="w-3 h-3 bg-[#CBD5E1] rounded-b-full translate-y-[2px]" />
-                </div>
-                <div className="h-1.5 w-16 bg-[#E2E8F0] rounded-full" />
-              </div>
-              <div className="flex gap-3">
-                <div className="w-[30%] aspect-[3/4] bg-[#E2E8F0] rounded-[2px]" />
-                <div className="flex-1 space-y-1.5">
-                  <div className="h-1 w-full bg-[#E2E8F0] rounded-full" />
-                  <div className="h-1 w-[80%] bg-[#E2E8F0] rounded-full" />
-                  <div className="h-1 w-[60%] bg-[#E2E8F0] rounded-full" />
-                  <div className="h-2 w-full mt-2 bg-[#E2E8F0] rounded-full mx-auto" />
-                </div>
-              </div>
+      {/* Row 1: Upload Front */}
+      <div className="space-y-2">
+        <span className="text-[15px] font-bold text-[#041B4A]">Upload Front</span>
+        <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
+          {/* Mockup */}
+          <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] relative flex flex-col justify-between p-1.5 overflow-hidden">
+            <div className="flex items-center justify-between px-1">
+               <div className="flex items-center gap-1">
+                  <div className="w-3.5 h-4 text-[7px] leading-none"><ShieldCheck className="w-full h-full text-gray-700" strokeWidth={2} /></div>
+                  <span className="text-[6px] font-bold text-gray-800">Government of India</span>
+               </div>
+               <div className="text-[5px] text-orange-500 font-bold">AADHAAR</div>
             </div>
-            
-            <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 ${uploads.front ? "bg-[#0033A0] text-white" : "bg-white text-[#041B4A] border border-[#E2E8F0]"}`}>
-              {uploads.front ? <Check className="w-5 h-5" strokeWidth={3} /> : <Camera className="w-5 h-5" />}
+            <div className="flex gap-2 px-1">
+               <div className="w-[28px] h-[36px] bg-[#D1D5DB] rounded-[3px] flex items-end justify-center overflow-hidden shrink-0">
+                  <div className="w-6 h-6 bg-[#9CA3AF] rounded-t-full" />
+               </div>
+               <div className="flex-1 space-y-[2px] mt-0.5">
+                  <div className="text-[4px] text-gray-500 font-semibold leading-none">Name</div>
+                  <div className="text-[5px] font-bold leading-none">XXXX XXXX XXXX</div>
+                  <div className="text-[4px] text-gray-500 font-semibold leading-none mt-1">DOB : XX/XX/XXXX</div>
+                  <div className="text-[4px] text-gray-500 font-semibold leading-none">Gender : MALE</div>
+               </div>
+               <div className="w-6 h-6 border-2 border-dashed border-gray-400 mt-1 flex items-center justify-center p-[1px] shrink-0">
+                  <div className="w-full h-full bg-gray-400" />
+               </div>
             </div>
-          </div>
-          <span className="text-[13px] font-bold text-[#041B4A] text-center">Upload Front</span>
-        </div>
-
-        {/* Back Upload */}
-        <div className="flex flex-col gap-2">
-          <div 
-            onClick={() => {
-              setUploads(prev => ({ ...prev, back: true }))
-              setError("")
-            }}
-            className={`w-full aspect-[1.6/1] rounded-[14px] border-[1.5px] border-dashed flex flex-col items-center justify-center p-3 relative overflow-hidden transition-all cursor-pointer group ${uploads.back ? "bg-[#F4F9FF] border-[#0033A0]/40" : "bg-white border-[#E2E8F0] hover:border-[#0033A0]/30 hover:bg-[#F8FAFC]"}`}
-          >
-            <div className="absolute inset-0 p-3 opacity-30 flex flex-col justify-between pointer-events-none">
-              <div className="h-[25%] w-full bg-[#E2E8F0] rounded-[2px]" />
-              <div className="space-y-1.5">
-                <div className="h-1 w-full bg-[#E2E8F0] rounded-full" />
-                <div className="h-1 w-[85%] bg-[#E2E8F0] rounded-full" />
-                <div className="h-1 w-[70%] bg-[#E2E8F0] rounded-full" />
-              </div>
-            </div>
-
-            <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 ${uploads.back ? "bg-[#0033A0] text-white" : "bg-white text-[#041B4A] border border-[#E2E8F0]"}`}>
-              {uploads.back ? <Check className="w-5 h-5" strokeWidth={3} /> : <Camera className="w-5 h-5" />}
+            <div className="text-center pb-0.5 mt-auto">
+               <div className="text-[11.5px] font-bold tracking-[0.15em] leading-none text-black">1234 5678 9012</div>
+               <div className="h-[2px] w-full mt-1.5 flex">
+                 <div className="flex-1 bg-green-500" />
+                 <div className="flex-1 bg-white" />
+                 <div className="flex-1 bg-red-500" />
+               </div>
             </div>
           </div>
-          <span className="text-[13px] font-bold text-[#041B4A] text-center">Upload Back</span>
+          
+          {/* Empty Place */}
+          <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center relative">
+            {uploads.front && <CheckCircle2 className="w-8 h-8 text-green-500 absolute inset-0 m-auto" />}
+          </div>
+
+          {/* Camera Button */}
+          <div 
+            onClick={() => setUploads(prev => ({ ...prev, front: true }))}
+            className={`w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center cursor-pointer transition-all hover:bg-gray-50 ${uploads.front ? "ring-2 ring-[#0033A0]" : ""}`}
+          >
+            <Camera className="w-8 h-8 text-[#0033A0]" fill="#0033A0" strokeWidth={1} />
+          </div>
         </div>
       </div>
 
-      {/* Live Selfie */}
-      <div className="flex flex-col gap-2">
-        <div 
-          onClick={() => {
-            setUploads(prev => ({ ...prev, selfie: true }))
-            setError("")
-          }}
-          className={`w-full h-[140px] rounded-[16px] border-[1.5px] border-dashed flex flex-col items-center justify-center relative overflow-hidden transition-all cursor-pointer group ${uploads.selfie ? "bg-[#F4F9FF] border-[#0033A0]/40" : "bg-[#F8FAFC] border-[#CBD5E1] hover:border-[#0033A0]/30 hover:bg-[#F1F5F9]"}`}
-        >
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-            <div className="w-[100px] h-[100px] rounded-[30px] border-2 border-[#94A3B8]" />
-            <div className="absolute w-[60px] h-[60px] rounded-full border-2 border-[#94A3B8] -translate-y-2" />
-            <div className="absolute w-[80px] h-[40px] rounded-t-full border-2 border-b-0 border-[#94A3B8] translate-y-10" />
+      {/* Row 2: Upload Back */}
+      <div className="space-y-2">
+        <span className="text-[15px] font-bold text-[#041B4A]">Upload Back</span>
+        <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
+          {/* Mockup */}
+          <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] relative flex flex-col justify-between p-1.5 overflow-hidden">
+            <div className="flex items-center gap-1 px-1 pt-0.5">
+               <div className="w-4 h-4"><ShieldCheck className="w-full h-full text-gray-700" strokeWidth={2} /></div>
+               <span className="text-[5px] font-bold text-orange-500 leading-tight">Unique Identification Authority of India</span>
+            </div>
+            <div className="h-[2px] w-full mt-1 flex">
+                 <div className="flex-1 bg-green-500" />
+                 <div className="flex-1 bg-white" />
+                 <div className="flex-1 bg-red-500" />
+            </div>
+            <div className="flex gap-2 px-1 mt-1.5">
+               <div className="flex-1 space-y-[2px]">
+                  <div className="text-[4px] font-bold leading-none">Address :</div>
+                  <div className="text-[5px] font-bold leading-none">XXXX XXXX XXXX</div>
+                  <div className="text-[5px] font-bold leading-none">XXXX XXXX XXXX</div>
+                  <div className="text-[5px] font-bold leading-none">Pincode - 123456</div>
+               </div>
+               <div className="w-7 h-7 border-2 border-dashed border-gray-400 mt-0.5 flex items-center justify-center p-[1px] shrink-0">
+                  <div className="w-full h-full bg-gray-400" />
+               </div>
+            </div>
+            <div className="text-center pb-0.5 mt-auto">
+               <div className="text-[11.5px] font-bold tracking-[0.15em] leading-none text-black">1234 5678 9012</div>
+            </div>
+          </div>
+          
+          {/* Empty Place */}
+          <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center relative">
+            {uploads.back && <CheckCircle2 className="w-8 h-8 text-green-500 absolute inset-0 m-auto" />}
           </div>
 
-          <div className={`relative z-10 w-14 h-14 rounded-full flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 ${uploads.selfie ? "bg-[#0033A0] text-white" : "bg-white text-[#041B4A] border border-[#E2E8F0]"}`}>
-            {uploads.selfie ? <Check className="w-6 h-6" strokeWidth={3} /> : <Camera className="w-6 h-6" />}
+          {/* Camera Button */}
+          <div 
+            onClick={() => setUploads(prev => ({ ...prev, back: true }))}
+            className={`w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center cursor-pointer transition-all hover:bg-gray-50 ${uploads.back ? "ring-2 ring-[#0033A0]" : ""}`}
+          >
+            <Camera className="w-8 h-8 text-[#0033A0]" fill="#0033A0" strokeWidth={1} />
           </div>
         </div>
-        <span className="text-[13px] font-bold text-[#041B4A] text-center">Live Selfie</span>
+      </div>
+
+      {/* Row 3: Live Selfie */}
+      <div className="space-y-2">
+        <span className="text-[15px] font-bold text-[#041B4A]">Live Selfie</span>
+        <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
+          {/* Mockup */}
+          <div className="w-full h-full bg-[#E5E7EB] rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] overflow-hidden relative">
+            <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 pt-3">
+              <path d="M 15 100 L 15 75 Q 15 60 50 60 Q 85 60 85 75 L 85 100" fill="#93C5FD" stroke="#60A5FA" strokeWidth="2" />
+              <path d="M 35 60 L 50 80 L 65 60" fill="#BFDBFE" />
+              <rect x="42" y="45" width="16" height="20" fill="#FDBA74" />
+              <circle cx="50" cy="40" r="18" fill="#FDBA74" />
+              <path d="M 32 40 Q 50 65 68 40 Q 50 60 32 40" fill="#1F2937" />
+              <path d="M 32 38 Q 50 15 68 38 Q 50 20 32 38" fill="#1F2937" />
+              <circle cx="43" cy="36" r="2" fill="#1F2937" />
+              <circle cx="57" cy="36" r="2" fill="#1F2937" />
+              <path d="M 39 32 L 46 32 M 54 32 L 61 32" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" />
+              <path d="M 50 40 L 50 45" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </div>
+          
+          {/* Empty Place */}
+          <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center relative">
+            {uploads.selfie && <CheckCircle2 className="w-8 h-8 text-green-500 absolute inset-0 m-auto" />}
+          </div>
+
+          {/* Camera Button */}
+          <div 
+            onClick={() => setUploads(prev => ({ ...prev, selfie: true }))}
+            className={`w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex items-center justify-center cursor-pointer transition-all hover:bg-gray-50 ${uploads.selfie ? "ring-2 ring-[#0033A0]" : ""}`}
+          >
+            <Camera className="w-8 h-8 text-[#0033A0]" fill="#0033A0" strokeWidth={1} />
+          </div>
+        </div>
       </div>
     </div>
   )
