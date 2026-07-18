@@ -7,7 +7,7 @@ import { AppContainer } from "@/components/ui/AppContainer"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { Input } from "@/components/ui/input"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
-import { UploadCloud, Check, ChevronDown, ArrowRight } from "lucide-react"
+import { UploadCloud, Check, ChevronDown, ArrowRight, MapPin } from "lucide-react"
 
 const B2C_CATEGORIES = [
   "Real Estate & Rental",
@@ -29,7 +29,7 @@ function RegisterFormContent() {
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase() as "c2c" | "b2b" | "b2c"
 
-  const [formPage, setFormPage] = React.useState<1 | 2>(1)
+  const [formPage, setFormPage] = React.useState<1 | 2 | 3>(1)
 
   // C2C Form States
   const [c2cName, setC2cName] = React.useState("")
@@ -85,6 +85,11 @@ function RegisterFormContent() {
   const handleSubmit = () => {
     if (formPage === 1) {
       handleNextPage()
+      return
+    }
+    
+    if (formPage === 2 && moduleType === "c2c") {
+      setFormPage(3)
       return
     }
 
@@ -215,7 +220,7 @@ function RegisterFormContent() {
 
     // Default C2C Page 1
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 relative">
         <Input
           label="Full Name (As per Aadhaar)"
           type="text"
@@ -233,13 +238,26 @@ function RegisterFormContent() {
           error={errors.c2cMobile}
           required
         />
-        <Input
-          label="Email Address (Optional)"
-          type="email"
-          value={c2cEmail}
-          onChange={(e) => { setC2cEmail(e.target.value); delete errors.c2cEmail; }}
-          error={errors.c2cEmail}
-        />
+        <div className="relative">
+          <Input
+            label="Email Address (Optional)"
+            type="email"
+            value={c2cEmail}
+            onChange={(e) => { setC2cEmail(e.target.value); delete errors.c2cEmail; }}
+            error={errors.c2cEmail}
+          />
+          {/* Sparkles Autofill Button */}
+          <button 
+            type="button"
+            className="absolute -right-2 -bottom-4 w-12 h-12 bg-[#F0F4FA] rounded-full flex items-center justify-center text-primary shadow-sm border border-primary/10 hover:bg-primary/10 active:scale-95 transition-all z-10"
+            onClick={() => {
+              setC2cName("Ramesh Kumar Sharma");
+              setC2cEmail("ramesh.kumar@example.com");
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg>
+          </button>
+        </div>
       </div>
     )
   }
@@ -373,6 +391,69 @@ function RegisterFormContent() {
     )
   }
 
+  if (formPage === 3 && moduleType === "c2c") {
+    return (
+      <AppContainer centered>
+        <div className="w-full flex flex-col items-center bg-surface pt-8 pb-6 px-6 h-[100dvh] justify-between overflow-y-auto">
+            <div className="text-center w-full max-w-sm mx-auto flex-1 flex flex-col items-center pt-4">
+              <h2 className="text-[22px] font-bold text-primary-text mb-8">Location Permission</h2>
+              
+              <div className="w-full aspect-square max-h-[280px] bg-[#E8ECEF] rounded-[24px] mb-8 relative overflow-hidden flex items-center justify-center">
+                 {/* Map mockup */}
+                 <div className="absolute inset-0 opacity-40">
+                    <div className="absolute top-1/4 left-0 right-0 h-4 bg-white transform -rotate-12" />
+                    <div className="absolute top-1/2 left-0 right-0 h-6 bg-white transform rotate-6" />
+                    <div className="absolute top-0 bottom-0 left-1/3 w-4 bg-white transform 12" />
+                    <div className="absolute top-0 bottom-0 right-1/4 w-5 bg-white transform -rotate-6" />
+                    <div className="absolute top-[20%] left-[10%] w-16 h-24 bg-[#D1DFD3]" />
+                    <div className="absolute bottom-[20%] right-[10%] w-20 h-16 bg-[#D1DFD3]" />
+                    <div className="absolute top-[60%] left-[20%] w-12 h-12 bg-[#D1DFD3]" />
+                 </div>
+                 <div className="relative z-10 w-24 h-24 flex items-center justify-center mb-4">
+                    <svg viewBox="0 0 24 24" fill="#D32F2F" className="w-20 h-20">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                 </div>
+              </div>
+              
+              <h3 className="text-[20px] font-bold text-primary-text mb-6">Allow location access</h3>
+              <p className="text-[15px] text-primary-text font-medium leading-[1.6] mb-8 px-2">
+                We value your current location to include with the Digital Personal's proof of transaction act, 2023.
+              </p>
+              <p className="text-[15px] text-primary-text font-medium leading-[1.6] mb-8 px-4">
+                Your location is secure and used only for agreement creation.
+              </p>
+            </div>
+
+            <div className="w-full max-w-sm mx-auto space-y-4 pb-4">
+              <button 
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => {
+                     router.push(`/verify-identity?module=${moduleType}`)
+                  }, 1200)
+                }}
+                className="w-full rounded-[12px] h-[54px] bg-primary text-surface font-semibold tracking-wide text-[16px] transition-all hover:opacity-90 flex items-center justify-center"
+              >
+                {isLoading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-surface border-t-transparent" /> : "Allow Location"}
+              </button>
+              <button 
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => {
+                     router.push(`/verify-identity?module=${moduleType}`)
+                  }, 1200)
+                }}
+                className="w-full rounded-[12px] h-[54px] bg-transparent text-primary font-bold tracking-wide text-[16px] transition-all hover:bg-primary/5 flex items-center justify-center"
+              >
+                Not Now
+              </button>
+            </div>
+        </div>
+      </AppContainer>
+    )
+  }
+
   return (
     <AppContainer centered>
       <OnboardingLayout
@@ -383,9 +464,11 @@ function RegisterFormContent() {
         onButtonClick={handleSubmit}
         isButtonLoading={isLoading}
         showBackButton
-        stepperStep={0}
+        stepperStep={formPage - 1}
         onBackClick={() => {
-          if (formPage === 2) {
+          if (formPage === 3) {
+            setFormPage(2)
+          } else if (formPage === 2) {
             setFormPage(1)
           } else {
             router.push("/select-service")

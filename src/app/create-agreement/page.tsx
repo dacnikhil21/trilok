@@ -14,10 +14,6 @@ import { BuyerReviewStep } from "@/components/agreement/BuyerReviewStep"
 import { WhatsAppInviteStep } from "@/components/agreement/WhatsAppInviteStep"
 import { WaitingForResponseStep } from "@/components/agreement/WaitingForResponseStep"
 import { AcceptanceSuccessStep } from "@/components/agreement/AcceptanceSuccessStep"
-import { AadhaarAuthStep } from "@/components/agreement/AadhaarAuthStep"
-import { OtpVerificationStep } from "@/components/agreement/OtpVerificationStep"
-import { PartiesPhotosStep } from "@/components/agreement/PartiesPhotosStep"
-import { GpsVerificationStep } from "@/components/agreement/GpsVerificationStep"
 import { ReviewSignStep } from "@/components/agreement/ReviewSignStep"
 import { PaymentStep } from "@/components/agreement/PaymentStep"
 import { FinalAgreementNote } from "@/components/agreement/FinalAgreementNote"
@@ -114,7 +110,7 @@ function CreateAgreementContent() {
   const handleBack = () => {
     if (currentStep === 1) {
       router.push(`/dashboard?module=${moduleType}`)
-    } else if (currentStep < 16) {
+    } else if (currentStep < 10) {
       prevStep()
     }
   }
@@ -127,13 +123,9 @@ function CreateAgreementContent() {
     { id: 5, title: "Other Party Details", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },
     { id: 6, title: "Waiting For Response", component: <WaitingForResponseStep onNext={nextStep} /> },
     { id: 7, title: "Acceptance Success", component: <AcceptanceSuccessStep data={formData} onNext={nextStep} /> },
-    { id: 8, title: "Assisted Identity Verification", component: <AadhaarAuthStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 9, title: "Enter OTP", component: <OtpVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 10, title: "Live Selfie Verification", component: <PartiesPhotosStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 11, title: "GPS Verification", component: <GpsVerificationStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 12, title: "Final Review", component: <ReviewSignStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 13, title: "Agreement Fee", component: <PaymentStep data={formData} onNext={nextStep} /> },
-    { id: 14, title: "", component: <FinalAgreementNote data={formData} onHome={() => router.push(`/dashboard?module=${moduleType}`)} /> },
+    { id: 8, title: "Final Review", component: <ReviewSignStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    { id: 9, title: "Agreement Fee", component: <PaymentStep data={formData} onNext={nextStep} /> },
+    { id: 10, title: "", component: <FinalAgreementNote data={formData} onHome={() => router.push(`/dashboard?module=${moduleType}`)} /> },
   ]
 
   const currentStepData = steps.find(s => s.id === currentStep)
@@ -142,7 +134,7 @@ function CreateAgreementContent() {
     <AppContainer>
       <div className="flex flex-col h-[100dvh] bg-[#fcfcfc] overflow-hidden">
         {/* Header (Hidden on final success step) */}
-        {currentStep < 14 && (
+        {currentStep < 10 && (
           <header className="flex items-center h-[60px] px-4 shrink-0 bg-white sticky top-0 z-10 shadow-sm border-b border-border/50">
             <button 
               onClick={handleBack}

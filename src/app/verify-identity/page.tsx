@@ -19,18 +19,12 @@ function VerifyIdentityContent() {
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
   // Aadhaar eKYC state
-  const [aadhaarNumber, setAadhaarNumber] = React.useState("")
-  const [aadhaarOtp, setAadhaarOtp] = React.useState("")
-  const [timer, setTimer] = React.useState(30)
+  const [activeTab, setActiveTab] = React.useState<"aadhaar" | "vid">("aadhaar")
+  const [uploads, setUploads] = React.useState({ front: false, back: false, selfie: false })
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
 
-  React.useEffect(() => {
-    if (timer > 0 && (step === "otp")) {
-      const t = setTimeout(() => setTimer(timer - 1), 1000)
-      return () => clearTimeout(t)
-    }
-  }, [timer, step])
+
 
   // DPDP state
   const [dpdpChecked, setDpdpChecked] = React.useState(false)
@@ -60,86 +54,172 @@ function VerifyIdentityContent() {
       case "liveness":
       case "success":
         return 4
+      default:
+        return 1
     }
   }, [step])
 
-  const handleButtonClick = () => {
-    setError("")
-    if (step === "aadhaar") {
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsLoading(false)
-        setStep("otp")
-      }, 1000)
-    } else if (step === "otp") {
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsLoading(false)
-        setStep("consent")
-      }, 1200)
-    } else if (step === "consent") {
-      setStep("permissions")
-    } else if (step === "permissions") {
-      setStep("liveness")
-    } else if (step === "liveness") {
-      if (!livenessCaptured) {
-        setScanning(true)
-        setTimeout(() => {
-          setScanning(false)
-          setLivenessCaptured(true)
-        }, 1800)
-      } else {
-        setStep("success")
+  const handlePrimaryAction = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+      switch (step) {
+        case "aadhaar":
+          if (!uploads.front || !uploads.back || !uploads.selfie) {
+            setError("Please complete all uploads.")
+            return
+          }
+          setStep("consent") // Skip OTP step
+          break
+        case "consent":
+          setStep("permissions")
+          break
+        case "permissions":
+          setStep("liveness")
+          break
+        case "liveness":
+          setStep("success")
+          break
+        case "success":
+          router.push(`/dashboard?module=${moduleType}`)
+          break
       }
-    } else if (step === "success") {
-      router.push(`/dashboard?module=${moduleType}`)
-    }
+    }, 800)
   }
 
   // 1. Aadhaar screen content
   const renderAadhaarContent = () => (
-    <div className="space-y-4">
-      <Input
-        label="Aadhaar Card Number"
-        type="text"
-        inputMode="numeric"
-        value={aadhaarNumber}
-        onChange={(e) => { setAadhaarNumber(e.target.value.replace(/\D/g, "").slice(0, 12)); setError(""); }}
-        placeholder="Enter 12-digit Aadhaar"
-        error={error}
-        required
-      />
-      <div className="flex items-start gap-2.5 p-3 rounded-[12px] bg-divider/20 text-secondary-text border border-border/10 text-[11.5px] leading-relaxed">
-        <Lock className="w-4 h-4 shrink-0 text-primary mt-0.5" />
-        <span>eSaleAgreement is certified as a sub-ASA user. Your data is encrypted and validated through UIDAI channels.</span>
+    <div className="flex flex-col space-y-6 animate-in fade-in zoom-in-95 duration-300">
+      
+      {/* Tabs */}
+      <div className="flex w-full bg-[#F7F9FB] rounded-[12px] p-1 mb-2">
+        <button 
+          onClick={() => setActiveTab("aadhaar")}
+          className={`flex-1 py-3 text-[14.5px] font-bold rounded-[10px] transition-all ${
+            activeTab === "aadhaar" 
+              ? "bg-white text-[#0033A0] shadow-sm ring-1 ring-black/5" 
+              : "text-gray-500 hover:text-[#041B4A]"
+          }`}
+        >
+          Aadhaar Card
+        </button>
+        <button 
+          onClick={() => setActiveTab("vid")}
+          className={`flex-1 py-3 text-[14.5px] font-bold rounded-[10px] transition-all ${
+            activeTab === "vid" 
+              ? "bg-white text-[#0033A0] shadow-sm ring-1 ring-black/5" 
+              : "text-gray-500 hover:text-[#041B4A]"
+          }`}
+        >
+          Virtual ID
+        </button>
       </div>
-    </div>
-  )
 
-  // 2. Aadhaar OTP screen content
-  const renderAadhaarOtpContent = () => (
-    <div className="space-y-4">
-      <p className="text-[13px] text-secondary-text font-medium text-center leading-relaxed">
-        Enter the 6-digit OTP dispatched to your registered mobile ending in <strong>****{aadhaarNumber.slice(-4)}</strong>.
-      </p>
-      <Input
-        label="Aadhaar Verification OTP"
-        type="text"
-        inputMode="numeric"
-        value={aadhaarOtp}
-        onChange={(e) => { setAadhaarOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
-        placeholder="Enter 6-digit OTP"
-        error={error}
-        required
-      />
-      <div className="flex justify-between items-center text-[12.5px] px-1 font-bold uppercase tracking-wider text-primary">
-        <button type="button" onClick={() => setStep("aadhaar")} className="hover:opacity-80">Edit Aadhaar</button>
-        {timer > 0 ? (
-          <span className="text-secondary-text/80 font-semibold normal-case">Resend in {timer}s</span>
-        ) : (
-          <button type="button" onClick={() => { setTimer(30); setAadhaarOtp(""); }} className="hover:opacity-80">Resend OTP</button>
-        )}
+      {/* Upload Front */}
+      <div className="space-y-2.5">
+        <h4 className="text-[15px] font-bold text-[#041B4A]">Upload Front</h4>
+        <div className="flex gap-3">
+          {/* Sample */}
+          <div className="flex-[1.8] h-[90px] border border-gray-200 rounded-[12px] bg-white relative overflow-hidden flex flex-col p-2">
+            <div className="flex justify-between items-start">
+               <div className="w-6 h-8 bg-gray-200 rounded-sm" />
+               <div className="text-[6px] font-bold text-orange-500 text-center uppercase">Government of India</div>
+               <div className="w-8 h-8 rounded-full border border-red-400 flex items-center justify-center">
+                  <div className="w-5 h-5 bg-red-100 rounded-full" />
+               </div>
+            </div>
+            <div className="flex gap-2 mt-auto">
+               <div className="w-8 h-10 bg-gray-200 rounded-sm shrink-0" />
+               <div className="flex-1 space-y-1 mt-1">
+                 <div className="w-full h-1.5 bg-gray-200 rounded-full" />
+                 <div className="w-3/4 h-1.5 bg-gray-200 rounded-full" />
+                 <div className="w-1/2 h-1.5 bg-gray-200 rounded-full" />
+               </div>
+               <div className="w-8 h-8 bg-gray-200 rounded-sm mt-auto" />
+            </div>
+          </div>
+          {/* Empty Box */}
+          <div className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center">
+             {uploads.front && <CheckCircle2 className="w-6 h-6 text-[#1E9E40]" />}
+          </div>
+          {/* Camera Button */}
+          <button 
+            onClick={() => setUploads(p => ({ ...p, front: !p.front }))}
+            className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center hover:bg-gray-50 transition-colors active:scale-95"
+          >
+             <div className="w-10 h-10 bg-[#0033A0] rounded-lg flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white" />
+             </div>
+          </button>
+        </div>
       </div>
+
+      {/* Upload Back */}
+      <div className="space-y-2.5">
+        <h4 className="text-[15px] font-bold text-[#041B4A]">Upload Back</h4>
+        <div className="flex gap-3">
+          {/* Sample */}
+          <div className="flex-[1.8] h-[90px] border border-gray-200 rounded-[12px] bg-white relative overflow-hidden p-2 flex flex-col justify-between">
+            <div className="flex justify-between items-start w-full">
+               <div className="w-6 h-8 bg-gray-200 rounded-sm" />
+               <div className="text-[6px] font-bold text-orange-500 uppercase mt-1">Unique Identification Authority of India</div>
+               <div className="w-4 h-4" />
+            </div>
+            <div className="flex gap-2">
+               <div className="flex-1 space-y-1">
+                 <div className="w-full h-1.5 bg-gray-200 rounded-full" />
+                 <div className="w-full h-1.5 bg-gray-200 rounded-full" />
+                 <div className="w-3/4 h-1.5 bg-gray-200 rounded-full" />
+                 <div className="w-1/2 h-1.5 bg-gray-200 rounded-full" />
+               </div>
+               <div className="w-10 h-10 bg-gray-200 rounded-sm shrink-0" />
+            </div>
+          </div>
+          {/* Empty Box */}
+          <div className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center">
+             {uploads.back && <CheckCircle2 className="w-6 h-6 text-[#1E9E40]" />}
+          </div>
+          {/* Camera Button */}
+          <button 
+            onClick={() => setUploads(p => ({ ...p, back: !p.back }))}
+            className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center hover:bg-gray-50 transition-colors active:scale-95"
+          >
+             <div className="w-10 h-10 bg-[#0033A0] rounded-lg flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white" />
+             </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Live Selfie */}
+      <div className="space-y-2.5">
+        <h4 className="text-[15px] font-bold text-[#041B4A]">Live Selfie</h4>
+        <div className="flex gap-3">
+          {/* Sample */}
+          <div className="flex-[1.8] h-[90px] border border-gray-200 rounded-[12px] bg-gray-100 relative overflow-hidden flex items-end justify-center">
+             {/* Avatar SVG Mock */}
+             <svg width="60" height="70" viewBox="0 0 60 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M15 70C15 50 25 45 30 45C35 45 45 50 45 70" fill="#93C5FD"/>
+               <circle cx="30" cy="25" r="15" fill="#FCD34D"/>
+               <path d="M22 15C25 10 35 10 38 15C40 18 40 22 40 22C40 22 35 18 30 18C25 18 20 22 20 22C20 22 20 18 22 15Z" fill="#1F2937"/>
+             </svg>
+          </div>
+          {/* Empty Box */}
+          <div className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center">
+             {uploads.selfie && <CheckCircle2 className="w-6 h-6 text-[#1E9E40]" />}
+          </div>
+          {/* Camera Button */}
+          <button 
+            onClick={() => setUploads(p => ({ ...p, selfie: !p.selfie }))}
+            className="flex-1 h-[90px] border border-gray-200 rounded-[12px] bg-white flex items-center justify-center hover:bg-gray-50 transition-colors active:scale-95"
+          >
+             <div className="w-10 h-10 bg-[#0033A0] rounded-lg flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white" />
+             </div>
+          </button>
+        </div>
+      </div>
+
     </div>
   )
 
@@ -281,11 +361,10 @@ function VerifyIdentityContent() {
     </div>
   )
 
-  // Subtitle/Title mapper
   const pageConfig = React.useMemo(() => {
     switch (step) {
       case "aadhaar":
-        return { title: "Aadhaar eKYC", subtitle: "Aadhaar Verification" }
+        return { title: "Aadhaar eKYC Verification", subtitle: "Verify your identity using Aadhaar" }
       case "otp":
         return { title: "Aadhaar OTP", subtitle: "OTP Verification" }
       case "consent":
@@ -302,7 +381,7 @@ function VerifyIdentityContent() {
   const buttonTextConfig = React.useMemo(() => {
     switch (step) {
       case "aadhaar":
-        return "Request Secure OTP"
+        return "Next"
       case "otp":
         return "Verify Aadhaar"
       case "consent":
@@ -338,14 +417,13 @@ function VerifyIdentityContent() {
         subtitle={pageConfig.subtitle}
         cardContent={renderStepContent()}
         buttonText={buttonTextConfig}
-        onButtonClick={handleButtonClick}
+        onButtonClick={handlePrimaryAction}
         isButtonDisabled={isButtonDisabled}
         isButtonLoading={isLoading}
         showBackButton={step !== "success"}
         stepperStep={stepNumber}
         onBackClick={() => {
-          if (step === "otp") setStep("aadhaar")
-          else if (step === "consent") setStep("otp")
+          if (step === "consent") setStep("aadhaar")
           else if (step === "permissions") setStep("consent")
           else if (step === "liveness") setStep("permissions")
         }}
