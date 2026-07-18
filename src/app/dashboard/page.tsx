@@ -119,7 +119,7 @@ function DashboardContent() {
   const pendingActions = PENDING_ACTIONS[moduleType] || PENDING_ACTIONS.c2c
   const activities = ACTIVITY_LOG[moduleType] || ACTIVITY_LOG.c2c
 
-  const handleCreateNew = () => router.push(`/register?module=${moduleType}`)
+  const handleCreateNew = () => router.push(`/create-agreement?module=${moduleType}`)
   const handleLogout = () => router.push("/login")
 
   const spring = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 } as const
