@@ -67,8 +67,8 @@ export function BuyerVerificationStep({ data, updateData, onNext }: Props) {
 
             <Button 
               onClick={handleSendOtp}
-              disabled={verifying}
-              className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+              disabled={verifying || (data.buyerAadhaar || "").length < 12}
+              className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] disabled:bg-[#0033A0]/50 text-white rounded-[14px] text-[16px] font-bold shadow-lg transition-all"
             >
               {verifying ? <Loader2 className="w-5 h-5 animate-spin" /> : "Send OTP"}
             </Button>
@@ -92,8 +92,8 @@ export function BuyerVerificationStep({ data, updateData, onNext }: Props) {
 
             <Button 
               onClick={handleVerifyOtp}
-              disabled={verifying}
-              className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+              disabled={verifying || (data.buyerOtp || "").length < 6}
+              className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] disabled:bg-[#0033A0]/50 text-white rounded-[14px] text-[16px] font-bold shadow-lg transition-all"
             >
               {verifying ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify Identity"}
             </Button>

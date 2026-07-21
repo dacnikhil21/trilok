@@ -73,48 +73,39 @@ function VerifyIdentityContent() {
   }, [step])
 
   const handlePrimaryAction = () => {
+    if (step === "aadhaar" && aadhaarNumber.length < 12) {
+      setError("Please enter a valid 12-digit Aadhaar number.")
+      return
+    }
+    if (step === "otp" && otp.length < 6) {
+      setError("Please enter valid 6-digit OTP.")
+      return
+    }
+
+    setError("")
     setIsLoading(true)
+
     setTimeout(() => {
       setIsLoading(false)
-      switch (step) {
-        case "aadhaar":
-          if (aadhaarNumber.length < 12) {
-            setError("Please enter a valid 12-digit Aadhaar number.")
-            return
-          }
-          setError("")
-          setTimer(60)
-          setStep("otp")
-          break
-        case "otp":
-          if (otp.length < 6) {
-            setError("Please enter valid 6-digit OTP.")
-            return
-          }
-          setError("")
-          setStep("upload-ekyc")
-          break
-        case "upload-ekyc":
-          setError("")
-          setStep("consent")
-          break
-        case "consent":
-          setStep("permissions")
-          break
-        case "permissions":
-          setStep("liveness")
-          break
-        case "liveness":
-          setStep("location")
-          break
-        case "location":
-          setStep("success")
-          break
-        case "success":
-          router.push(`/dashboard?module=${moduleType}`)
-          break
+      if (step === "aadhaar") {
+        setTimer(60)
+        setStep("otp")
+      } else if (step === "otp") {
+        setStep("upload-ekyc")
+      } else if (step === "upload-ekyc") {
+        setStep("consent")
+      } else if (step === "consent") {
+        setStep("permissions")
+      } else if (step === "permissions") {
+        setStep("liveness")
+      } else if (step === "liveness") {
+        setStep("location")
+      } else if (step === "location") {
+        setStep("success")
+      } else if (step === "success") {
+        router.push(`/dashboard?module=${moduleType}`)
       }
-    }, 800)
+    }, 500)
   }
 
   // 1. Aadhaar manual screen content
@@ -541,9 +532,11 @@ function VerifyIdentityContent() {
   }, [step, livenessCaptured])
 
   const isButtonDisabled = React.useMemo(() => {
+    if (step === "aadhaar") return aadhaarNumber.length < 12
+    if (step === "otp") return otp.length < 6
     if (step === "consent") return !dpdpChecked
     return false
-  }, [step, dpdpChecked])
+  }, [step, aadhaarNumber, otp, dpdpChecked])
 
   const renderStepContent = () => {
     switch (step) {
