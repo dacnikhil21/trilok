@@ -84,7 +84,7 @@ export function BottomNavigation({
             whileTap={{ scale: 0.88 }}
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 22 }}
-            className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0D7343] to-[#0A5C36] text-white flex items-center justify-center shadow-[0_3px_10px_rgba(10,92,54,0.30)] border border-white/10"
+            className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0033A0] to-[#041B4A] text-white flex items-center justify-center shadow-[0_3px_10px_rgba(0,51,160,0.30)] border border-white/10"
             aria-label="Create Agreement"
           >
             <Plus strokeWidth={2.8} className="w-[20px] h-[20px]" />

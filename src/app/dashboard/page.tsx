@@ -104,9 +104,9 @@ function DashboardContent() {
 
   const config = React.useMemo(() => {
     switch (moduleType) {
-      case "b2b": return { title: "Trilok B2B", subtitle: "Enterprise Contract Suite" }
-      case "b2c": return { title: "Trilok B2C", subtitle: "Merchant Agreement Portal" }
-      default:    return { title: "Trilok C2C", subtitle: "Peer-to-Peer Agreement Hub" }
+      case "b2b": return { title: "eSaleAgreement B2B", subtitle: "Enterprise Contract Suite" }
+      case "b2c": return { title: "eSaleAgreement B2C", subtitle: "Merchant Agreement Portal" }
+      default:    return { title: "eSaleAgreement C2C", subtitle: "Peer-to-Peer Agreement Hub" }
     }
   }, [moduleType])
 
@@ -138,7 +138,7 @@ function DashboardContent() {
               <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10">
                 <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
               </div>
-              <span className="font-display font-bold text-[18px] tracking-tight text-foreground">Trilok</span>
+              <span className="font-display font-bold text-[18px] tracking-tight text-foreground">eSaleAgreement</span>
             </div>
             <nav className="space-y-1">
               {[
@@ -194,7 +194,7 @@ function DashboardContent() {
               <motion.button
                 whileHover={{ y: -4, scale: 1.002 }} whileTap={{ scale: 0.995 }} transition={spring}
                 onClick={handleCreateNew}
-                className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#0A5C36] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(10,92,54,0.22)] border border-primary/20 overflow-hidden group cursor-pointer"
+                className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[#0033A0] via-[#002277] to-[#041B4A] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(0,51,160,0.25)] border border-primary/20 overflow-hidden group cursor-pointer"
               >
                 <div className="sweep-overlay" />
                 <div className="w-12 h-12 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
@@ -312,13 +312,13 @@ function DashboardContent() {
 
         {/* ── Mobile Header ─────────────────── */}
         <header className="flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20 bg-surface/30 backdrop-blur-md">
-          {/* Left: Trilok Brand */}
+          {/* Left: eSaleAgreement Brand */}
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
                 <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
               </div>
-              <span className="font-display font-bold text-[19px] tracking-tight text-foreground leading-none">Trilok</span>
+              <span className="font-display font-bold text-[19px] tracking-tight text-foreground leading-none">eSaleAgreement</span>
             </div>
             <span className="text-[9px] font-bold tracking-[0.12em] uppercase text-secondary-text mt-1.5 pl-0.5 leading-none">
               SECURE · VERIFIED · TRUSTED
@@ -341,7 +341,7 @@ function DashboardContent() {
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={handleLogout}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#0D7343] text-white flex items-center justify-center font-display font-bold text-[14px] shadow-[0_4px_12px_rgba(10,92,54,0.25)]"
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0033A0] to-[#041B4A] text-white flex items-center justify-center font-display font-bold text-[14px] shadow-[0_4px_12px_rgba(0,51,160,0.25)]"
             >
               N
             </motion.button>
@@ -355,7 +355,7 @@ function DashboardContent() {
           <motion.div
             whileTap={{ scale: 0.985 }}
             onClick={handleCreateNew}
-            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0A5C36] via-[#0D7343] to-[#053D24] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(10,92,54,0.30)] border border-primary/20 p-4.5 pb-4 flex flex-col justify-between h-[162px]"
+            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0033A0] via-[#002277] to-[#041B4A] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(0,51,160,0.30)] border border-primary/20 p-4.5 pb-4 flex flex-col justify-between h-[162px]"
           >
             {/* Gloss reflection glow */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
@@ -391,16 +391,16 @@ function DashboardContent() {
                     <line x1="32" y1="30" x2="58" y2="30" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
                     <line x1="32" y1="38" x2="48" y2="38" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
                     
-                    {/* Green signature trace */}
-                    <path d="M32 47 C 35 44, 38 48, 42 45 C 45 42, 48 46, 52 44" fill="none" stroke="#1A8A3C" strokeWidth="1.8" strokeLinecap="round" />
+                    {/* Blue signature trace */}
+                    <path d="M32 47 C 35 44, 38 48, 42 45 C 45 42, 48 46, 52 44" fill="none" stroke="#0033A0" strokeWidth="1.8" strokeLinecap="round" />
 
                     {/* Shield (on the left edge overlay) */}
-                    <path d="M12 21 C 12 21, 17 19, 23 21 C 23 29, 23 37, 12 43 C 1 37, 1 29, 1 21 C 7 19, 12 21, 12 21 Z" fill="#1A8A3C" stroke="white" strokeWidth="1.8" strokeLinejoin="round" />
+                    <path d="M12 21 C 12 21, 17 19, 23 21 C 23 29, 23 37, 12 43 C 1 37, 1 29, 1 21 C 7 19, 12 21, 12 21 Z" fill="#0033A0" stroke="white" strokeWidth="1.8" strokeLinejoin="round" />
                     {/* Checkmark inside shield */}
                     <path d="M7 32 L 10.5 35.5 L 17.5 27.5" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
 
                     {/* Pen Body (on the right) */}
-                    <path d="M72 40 L 78 16 C 78.3 14.8, 79.5 14.1, 80.7 14.4 C 81.9 14.7, 82.6 15.9, 82.3 17.1 L 76.3 41.1 Z" fill="#053D24" stroke="white" strokeWidth="0.8" />
+                    <path d="M72 40 L 78 16 C 78.3 14.8, 79.5 14.1, 80.7 14.4 C 81.9 14.7, 82.6 15.9, 82.3 17.1 L 76.3 41.1 Z" fill="#041B4A" stroke="white" strokeWidth="0.8" />
                     {/* Pen Nib / Drawing Tip */}
                     <path d="M76.3 41.1 L 74 46 L 72 40 Z" fill="#D4AF37" />
                   </svg>
@@ -447,7 +447,7 @@ function DashboardContent() {
               </div>
 
               {/* Start Button */}
-              <button className="flex items-center justify-center gap-1 bg-white text-[#0A5C36] px-4.5 py-2.5 rounded-full font-bold text-[13px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all shrink-0 whitespace-nowrap">
+              <button className="flex items-center justify-center gap-1 bg-white text-[#0033A0] px-4.5 py-2.5 rounded-full font-bold text-[13px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all shrink-0 whitespace-nowrap">
                 Start <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
               </button>
             </div>
