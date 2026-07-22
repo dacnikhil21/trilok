@@ -48,21 +48,7 @@ export default function LoginPage() {
     <AppContainer centered>
       <div className="w-full flex flex-col justify-between flex-1 py-4">
         
-        {/* Top Header */}
-        <div className="flex items-center justify-between px-2 mb-2">
-          {activeTab === 'register' ? (
-            <button
-              onClick={() => setActiveTab('login')}
-              className="w-9 h-9 rounded-full bg-[#F0F4F8] flex items-center justify-center text-primary-text hover:text-foreground active:scale-95 transition-all shadow-xs"
-              aria-label="Back to Login"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-          ) : <div className="w-9" />}
-
-          <BrandLogo size="sm" />
-          <div className="w-9" />
-        </div>
+        {/* Tab Navigation Line (Starts directly at top of screen) */}
 
         {/* Tab Navigation Line */}
         <div className="flex border-b border-divider/70 mb-6 relative">

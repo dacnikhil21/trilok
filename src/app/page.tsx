@@ -11,10 +11,10 @@ export default function Home() {
 
   React.useEffect(() => {
     setIsMounted(true)
-    // Fallback safety timer just in case video fails to load or play
+    // Splash screen timer set to 3 seconds
     const timer = setTimeout(() => {
       router.push("/login")
-    }, 6000)
+    }, 3000)
     return () => clearTimeout(timer)
   }, [])
 
