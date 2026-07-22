@@ -48,13 +48,9 @@ export function ProgressStepper({ currentStep, totalSteps, className = "" }: Pro
                 }}
                 className="w-7 h-7 rounded-full border-[1.5px] flex items-center justify-center shadow-sm bg-surface mx-auto"
               >
-                {isCompleted ? (
-                  <Check strokeWidth={3.8} className="w-4 h-4 text-white" />
-                ) : (
-                  <span className="text-[12px] font-bold mt-[1px]">
-                    {idx + 1}
-                  </span>
-                )}
+                <span className="text-[12px] font-bold mt-[1px]">
+                  {idx + 1}
+                </span>
               </motion.div>
             </div>
           )

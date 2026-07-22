@@ -7,16 +7,20 @@ import { AppContainer } from "@/components/ui/AppContainer"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { Input } from "@/components/ui/input"
-import { ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, FileText } from "lucide-react"
+import { ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, FileText, CreditCard, QrCode, Sparkles } from "lucide-react"
 
-type OnboardingStep = "aadhaar" | "otp" | "upload-ekyc" | "consent" | "permissions" | "liveness" | "location" | "success"
+type OnboardingStep = "aadhaar" | "otp" | "upload-ekyc" | "consent" | "permissions" | "liveness" | "location" | "payment" | "success"
 
 function VerifyIdentityContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
+  const isB2C = moduleType === "b2c"
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
+
+  // B2C Payment State
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<"upi" | "card" | "qr">("upi")
 
   // Aadhaar manual state
   const [aadhaarNumber, setAadhaarNumber] = React.useState("")
@@ -101,6 +105,12 @@ function VerifyIdentityContent() {
       } else if (step === "liveness") {
         setStep("location")
       } else if (step === "location") {
+        if (isB2C) {
+          setStep("payment")
+        } else {
+          setStep("success")
+        }
+      } else if (step === "payment") {
         setStep("success")
       } else if (step === "success") {
         router.push(`/dashboard?module=${moduleType}`)
@@ -469,33 +479,104 @@ function VerifyIdentityContent() {
     </div>
   )
 
-  // 8. Success screen content
+  // 8. B2C ₹99 Lifetime Subscription Payment screen content
+  const renderPaymentContent = () => (
+    <div className="space-y-4">
+      <div className="p-4 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-[20px] text-center space-y-2">
+        <div className="w-12 h-12 bg-primary text-surface rounded-full flex items-center justify-center mx-auto shadow-md">
+          <Sparkles className="w-6 h-6" />
+        </div>
+        <h3 className="font-bold text-[18px] text-foreground tracking-tight">B2C Lifetime Merchant Access</h3>
+        <p className="text-[13px] text-secondary-text font-medium leading-relaxed">
+          Pay a one-time subscription fee for unlimited agreement setup and customer verification.
+        </p>
+        <div className="pt-2 flex items-baseline justify-center gap-1">
+          <span className="text-[32px] font-bold text-primary">₹99</span>
+          <span className="text-[13px] font-semibold text-secondary-text">/ Lifetime Access</span>
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        <span className="text-[12px] font-bold uppercase tracking-wider text-secondary-text px-1">Select Payment Method</span>
+        
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            onClick={() => setSelectedPaymentMethod("upi")}
+            className={`p-3.5 rounded-[16px] border flex flex-col items-center justify-center gap-1.5 transition-all ${
+              selectedPaymentMethod.startsWith("upi")
+                ? "border-primary bg-primary/5 text-primary shadow-sm"
+                : "border-border bg-surface text-secondary-text hover:border-primary/20"
+            }`}
+          >
+            <Smartphone className="w-5 h-5" />
+            <span className="text-[12.5px] font-bold">UPI / GPay / PhonePe</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedPaymentMethod("qr")}
+            className={`p-3.5 rounded-[16px] border flex flex-col items-center justify-center gap-1.5 transition-all ${
+              selectedPaymentMethod.startsWith("qr")
+                ? "border-primary bg-primary/5 text-primary shadow-sm"
+                : "border-border bg-surface text-secondary-text hover:border-primary/20"
+            }`}
+          >
+            <QrCode className="w-5 h-5" />
+            <span className="text-[12.5px] font-bold">Instant QR Code</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="p-3 bg-[#F8FAFC] border border-border/60 rounded-[14px] flex items-center justify-between text-[12px]">
+        <span className="font-semibold text-secondary-text">Merchant Status:</span>
+        <span className="font-bold text-primary flex items-center gap-1">
+          <CheckCircle2 className="w-4 h-4" /> Verified Business Tag Ready
+        </span>
+      </div>
+    </div>
+  )
+
+  // 9. Success screen content with Verified Tag
   const renderSuccessContent = () => (
     <div className="space-y-4">
       <div className="text-center space-y-2.5">
         <div className="mx-auto w-14 h-14 rounded-full bg-success/10 flex items-center justify-center border border-success/20 shadow-sm">
           <CheckCircle2 strokeWidth={2.4} className="w-8 h-8 text-success" />
         </div>
-        <div className="space-y-0.5">
-          <h2 className="text-[20px] font-display font-bold text-foreground">Identity Verified Successfully</h2>
-          <p className="text-[12px] text-secondary-text font-medium leading-relaxed max-w-[280px] mx-auto">
-            Your credentials have been securely stored in compliance with the DPDP Act (2023).
+        <div className="space-y-1">
+          <h2 className="text-[20px] font-display font-bold text-foreground">
+            {isB2C ? "Business Verification Complete" : "Identity Verified Successfully"}
+          </h2>
+          
+          {/* Verified Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[13px] font-bold shadow-sm">
+            <CheckCircle2 className="w-4 h-4 fill-primary text-white" />
+            <span>{isB2C ? "Verified Business Tag" : "Person Verified"}</span>
+          </div>
+
+          <p className="text-[12px] text-secondary-text font-medium leading-relaxed max-w-[280px] mx-auto pt-1">
+            {isB2C 
+              ? "Your shop/business profile is verified and active for agreement creation."
+              : "Your credentials have been securely stored in compliance with the DPDP Act (2023)."}
           </p>
         </div>
       </div>
 
       <div className="p-4 bg-[#FBFBFA] border border-border/40 rounded-[14px] space-y-2.5 text-[12.5px] font-semibold text-secondary-text">
         <div className="flex justify-between border-b border-divider pb-2.5">
-          <span>Verification Version</span>
-          <span className="text-foreground">v2.4.1 (DPDP)</span>
+          <span>Verification Status</span>
+          <span className="text-primary font-bold">{isB2C ? "Verified Business Tag" : "Person Verified"}</span>
         </div>
+        {isB2C && (
+          <div className="flex justify-between border-b border-divider pb-2.5">
+            <span>Subscription Paid</span>
+            <span className="text-success font-bold">₹99 Lifetime Access</span>
+          </div>
+        )}
         <div className="flex justify-between border-b border-divider pb-2.5">
           <span>Audit Timestamp</span>
           <span className="text-foreground text-[11.5px]">{timestamp}</span>
-        </div>
-        <div className="flex justify-between border-b border-divider pb-2.5">
-          <span>Registered Device</span>
-          <span className="text-foreground">{deviceId}</span>
         </div>
         <div className="flex justify-between items-center">
           <span>Security Protocol</span>
@@ -507,29 +588,31 @@ function VerifyIdentityContent() {
 
   const pageConfig = React.useMemo(() => {
     switch (step) {
-      case "aadhaar": return { title: "Aadhaar eKYC Verification", subtitle: "Enter your Aadhaar number manually" }
+      case "aadhaar": return { title: isB2C ? "Udyam / GST Verification" : "Aadhaar eKYC Verification", subtitle: isB2C ? "Verify business credentials" : "Enter your Aadhaar number manually" }
       case "otp": return { title: "Aadhaar OTP", subtitle: "Verify OTP" }
-      case "upload-ekyc": return { title: "Upload eKYC Documents", subtitle: "Provide front, back and selfie" }
+      case "upload-ekyc": return { title: "Upload Verification Documents", subtitle: "Provide front, back and selfie" }
       case "consent": return { title: "Data Privacy & Consent", subtitle: "DPDP Consent" }
       case "permissions": return { title: "Permissions Required", subtitle: "Consent Access" }
       case "liveness": return { title: "Face Verification", subtitle: "Liveness Audit" }
       case "location": return { title: "Location Permission", subtitle: "Allow location access" }
-      case "success": return { title: "Verification Completed", subtitle: "Identity Verified" }
+      case "payment": return { title: "Merchant Subscription", subtitle: "Pay ₹99 Lifetime Fee" }
+      case "success": return { title: "Verification Completed", subtitle: isB2C ? "Verified Business Tag Active" : "Person Verified" }
     }
-  }, [step])
+  }, [step, isB2C])
 
   const buttonTextConfig = React.useMemo(() => {
     switch (step) {
       case "aadhaar": return "Request Secure OTP"
-      case "otp": return "Verify Aadhaar"
+      case "otp": return "Verify Identity"
       case "upload-ekyc": return "Verify Documents"
       case "consent": return "Confirm DPDP Consent"
       case "permissions": return "Grant Permissions"
       case "liveness": return livenessCaptured ? "Continue" : "Capture Face Selfie"
-      case "location": return "Allow Location"
+      case "location": return isB2C ? "Proceed to ₹99 Payment" : "Allow Location"
+      case "payment": return "Complete ₹99 Payment & Activate"
       case "success": return "Continue to Dashboard"
     }
-  }, [step, livenessCaptured])
+  }, [step, livenessCaptured, isB2C])
 
   const isButtonDisabled = React.useMemo(() => {
     if (step === "aadhaar") return aadhaarNumber.length < 12
@@ -547,6 +630,7 @@ function VerifyIdentityContent() {
       case "permissions": return renderPermissionsContent()
       case "liveness": return renderLivenessContent()
       case "location": return renderLocationContent()
+      case "payment": return renderPaymentContent()
       case "success": return renderSuccessContent()
     }
   }

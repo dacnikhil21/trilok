@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { Button } from "@/components/ui/button"
 
+import { ArrowLeft, ShieldCheck } from "lucide-react"
+
 export default function OtpPage() {
   const router = useRouter()
   const [otp, setOtp] = React.useState<string>("")
@@ -77,13 +79,30 @@ export default function OtpPage() {
 
   return (
     <AppContainer centered>
-      <div className="w-full flex flex-col h-full bg-surface pt-4 pb-2">
+      <div className="w-full flex flex-col h-full bg-surface pt-2 pb-2">
         
-        {/* Header */}
-        <div className="text-center mt-2 mb-8">
-          <h1 className="text-[26px] font-bold text-primary mb-2 tracking-tight">Verify OTP</h1>
-          <p className="text-[14px] text-secondary-text font-medium">Enter the 6-digit OTP sent to</p>
-          <p className="text-[16px] font-bold text-primary mt-1">{mobile}</p>
+        {/* Top Nav Bar */}
+        <div className="flex items-center justify-between mb-2 px-2">
+          <button 
+            type="button"
+            onClick={() => router.push("/login")}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-primary-text hover:bg-gray-100 active:scale-95 transition-all"
+            aria-label="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5 text-primary-text" />
+          </button>
+          <span className="text-[17px] font-bold text-primary-text tracking-tight">Verify Identity</span>
+          <div className="w-10" />
+        </div>
+
+        {/* Brand Icon & Header */}
+        <div className="flex flex-col items-center text-center mt-2 mb-6 px-4">
+          <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm mb-2">
+            <ShieldCheck className="w-7 h-7 text-primary" strokeWidth={2.2} />
+          </div>
+          <h1 className="text-[24px] font-bold text-primary mb-1 tracking-tight">Verify OTP</h1>
+          <p className="text-[13.5px] text-secondary-text font-medium">Enter the 6-digit OTP sent to</p>
+          <p className="text-[16px] font-bold text-foreground mt-0.5">{mobile}</p>
         </div>
 
         {/* OTP Boxes */}

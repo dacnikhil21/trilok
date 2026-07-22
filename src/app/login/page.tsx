@@ -7,12 +7,18 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ServiceSelectionForm } from "@/components/auth/ServiceSelectionForm"
 
+import { ArrowLeft } from "lucide-react"
+
+import { TermsModal } from "@/components/ui/TermsModal"
+import { BrandLogo } from "@/components/ui/BrandLogo"
+
 export default function LoginPage() {
   const router = useRouter()
   const [mobile, setMobile] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
   const [activeTab, setActiveTab] = React.useState<"login" | "register">("login")
+  const [isTermsOpen, setIsTermsOpen] = React.useState(false)
 
   const handleMobileChange = (val: string) => {
     const clean = val.replace(/\D/g, "").slice(0, 10)
@@ -20,47 +26,77 @@ export default function LoginPage() {
     setError("")
   }
 
-  const handleSubmit = () => {
-    const isValid = /^[6-9]\d{9}$/.test(mobile)
-    if (!isValid) {
-      setError("Please enter a valid 10-digit Indian mobile number.")
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (mobile.length !== 10) {
+      setError("Please enter a valid 10-digit mobile number.")
       return
     }
-
     setIsLoading(true)
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("user_mobile", mobile)
+    }
     setTimeout(() => {
       setIsLoading(false)
-      sessionStorage.setItem("user_mobile", mobile)
       router.push("/otp")
-    }, 1200)
+    }, 600)
   }
 
   const isButtonDisabled = mobile.length !== 10
 
   return (
     <AppContainer centered>
-      <div className="w-full flex flex-col h-full bg-surface">
+      <div className="w-full flex flex-col justify-between flex-1 py-4">
         
-        {/* Header */}
-        <div className="text-center mt-2 mb-6">
-          <h1 className="text-[26px] font-bold text-primary mb-1.5 tracking-tight">Welcome Back!</h1>
-          <p className="text-[14px] text-secondary-text font-medium">Login or Register to continue</p>
+        {/* Top Header */}
+        <div className="flex items-center justify-between px-2 mb-2">
+          {activeTab === 'register' ? (
+            <button
+              onClick={() => setActiveTab('login')}
+              className="w-9 h-9 rounded-full bg-[#F0F4F8] flex items-center justify-center text-primary-text hover:text-foreground active:scale-95 transition-all shadow-xs"
+              aria-label="Back to Login"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          ) : <div className="w-9" />}
+
+          <BrandLogo size="sm" />
+          <div className="w-9" />
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-divider mb-8 px-4">
+        {/* Tab Navigation Line */}
+        <div className="flex border-b border-divider/70 mb-6 relative">
           <button 
-            className={`flex-1 pb-3 text-[16px] font-bold transition-all ${activeTab === 'login' ? 'text-primary border-b-[2.5px] border-primary' : 'text-secondary-text font-semibold hover:text-foreground'}`}
+            className={`flex-1 pb-3 text-[16px] font-bold transition-all text-center relative ${activeTab === 'login' ? 'text-primary' : 'text-secondary-text hover:text-foreground'}`}
             onClick={() => setActiveTab('login')}
           >
             Login
+            {activeTab === 'login' && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-t-full" />
+            )}
           </button>
           <button 
-            className={`flex-1 pb-3 text-[16px] font-bold transition-all ${activeTab === 'register' ? 'text-primary border-b-[2.5px] border-primary' : 'text-secondary-text font-semibold hover:text-foreground'}`}
+            className={`flex-1 pb-3 text-[16px] font-bold transition-all text-center relative ${activeTab === 'register' ? 'text-primary' : 'text-secondary-text hover:text-foreground'}`}
             onClick={() => setActiveTab('register')}
           >
             Register
+            {activeTab === 'register' && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-t-full" />
+            )}
           </button>
+        </div>
+
+        {/* Brand Icon & Welcome Headline */}
+        <div className="flex flex-col items-center text-center mt-2 mb-6 px-4">
+          <div className="mb-3">
+            <BrandLogo size="lg" />
+          </div>
+          <h1 className="text-[24px] font-bold text-foreground tracking-tight mb-1">
+            {activeTab === 'login' ? "Welcome Back!" : "Create your account"}
+          </h1>
+          <p className="text-[13.5px] text-secondary-text font-medium max-w-[280px]">
+            Join thousands securing smart, legal digital sale agreements.
+          </p>
         </div>
 
         {/* Conditional Content based on Tab */}
@@ -194,8 +230,23 @@ export default function LoginPage() {
             </div>
             <span className="text-[12px] font-medium text-[#041B4A] text-center leading-[1.25] tracking-tight">End-to-End<br/>Encrypted</span>
           </div>
-          
         </div>
+
+        {/* Terms & Conditions Link (Screenshot Requirement) */}
+        <div className="mt-4 text-center pb-2">
+          <p className="text-[12px] text-secondary-text font-medium leading-relaxed">
+            By continuing you agree to our{" "}
+            <button
+              type="button"
+              onClick={() => setIsTermsOpen(true)}
+              className="text-primary font-bold underline hover:opacity-80 transition-opacity"
+            >
+              terms and conditions
+            </button>
+          </p>
+        </div>
+
+        <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       </div>
     </AppContainer>
   )

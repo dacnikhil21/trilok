@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ShieldCheck, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { BrandLogo } from "@/components/ui/BrandLogo"
 
 interface PageHeaderProps {
   title?: string
@@ -29,11 +30,8 @@ export function PageHeader({ title, subtitle, showLogo = false, showBackButton =
         ) : <div className="w-10" />}
 
         {showLogo && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-primary/10 shadow-sm mx-auto">
-            <ShieldCheck strokeWidth={2.5} className="w-4 h-4 text-primary" />
-            <span className="text-[15px] font-display font-bold text-primary">
-              eSaleAgreement
-            </span>
+          <div className="flex items-center justify-center mx-auto">
+            <BrandLogo size="sm" />
           </div>
         )}
 

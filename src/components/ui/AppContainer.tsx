@@ -31,33 +31,32 @@ export function AppContainer({ children, className = "", centered = false }: App
       <div className="absolute top-[-15%] left-[-10%] w-[55%] h-[45%] bg-primary/[0.04] rounded-full blur-[110px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[45%] bg-[#D4AF37]/[0.02] rounded-full blur-[110px] pointer-events-none" />
 
-      {/* ── DEVELOPER QUICK SKIP FAB ──────────────────────────────────────────── */}
-      {/* Compact round FAB that expands UPWARD — never overflows the screen */}
-      <div className="fixed bottom-[96px] right-4 z-50 flex flex-col-reverse items-end gap-2">
+      {/* ── DEVELOPER QUICK SKIP FAB (Top-Right to prevent bottom nav overlap) ─── */}
+      <div className="fixed top-4 right-4 z-[100] flex flex-col items-end gap-2">
 
         {/* FAB Toggle Button */}
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
           whileTap={{ scale: 0.9 }}
-          className="w-10 h-10 rounded-full backdrop-blur-xl bg-primary/12 border border-primary/20 text-primary flex items-center justify-center shadow-[0_4px_16px_rgba(10,92,54,0.15)] hover:bg-primary/18 transition-all"
+          className="w-8 h-8 rounded-full backdrop-blur-xl bg-slate-900/80 border border-white/20 text-white flex items-center justify-center shadow-lg hover:bg-slate-900 transition-all opacity-40 hover:opacity-100"
           title="Dev Quick Skip"
         >
           <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5" />
           </motion.div>
         </motion.button>
 
-        {/* Expanded Nav Grid — opens upward, 2 columns, max-width 180px stays within right edge */}
+        {/* Expanded Nav Grid */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.92 }}
+              initial={{ opacity: 0, y: -8, scale: 0.92 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.92 }}
+              exit={{ opacity: 0, y: -8, scale: 0.92 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="backdrop-blur-xl bg-surface/90 border border-border rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.1)] p-2.5 grid grid-cols-2 gap-1.5 w-[168px]"
+              className="backdrop-blur-xl bg-slate-900/95 border border-white/10 text-white rounded-[16px] shadow-2xl p-2.5 grid grid-cols-2 gap-1.5 w-[168px]"
             >
-              <p className="col-span-2 text-[9px] font-bold uppercase tracking-widest text-secondary-text/60 px-1 pb-0.5">Dev Navigation</p>
+              <p className="col-span-2 text-[9px] font-bold uppercase tracking-widest text-slate-400 px-1 pb-0.5">Dev Navigation</p>
               {devLinks.map((link) => (
                 <button
                   key={link.path}
@@ -65,7 +64,7 @@ export function AppContainer({ children, className = "", centered = false }: App
                     router.push(link.path)
                     setIsOpen(false)
                   }}
-                  className="px-2.5 py-1.5 rounded-[10px] text-[11px] font-bold text-secondary-text hover:text-primary hover:bg-primary/6 transition-all text-left"
+                  className="px-2 py-1 rounded-[8px] text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left"
                 >
                   {link.name}
                 </button>
@@ -76,24 +75,20 @@ export function AppContainer({ children, className = "", centered = false }: App
       </div>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────────── */}
-      {/* 
-        Mobile: top-aligned (justify-start) so content flows from top, no floating effect
-        Desktop (sm+): centered card layout (sm:justify-center)
-      */}
-      <div className={`relative z-10 flex-1 flex flex-col ${centered ? "items-center justify-center p-3.5 sm:p-6 lg:p-8" : "w-full"}`}>
+      <div className={`relative z-10 flex-1 flex flex-col ${centered ? "items-center justify-start sm:justify-center p-0 sm:p-6 lg:p-8 min-h-screen" : "w-full"}`}>
         {centered ? (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            initial={{ opacity: 0, y: 12, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
-            className={`w-full flex flex-col bg-surface rounded-[28px] border border-primary/12 shadow-[0_8px_30px_rgba(10,92,54,0.02)] overflow-hidden max-w-[412px] ${className}`}
+            className={`w-full min-h-screen sm:min-h-0 flex flex-col bg-surface rounded-none border-0 shadow-none sm:rounded-[24px] sm:border sm:border-primary/10 sm:shadow-[0_12px_40px_rgba(10,92,54,0.06)] overflow-hidden sm:max-w-[440px] ${className}`}
           >
-            <div className="flex flex-col flex-1 p-5 pb-6 sm:p-8 lg:p-10">
+            <div className="flex flex-col flex-1 p-0 sm:p-4">
               {children}
             </div>
           </motion.div>
         ) : (
-          <div className={`flex flex-col flex-1 w-full ${className}`}>
+          <div className={`flex flex-col flex-1 w-full min-h-screen bg-surface ${className}`}>
             {children}
           </div>
         )}

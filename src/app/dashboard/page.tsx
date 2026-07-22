@@ -2,621 +2,282 @@
 
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
-  Plus, FileText, Inbox, ShieldCheck, Bell, Home,
-  ArrowUpRight, ChevronRight, Check, CheckCircle2,
-  Scan, HelpCircle, Activity, LogOut, Clock
+  Plus, FileText, Bell, Home, ChevronRight,
+  Smartphone, Car, Wrench, Building2, Grid, UserPlus, ClipboardList,
+  ScanLine, BarChart3, Inbox, User, Shield, PenTool
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { BottomNavigation } from "@/components/ui/BottomNavigation"
+import { BrandLogo } from "@/components/ui/BrandLogo"
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const AGREEMENTS_BY_MODULE = {
-  c2c: [
-    { id: "agr-01", title: "Residential Lease Agreement", party: "Rohan Kapoor", date: "12 Jul 2026", status: "Active", amount: "₹24,000/mo" },
-    { id: "agr-02", title: "Car Sale Agreement", party: "Amit Verma", date: "09 Jul 2026", status: "Pending Signature", amount: "₹4,50,000" },
-    { id: "agr-03", title: "Bicycle Sale Contract", party: "Sneha Patel", date: "28 Jun 2026", status: "Completed", amount: "₹12,500" },
-  ],
-  b2b: [
-    { id: "agr-11", title: "SaaS Enterprise SLA", party: "Acme Analytics Inc.", date: "15 Jul 2026", status: "Active", amount: "₹18,50,000/yr" },
-    { id: "agr-12", title: "Mutual NDA", party: "Stark Industries", date: "10 Jul 2026", status: "Pending Signature", amount: "N/A" },
-    { id: "agr-13", title: "Vendor Supply Agreement", party: "Global Logistics Ltd.", date: "04 Jul 2026", status: "Completed", amount: "₹64,20,000" },
-  ],
-  b2c: [
-    { id: "agr-21", title: "Standard Customer Service SLA", party: "Vikram Sen", date: "16 Jul 2026", status: "Active", amount: "₹8,500" },
-    { id: "agr-22", title: "Gym Membership Liability Waiver", party: "Divya Rao", date: "14 Jul 2026", status: "Pending Signature", amount: "₹15,000" },
-    { id: "agr-23", title: "Freelance Design Contract", party: "Karan Johar", date: "02 Jul 2026", status: "Completed", amount: "₹1,20,000" },
-  ]
-}
-
-const PENDING_ACTIONS = {
-  c2c: [
-    { id: "act-01", type: "Review & Sign", title: "Lease - Rohan Kapoor", status: "Signatures Pending", time: "Action Needed" },
-    { id: "act-02", type: "OTP Verification", title: "Car Sale - Amit Verma", status: "Aadhaar eKYC", time: "Expires soon" }
-  ],
-  b2b: [
-    { id: "act-11", type: "Counter-Sign", title: "SaaS SLA - Acme Analytics", status: "Awaiting CFO", time: "Action Needed" },
-    { id: "act-12", type: "Identity Check", title: "NDA - Stark Industries", status: "Authorized Signer", time: "Verify now" }
-  ],
-  b2c: [
-    { id: "act-21", type: "OTP Pending", title: "Freelance - Karan Johar", status: "OTP Pending", time: "Action Needed" },
-    { id: "act-22", type: "Accept Invite", title: "Terms - Aditya Roy", status: "Awaiting Action", time: "Accept now" }
-  ]
-}
-
-const ACTIVITY_LOG = {
-  c2c: [
-    { id: "log-1", type: "signed", message: "Residential Lease Signed", details: "Lease executed with Rohan Kapoor", time: "1h ago" },
-    { id: "log-2", type: "joined", message: "Buyer Joined Workspace", details: "Rohan Kapoor completed eKYC", time: "3h ago" },
-    { id: "log-3", type: "payment", message: "Stamp Duty Paid", details: "Payment completed successfully", time: "1d ago" }
-  ],
-  b2b: [
-    { id: "log-11", type: "signed", message: "SaaS Enterprise SLA Signed", details: "SLA finalized by Stark Industries", time: "2h ago" },
-    { id: "log-12", type: "joined", message: "CFO Authenticated", details: "Authorized signatory verified", time: "5h ago" },
-    { id: "log-13", type: "payment", message: "Contract Duty Stamped", details: "Stamp transaction verified", time: "2d ago" }
-  ],
-  b2c: [
-    { id: "log-21", type: "signed", message: "Gym Waiver Signed", details: "Waiver signed by Divya Rao", time: "30m ago" },
-    { id: "log-22", type: "joined", message: "Client Accepted Invite", details: "Karan Johar entered workspace", time: "2h ago" },
-    { id: "log-23", type: "payment", message: "Service Fee Escrowed", details: "Transaction security active", time: "1d ago" }
-  ]
-}
-
-// ─── Status badge helper ───────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    "Active": "bg-[#EAF7EE] text-[#1A8A3C]",
-    "Pending Signature": "bg-[#FFF4E0] text-[#B76E00]",
-    "Completed": "bg-[#F0F0EE] text-[#5E6368]",
-  }
-  return (
-    <span className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wider ${map[status] ?? "bg-[#F0F0EE] text-foreground"}`}>
-      {status}
-    </span>
-  )
-}
-
-// ─── Section Header ────────────────────────────────────────────────────────────
-function SectionHeader({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
-  return (
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="font-display font-bold text-[11px] text-secondary-text uppercase tracking-[0.08em]">{title}</h2>
-      {action && (
-        <button onClick={onAction} className="text-[11px] text-primary font-bold uppercase tracking-wider hover:opacity-70 transition-opacity">
-          {action}
-        </button>
-      )}
-    </div>
-  )
-}
-
-// ─── Main Component ────────────────────────────────────────────────────────────
 function DashboardContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const moduleType = (searchParams.get("module") || "c2c").toLowerCase() as "c2c" | "b2b" | "b2c"
-
-  const [activeTab, setActiveTab] = React.useState("home")
-  const [showNotifications, setShowNotifications] = React.useState(false)
-
-  const config = React.useMemo(() => {
-    switch (moduleType) {
-      case "b2b": return { title: "eSaleAgreement B2B", subtitle: "Enterprise Contract Suite" }
-      case "b2c": return { title: "eSaleAgreement B2C", subtitle: "Merchant Agreement Portal" }
-      default:    return { title: "eSaleAgreement C2C", subtitle: "Peer-to-Peer Agreement Hub" }
-    }
-  }, [moduleType])
-
-  const greeting = React.useMemo(() => {
-    const h = new Date().getHours()
-    return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"
-  }, [])
-
-  const recentAgreements = (AGREEMENTS_BY_MODULE[moduleType] || AGREEMENTS_BY_MODULE.c2c).slice(0, 3)
-  const pendingActions = PENDING_ACTIONS[moduleType] || PENDING_ACTIONS.c2c
-  const activities = ACTIVITY_LOG[moduleType] || ACTIVITY_LOG.c2c
+  const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
+  const [activeNav, setActiveNav] = React.useState<"home" | "agreements" | "inbox" | "profile">("home")
 
   const handleCreateNew = () => router.push(`/create-agreement?module=${moduleType}`)
-  const handleLogout = () => router.push("/login")
-
-  const spring = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 } as const
 
   return (
-    <AppContainer>
+    <AppContainer centered>
+      <div className="w-full flex flex-col h-full bg-[#F8FAFC] pb-28 min-h-screen text-[#0F172A] font-sans select-none">
 
-      {/* ═══════════════════════════════════════
-          DESKTOP LAYOUT (≥ 1024px)
-      ═══════════════════════════════════════ */}
-      <div className="hidden lg:flex flex-row min-h-screen">
-        {/* Sidebar */}
-        <aside className="w-64 bg-surface/30 backdrop-blur-[24px] border-r border-border/40 p-6 justify-between flex flex-col shrink-0">
-          <div className="space-y-8">
-            <div className="flex items-center gap-2.5 px-2">
-              <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10">
-                <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
-              </div>
-              <span className="font-display font-bold text-[18px] tracking-tight text-foreground">eSaleAgreement</span>
-            </div>
-            <nav className="space-y-1">
-              {[
-                { id: "home", label: "Overview", Icon: Home },
-                { id: "agreements", label: "My Agreements", Icon: FileText },
-                { id: "activity", label: "Activity", Icon: Activity },
-              ].map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200 ${activeTab === id ? "bg-primary/8 text-primary shadow-sm" : "text-secondary-text hover:text-foreground hover:bg-divider/40"}`}
-                >
-                  <Icon strokeWidth={2.2} className="w-4.5 h-4.5" />
-                  {label}
-                </button>
-              ))}
-            </nav>
-          </div>
-          <button onClick={handleLogout} className="flex items-center gap-3 px-3.5 py-2.5 text-error hover:bg-error/5 rounded-[var(--radius-sm)] text-[14px] font-semibold transition-all duration-200">
-            <LogOut strokeWidth={2.2} className="w-4.5 h-4.5" />
-            Sign Out
-          </button>
-        </aside>
+        {/* ── 1. HEADER (1:1 Match image.png) ─────────────────────────────────── */}
+        <header className="flex items-center justify-between px-4 sm:px-5 pt-4 pb-3 bg-white border-b border-slate-100 shadow-sm shrink-0">
+          <BrandLogo size="md" showSubtitle />
 
-        {/* Main */}
-        <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-[90px] bg-surface/30 backdrop-blur-[24px] border-b border-border/30 px-8 flex items-center justify-between sticky top-0 z-30">
-            <div className="flex flex-col">
-              <span className="text-[12px] text-secondary-text font-bold uppercase tracking-wider leading-none">{greeting},</span>
-              <div className="flex items-center gap-2 mt-1">
-                <h1 className="text-[22px] font-display font-bold text-foreground leading-tight tracking-tight">Nikhil</h1>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-verified text-success text-[10px] font-bold uppercase tracking-wider">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Verified Signer
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-[13px] font-semibold text-foreground leading-none">{config.title}</p>
-                <p className="text-[11px] text-secondary-text mt-1">{config.subtitle}</p>
-              </div>
-              <button className="p-2.5 text-secondary-text hover:text-foreground hover:bg-divider/50 rounded-full transition-colors relative border border-border">
-                <Bell strokeWidth={2.2} className="w-4.5 h-4.5" />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
-              </button>
-              <div className="w-10 h-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-display font-bold text-[14px] border border-primary/10 shadow-sm">N</div>
-            </div>
-          </header>
+          <div className="flex items-center gap-2.5">
+            {/* Notification Bell with Red Badge "3" */}
+            <button className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center relative hover:bg-slate-200 transition-colors">
+              <Bell className="w-4.5 h-4.5 text-slate-700" />
+              <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-[#EF4444] text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+                3
+              </span>
+            </button>
 
-          <div className="flex-1 p-8 space-y-8 overflow-y-auto max-w-6xl w-full">
-            {/* Hero + Quick Actions */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <motion.button
-                whileHover={{ y: -4, scale: 1.002 }} whileTap={{ scale: 0.995 }} transition={spring}
-                onClick={handleCreateNew}
-                className="relative xl:col-span-2 p-8 rounded-[24px] bg-gradient-to-br from-[#0033A0] via-[#002277] to-[#041B4A] text-surface text-left flex flex-col justify-between h-[200px] shadow-[0_20px_48px_-8px_rgba(0,51,160,0.25)] border border-primary/20 overflow-hidden group cursor-pointer"
-              >
-                <div className="sweep-overlay" />
-                <div className="w-12 h-12 rounded-full bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md">
-                  <Plus strokeWidth={2.6} className="w-6 h-6 text-surface" />
-                </div>
-                <div className="flex justify-between items-end w-full">
-                  <div className="space-y-1">
-                    <h3 className="font-display font-bold text-[24px] leading-tight">Create Agreement</h3>
-                    <p className="text-[14px] text-surface/85 font-medium max-w-[340px]">Create legally binding digital agreements in seconds.</p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[13px] font-bold tracking-wider uppercase bg-white/10 hover:bg-white/20 transition-colors px-5 py-2.5 rounded-full border border-white/25">
-                    Start Creation <ArrowUpRight strokeWidth={2.5} className="w-4.5 h-4.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </div>
-                </div>
-              </motion.button>
-
-              <div className="grid grid-cols-2 gap-4 h-[200px]">
-                {[
-                  { Icon: FileText, label: "Templates" },
-                  { Icon: Inbox, label: "Drafts" },
-                  { Icon: Scan, label: "Scan Doc" },
-                  { Icon: HelpCircle, label: "Help Center" },
-                ].map(({ Icon, label }) => (
-                  <div key={label} className="p-4 bg-surface border border-border rounded-[16px] flex flex-col justify-between hover:border-primary/20 transition-all cursor-pointer shadow-[var(--shadow-level-1)]">
-                    <Icon strokeWidth={2} className="w-5 h-5 text-primary" />
-                    <span className="text-[13.5px] font-semibold text-foreground">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Pending + Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Pending Action Feed</h3>
-                <div className="space-y-3">
-                  {pendingActions.map((act) => (
-                    <div key={act.id} className="p-4 bg-surface border border-border rounded-[16px] flex items-center justify-between shadow-[var(--shadow-level-1)]">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded-full bg-warning/8 text-warning text-[9.5px] font-bold uppercase tracking-wider">{act.type}</span>
-                          <span className="text-[11px] text-secondary-text font-medium">{act.time}</span>
-                        </div>
-                        <h4 className="font-bold text-foreground text-[14.5px]">{act.title}</h4>
-                        <p className="text-[12px] text-secondary-text font-medium">{act.status}</p>
-                      </div>
-                      <Button size="sm" className="h-10 text-[12.5px] px-4 font-bold shadow-sm">Execute</Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Activity Timeline</h3>
-                <div className="bg-surface/50 border border-border rounded-[16px] p-5 space-y-4 shadow-[var(--shadow-level-1)]">
-                  {activities.map((act, idx) => (
-                    <div key={act.id} className="flex gap-4 text-[13.5px] relative">
-                      {idx < activities.length - 1 && <span className="absolute left-2.5 top-6 bottom-[-20px] w-[1px] bg-border" />}
-                      <div className="w-5 h-5 rounded-full bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      </div>
-                      <div className="flex-1 flex justify-between gap-4">
-                        <div>
-                          <p className="font-semibold text-foreground">{act.message}</p>
-                          <p className="text-[12px] text-secondary-text font-medium mt-0.5">{act.details}</p>
-                        </div>
-                        <span className="text-[11.5px] text-secondary-text font-bold shrink-0">{act.time}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Agreements */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-display font-bold text-[14px] text-secondary-text uppercase tracking-wider">Recent Agreements</h3>
-                <button className="text-[12px] text-primary hover:opacity-80 font-bold tracking-wider uppercase">View all</button>
-              </div>
-              <Card className="divide-y divide-divider overflow-hidden">
-                {recentAgreements.map((agreement) => (
-                  <div key={agreement.id} className="p-5 flex items-center justify-between hover:bg-background/40 transition-colors duration-200">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-primary/[0.03] border border-primary/5 text-primary flex items-center justify-center shrink-0">
-                        <FileText strokeWidth={1.8} className="w-5 h-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-semibold text-foreground text-[15px] truncate">{agreement.title}</h4>
-                        <p className="text-[12.5px] text-secondary-text font-medium mt-0.5">Party: {agreement.party} • {agreement.date}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-6 shrink-0">
-                      <div className="flex flex-col items-end">
-                        <span className="font-semibold text-foreground text-[14px]">{agreement.amount}</span>
-                        <span className="text-[10.5px] text-secondary-text font-bold">Covenant Value</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <StatusBadge status={agreement.status} />
-                        <ChevronRight strokeWidth={2.4} className="w-4.5 h-4.5 text-secondary-text" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </Card>
-            </div>
-          </div>
-        </main>
-      </div>
-
-      {/* ═══════════════════════════════════════
-          MOBILE LAYOUT (< 1024px)
-      ═══════════════════════════════════════ */}
-      <div className="lg:hidden flex flex-col h-[100dvh] bg-[#FBFBFA] overflow-hidden">
-
-        {/* ── Mobile Header ─────────────────── */}
-        <header className="flex items-center justify-between px-5 pt-4 pb-3.5 border-b border-border/20 bg-surface/30 backdrop-blur-md">
-          {/* Left: eSaleAgreement Brand */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <div className="w-8 h-8 rounded-full bg-primary/8 flex items-center justify-center border border-primary/10 shadow-sm">
-                <ShieldCheck strokeWidth={2.4} className="h-4.5 w-4.5 text-primary" />
-              </div>
-              <span className="font-display font-bold text-[19px] tracking-tight text-foreground leading-none">eSaleAgreement</span>
-            </div>
-            <span className="text-[9px] font-bold tracking-[0.12em] uppercase text-secondary-text mt-1.5 pl-0.5 leading-none">
-              SECURE · VERIFIED · TRUSTED
-            </span>
-          </div>
-
-          {/* Center: Empty (clutter removed) */}
-          <div className="flex-1" />
-
-          {/* Right: Actions (2 icons only) */}
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="w-10 h-10 rounded-full border border-border bg-surface flex items-center justify-center relative shadow-sm hover:bg-background transition-colors"
-            >
-              <Bell strokeWidth={1.8} className="w-[18px] h-[18px] text-secondary-text" />
-              <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-primary" />
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={handleLogout}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0033A0] to-[#041B4A] text-white flex items-center justify-center font-display font-bold text-[14px] shadow-[0_4px_12px_rgba(0,51,160,0.25)]"
-            >
+            {/* Profile Avatar "N" */}
+            <div className="w-9 h-9 rounded-full bg-[#0052CC] text-white font-extrabold text-[15px] flex items-center justify-center shadow-sm">
               N
-            </motion.button>
+            </div>
           </div>
         </header>
 
+        <div className="p-3.5 sm:p-5 space-y-5">
 
-        {/* ── Mobile Scroll Body ─────────────── */}
-        <div className="flex-1 overflow-y-auto pb-36 px-4 pt-4 space-y-4">
-
-          <motion.div
-            whileTap={{ scale: 0.985 }}
-            onClick={handleCreateNew}
-            className="relative w-full rounded-[24px] bg-gradient-to-br from-[#0033A0] via-[#002277] to-[#041B4A] text-white overflow-hidden cursor-pointer shadow-[0_12px_36px_-6px_rgba(0,51,160,0.30)] border border-primary/20 p-4.5 pb-4 flex flex-col justify-between h-[162px]"
-          >
-            {/* Gloss reflection glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.04] to-transparent pointer-events-none" />
-            <div className="absolute top-0 right-0 w-[140px] h-[140px] bg-white/[0.035] rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute inset-0 opacity-[0.035]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
-
-            {/* Top row */}
-            <div className="flex justify-between items-start relative z-10">
-              <div className="space-y-1 mt-0.5">
-                <h2 className="font-display font-bold text-[22px] leading-tight text-white tracking-tight">Create Agreement</h2>
-                <p className="text-[13px] text-white/75 font-medium leading-snug max-w-[210px]">
-                  Secure C2C / B2B / B2C e-signing in minutes
-                </p>
-              </div>
-
-              {/* Document + Pen Custom SVG Mock Illustration */}
-              <div className="relative shrink-0 -mt-1 flex flex-col items-end">
-                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/95 font-semibold text-[8px] uppercase tracking-wider scale-90 origin-top-right border border-white/10 mb-2">
-                  ⚡ INSTANT SETUP
-                </span>
-                
-                {/* SVG Illustration resembling the document + shield + check + pen */}
-                <div className="relative">
-                  <svg className="w-[74px] h-[56px]" viewBox="0 0 84 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Document Shadow */}
-                    <rect x="25" y="5" width="44" height="54" rx="8" fill="black" fillOpacity="0.08" />
-                    {/* Document Sheet */}
-                    <rect x="24" y="4" width="44" height="54" rx="8" fill="white" />
-                    
-                    {/* Lines representing text */}
-                    <line x1="32" y1="14" x2="60" y2="14" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
-                    <line x1="32" y1="22" x2="54" y2="22" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
-                    <line x1="32" y1="30" x2="58" y2="30" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
-                    <line x1="32" y1="38" x2="48" y2="38" stroke="#E6EBEF" strokeWidth="2.5" strokeLinecap="round" />
-                    
-                    {/* Blue signature trace */}
-                    <path d="M32 47 C 35 44, 38 48, 42 45 C 45 42, 48 46, 52 44" fill="none" stroke="#0033A0" strokeWidth="1.8" strokeLinecap="round" />
-
-                    {/* Shield (on the left edge overlay) */}
-                    <path d="M12 21 C 12 21, 17 19, 23 21 C 23 29, 23 37, 12 43 C 1 37, 1 29, 1 21 C 7 19, 12 21, 12 21 Z" fill="#0033A0" stroke="white" strokeWidth="1.8" strokeLinejoin="round" />
-                    {/* Checkmark inside shield */}
-                    <path d="M7 32 L 10.5 35.5 L 17.5 27.5" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-
-                    {/* Pen Body (on the right) */}
-                    <path d="M72 40 L 78 16 C 78.3 14.8, 79.5 14.1, 80.7 14.4 C 81.9 14.7, 82.6 15.9, 82.3 17.1 L 76.3 41.1 Z" fill="#041B4A" stroke="white" strokeWidth="0.8" />
-                    {/* Pen Nib / Drawing Tip */}
-                    <path d="M76.3 41.1 L 74 46 L 72 40 Z" fill="#D4AF37" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom row */}
-            <div className="flex items-end justify-between mt-auto pt-2.5 relative z-10 border-t border-white/10 w-full">
-              {/* Counters */}
-              <div className="flex items-center gap-2 text-white">
-                {/* 1. Active */}
-                <div className="flex items-center gap-1">
-                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <FileText strokeWidth={2.4} className="w-3.5 h-3.5 text-white" />
-                  </div>
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[13px] font-bold">12</span>
-                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Active</span>
-                  </div>
-                </div>
-                
-                {/* 2. Pending */}
-                <div className="flex items-center gap-1">
-                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <Clock strokeWidth={2.4} className="w-3.5 h-3.5 text-white" />
-                  </div>
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[13px] font-bold">02</span>
-                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Pending</span>
-                  </div>
-                </div>
-
-                {/* 3. Completed */}
-                <div className="flex items-center gap-1">
-                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
-                    <Check strokeWidth={2.8} className="w-3.5 h-3.5 text-white" />
-                  </div>
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[13px] font-bold">08</span>
-                    <span className="text-[8.5px] text-white/60 font-semibold mt-0.5">Completed</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Start Button */}
-              <button className="flex items-center justify-center gap-1 bg-white text-[#0033A0] px-4.5 py-2.5 rounded-full font-bold text-[13px] shadow-[0_4px_14px_rgba(0,0,0,0.06)] hover:bg-white/95 transition-all shrink-0 whitespace-nowrap">
-                Start <ArrowUpRight strokeWidth={2.6} className="w-3.5 h-3.5" />
+          {/* ── 2. HERO BANNER ("Create Agreement") — Optimized Mobile Perspective ─ */}
+          <div className="w-full rounded-[20px] bg-gradient-to-r from-[#F0FDF4] via-[#F2F8F5] to-[#ECFDF5] border border-[#A7F3D0] p-4 sm:p-5 relative overflow-hidden shadow-xs flex items-center justify-between">
+            <div className="space-y-2 max-w-[200px] sm:max-w-[270px] z-10">
+              <h1 className="text-[19px] sm:text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight">
+                Create Agreement
+              </h1>
+              <p className="text-[12px] sm:text-[13px] text-[#475569] font-medium leading-snug">
+                Create eSign agreement for your customer in just 2 minutes
+              </p>
+              <button
+                onClick={handleCreateNew}
+                className="h-[38px] px-3.5 rounded-[10px] bg-[#059669] hover:bg-[#047857] text-white font-bold text-[13px] flex items-center gap-1.5 shadow-xs transition-all active:scale-95 mt-1"
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.8} />
+                <span>New Agreement</span>
               </button>
             </div>
-          </motion.div>
 
-
-          {/* PENDING ACTIONS */}
-          {pendingActions.length > 0 && (
-            <div>
-              <SectionHeader title="Pending Actions" action="See All" />
-              <div className="flex overflow-x-auto scrollbar-none gap-3 -mx-4 px-4 pb-1">
-                {pendingActions.map((act, i) => {
-                  const isReview = act.type.toLowerCase().includes("sign") || act.type.toLowerCase().includes("counter")
-                  const bg = isReview ? "bg-[#FFF4E0]" : "bg-[#EBF3FF]"
-                  const text = isReview ? "text-[#B76E00]" : "text-[#0052CC]"
-                  
-                  return (
-                    <motion.div
-                      key={act.id}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.07, type: "spring", stiffness: 300, damping: 24 }}
-                      className="min-w-[225px] max-w-[225px] p-4 bg-surface border border-border/40 rounded-[18px] flex items-center justify-between shadow-[0_4px_16px_rgba(0,0,0,0.015)] shrink-0 cursor-pointer hover:border-primary/20 transition-all"
-                    >
-                      <div className="flex gap-3 items-start flex-1 min-w-0">
-                        {/* Icon Left */}
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${bg} ${text}`}>
-                          {isReview ? <FileText className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <span className={`px-2 py-0.5 rounded-md text-[8.5px] font-bold uppercase tracking-wider ${bg} ${text}`}>
-                            {act.type}
-                          </span>
-                          <h4 className="font-bold text-foreground text-[13.5px] leading-snug mt-1 truncate">{act.title}</h4>
-                          <p className="text-[11px] text-secondary-text font-medium mt-0.5">{act.status}</p>
-                          <p className={`text-[11px] font-semibold mt-1 ${text}`}>
-                            {act.time.toLowerCase().includes("needed") ? "Due in 2 days" : act.time.toLowerCase().includes("expires") ? "Due today" : act.time}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Arrow Right */}
-                      <div className="w-7 h-7 rounded-full bg-divider/50 flex items-center justify-center text-secondary-text hover:text-foreground shrink-0 ml-1">
-                        <ChevronRight className="w-4.5 h-4.5" />
-                      </div>
-                    </motion.div>
-                  )
-                })}
+            {/* Document & Pen Signature Illustration (Mobile-Sized Proportions) */}
+            <div className="relative w-24 h-28 shrink-0 flex items-center justify-center -right-0.5 sm:right-0">
+              <div className="w-18 h-24 bg-white rounded-lg shadow-sm border border-slate-200/80 p-2 relative flex flex-col gap-1">
+                <div className="w-9 h-1 bg-slate-200 rounded-full" />
+                <div className="w-12 h-1 bg-slate-200 rounded-full" />
+                <div className="w-10 h-1 bg-slate-200 rounded-full" />
+                {/* Blue Checkmark Shield */}
+                <div className="w-6 h-6 rounded-full bg-[#0052CC] text-white flex items-center justify-center absolute -left-2.5 top-7 shadow-xs">
+                  <Shield className="w-3 h-3 fill-[#0052CC]" />
+                </div>
+                {/* Pen Signature */}
+                <div className="mt-auto flex justify-end pr-0.5 text-[#059669] font-serif italic text-[13px] font-bold">
+                  am
+                </div>
               </div>
+              <PenTool className="w-7 h-7 text-[#0052CC] absolute right-0 bottom-0.5 transform rotate-12 drop-shadow-xs" />
             </div>
-          )}
+          </div>
 
-          {/* RECENT AGREEMENTS */}
-          <div>
-            <SectionHeader title="Recent Agreements" action="View All" />
-            <div className="rounded-[18px] overflow-hidden border border-border/40 shadow-sm bg-surface divide-y divide-divider">
-              {recentAgreements.map((agreement, i) => {
-                const isCar = agreement.title.toLowerCase().includes("car")
-                const isShop = agreement.title.toLowerCase().includes("shop") || agreement.title.toLowerCase().includes("bicycle")
-                
-                let theme = { bg: "bg-[#EAF7EE]", border: "border-[#1A8A3C]/10", text: "text-[#1A8A3C]", badge: "bg-[#EAF7EE] text-[#1A8A3C]" }
-                if (agreement.status === "Pending Signature") {
-                  theme = { bg: "bg-[#FFF4E0]", border: "border-[#B76E00]/10", text: "text-[#B76E00]", badge: "bg-[#FFF4E0] text-[#B76E00]" }
-                } else if (agreement.status === "Completed" || agreement.status === "Draft") {
-                  theme = { bg: "bg-[#F3E8FF]", border: "border-[#7C3AED]/10", text: "text-[#7C3AED]", badge: "bg-[#F0F0EE] text-[#5E6368]" }
-                }
+          {/* ── 3. CATEGORIES SECTION ────────────────────────────────────────── */}
+          <div className="space-y-2.5">
+            <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">Categories</h2>
 
-                const displayAmount = agreement.amount === "₹24,000/mo" ? "₹45,000 / month" : agreement.amount === "₹4,50,000" ? "₹3,20,000" : agreement.amount
-
+            {/* Top Row: 3 items (Always fits text + chevron arrow >) */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+              {[
+                { name: "Electronics", icon: Smartphone, bg: "bg-[#ECFDF5] text-[#059669]" },
+                { name: "Vehicles", icon: Car, bg: "bg-[#EFF6FF] text-[#2563EB]" },
+                { name: "Services", icon: Wrench, bg: "bg-[#ECFDF5] text-[#059669]" },
+              ].map((cat) => {
+                const Icon = cat.icon
                 return (
-                  <motion.div
-                    key={agreement.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
-                    className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-background/40 transition-colors duration-200 cursor-pointer"
+                  <div
+                    key={cat.name}
+                    onClick={handleCreateNew}
+                    className="h-[44px] px-1.5 sm:px-2.5 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group min-w-0"
                   >
-                    <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border ${theme.bg} ${theme.border} ${theme.text}`}>
-                      {isCar ? (
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-                      ) : isShop ? (
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                      ) : (
-                        <FileText strokeWidth={1.8} className="w-5 h-5" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground text-[14px] truncate leading-snug">{agreement.title === "Bicycle Sale Contract" ? "Shop Rent Agreement" : agreement.title}</h4>
-                      <p className="text-[11px] text-secondary-text mt-0.5 font-medium">{agreement.party} · {agreement.date}</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex flex-col items-end text-right">
-                        <span className={`px-2 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider ${theme.badge}`}>
-                          {agreement.status === "Completed" ? "DRAFT" : agreement.status}
-                        </span>
-                        {displayAmount && displayAmount !== "N/A" && (
-                          <span className="text-[11.5px] text-foreground font-bold mt-1 leading-none">
-                            {displayAmount}
-                          </span>
-                        )}
+                    <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                      <div className={`w-6.5 h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
+                        <Icon className="w-3.5 h-3.5" />
                       </div>
-                      <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5 text-secondary-text/50" />
+                      <span className="font-bold text-[11px] sm:text-[12.5px] text-[#0F172A] whitespace-nowrap overflow-hidden text-ellipsis">{cat.name}</span>
                     </div>
-                  </motion.div>
+                    <ChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-0.5" />
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Bottom Row: 2 items */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              {[
+                { name: "Rental", icon: Building2, bg: "bg-[#EFF6FF] text-[#2563EB]" },
+                { name: "Others", icon: Grid, bg: "bg-[#ECFDF5] text-[#059669]" },
+              ].map((cat) => {
+                const Icon = cat.icon
+                return (
+                  <div
+                    key={cat.name}
+                    onClick={handleCreateNew}
+                    className="h-[44px] px-3 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className={`w-6.5 h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-bold text-[12px] sm:text-[13px] text-[#0F172A] whitespace-nowrap">{cat.name}</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                  </div>
                 )
               })}
             </div>
           </div>
 
-          {/* QUICK ACTIONS */}
-          <div>
-            <SectionHeader title="Quick Actions" />
-            <div className="grid grid-cols-4 gap-2.5">
-              {[
-                { Icon: FileText, label: "Templates" },
-                { Icon: Inbox, label: "Drafts" },
-                { Icon: Scan, label: "Scan" },
-                { Icon: HelpCircle, label: "Help" },
-              ].map(({ Icon, label }, i) => (
-                <motion.div
-                  key={label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.05, type: "spring", stiffness: 350, damping: 24 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="flex flex-col items-center gap-2 py-3.5 bg-surface border border-border rounded-[16px] cursor-pointer hover:border-primary/20 hover:shadow-[var(--shadow-level-1)] transition-all"
-                >
-                  <div className="w-9 h-9 rounded-[10px] bg-primary/6 flex items-center justify-center">
-                    <Icon strokeWidth={2} className="w-4.5 h-4.5 text-primary" />
+          {/* ── 4. MY AGREEMENTS & PENDING AGREEMENTS (2-Column Grid) ──────── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+
+            {/* Left: My Agreements */}
+            <div className="bg-white rounded-[18px] border border-slate-200/80 p-4 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                <h2 className="text-[14.5px] font-bold text-[#0F172A] tracking-tight">My Agreements</h2>
+                <button className="text-[11.5px] font-bold text-[#0052CC] hover:underline">View All</button>
+              </div>
+
+              <div className="space-y-3.5 divide-y divide-slate-100">
+                {[
+                  { title: "Electronics Purchase Agreement", date: "12 May 2025", status: "Completed", iconBg: "bg-[#059669]" },
+                  { title: "Mobile Sale Agreement", date: "10 May 2025", status: "Completed", iconBg: "bg-[#0052CC]" },
+                  { title: "Laptop Purchase Agreement", date: "08 May 2025", status: "Pending", iconBg: "bg-[#059669]" },
+                ].map((item, idx) => (
+                  <div key={idx} className={`flex items-center justify-between ${idx > 0 ? "pt-3" : ""} hover:bg-slate-50 transition-colors cursor-pointer rounded-lg p-1`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-8.5 h-8.5 rounded-full ${item.iconBg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-[12.5px] text-[#0F172A] truncate leading-snug">{item.title}</h3>
+                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                          {item.date} • <span className={item.status === "Completed" ? "text-[#059669] font-bold" : "text-[#D97706] font-bold"}>{item.status}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
                   </div>
-                  <span className="text-[10.5px] font-bold text-secondary-text text-center leading-none">{label}</span>
-                </motion.div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* Right: Pending Agreements */}
+            <div className="bg-white rounded-[18px] border border-slate-200/80 p-4 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                <h2 className="text-[14.5px] font-bold text-[#0F172A] tracking-tight">Pending Agreements</h2>
+                <button className="text-[11.5px] font-bold text-[#0052CC] hover:underline">View All</button>
+              </div>
+
+              <div className="space-y-3.5 divide-y divide-slate-100">
+                {[
+                  { title: "Customer eSign Pending", desc: "Mobile Purchase", date: "11 May 2025", bg: "bg-[#DBEAFE] text-[#2563EB]" },
+                  { title: "Customer eSign Pending", desc: "AC Service Agreement", date: "09 May 2025", bg: "bg-[#D1FAE5] text-[#059669]" },
+                ].map((item, idx) => (
+                  <div key={idx} className={`flex items-center justify-between ${idx > 0 ? "pt-3" : ""} hover:bg-slate-50 transition-colors cursor-pointer rounded-lg p-1`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-8.5 h-8.5 rounded-full ${item.bg} flex items-center justify-center shrink-0`}>
+                        <User className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-[12.5px] text-[#0F172A] truncate leading-snug">{item.title}</h3>
+                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">{item.desc}</p>
+                        <p className="text-[10.5px] text-slate-400 font-medium">{item.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                      <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
 
-          {/* ACTIVITY */}
-          <div>
-            <SectionHeader title="Activity" />
-            <div className="bg-surface border border-border rounded-[18px] divide-y divide-divider shadow-[var(--shadow-level-1)] overflow-hidden">
-              {activities.map((act, idx) => (
-                <div key={act.id} className="flex gap-3.5 px-4 py-3.5 items-start">
-                  <div className="w-6 h-6 rounded-full bg-primary/8 border border-primary/12 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+          {/* ── 5. QUICK ACTIONS TOOLBAR ─────────────────────────────────────── */}
+          <div className="w-full rounded-[18px] bg-[#EEF4FF] border border-[#D0E2FF] p-3 grid grid-cols-4 divide-x divide-[#D0E2FF]/80 text-center">
+            {[
+              { label: "Add Customer", icon: UserPlus, color: "text-[#0052CC]" },
+              { label: "Templates", icon: ClipboardList, color: "text-[#059669]" },
+              { label: "Scan & Verify", icon: ScanLine, color: "text-[#0052CC]" },
+              { label: "Reports", icon: BarChart3, color: "text-[#059669]" },
+            ].map((action) => {
+              const Icon = action.icon
+              return (
+                <div
+                  key={action.label}
+                  onClick={handleCreateNew}
+                  className="flex flex-col items-center justify-center gap-1.5 px-1 py-1 hover:bg-white/50 transition-colors cursor-pointer rounded-lg"
+                >
+                  <div className={`w-9 h-9 rounded-xl bg-white ${action.color} shadow-xs flex items-center justify-center mx-auto`}>
+                    <Icon className="w-4.5 h-4.5" />
                   </div>
-                  <div className="flex-1 flex justify-between gap-2 min-w-0">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-foreground text-[13.5px] truncate">{act.message}</p>
-                      <p className="text-[11px] text-secondary-text mt-0.5 font-medium truncate">{act.details}</p>
-                    </div>
-                    <span className="text-[10.5px] text-secondary-text font-bold shrink-0">{act.time}</span>
-                  </div>
+                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">{action.label}</span>
                 </div>
-              ))}
-            </div>
+              )
+            })}
           </div>
 
         </div>
 
-        {/* Bottom Navigation */}
-        <BottomNavigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onLogout={handleLogout}
-          onCreateNew={handleCreateNew}
-          unreadCount={pendingActions.length}
-        />
+        {/* ── 6. FLOATING BOTTOM NAVIGATION ──────────────────────────────────── */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-5 py-2 shadow-lg flex items-center justify-between max-w-[440px] mx-auto rounded-t-[22px]">
+          <button
+            onClick={() => setActiveNav("home")}
+            className={`flex flex-col items-center gap-0.5 ${activeNav === "home" ? "text-[#0052CC]" : "text-slate-400"}`}
+          >
+            <Home className="w-5 h-5 fill-current" />
+            <span className="text-[10.5px] font-bold">Home</span>
+          </button>
+
+          <button
+            onClick={() => setActiveNav("agreements")}
+            className={`flex flex-col items-center gap-0.5 ${activeNav === "agreements" ? "text-[#0052CC]" : "text-slate-400"}`}
+          >
+            <FileText className="w-5 h-5" />
+            <span className="text-[10.5px] font-bold">Agreements</span>
+          </button>
+
+          {/* Floating Center Create FAB */}
+          <div className="flex flex-col items-center -mt-6">
+            <button
+              onClick={handleCreateNew}
+              className="w-13 h-13 rounded-full bg-[#0052CC] hover:bg-[#0033A0] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform border-4 border-white"
+            >
+              <Plus className="w-6 h-6" strokeWidth={2.8} />
+            </button>
+            <span className="text-[10.5px] font-bold text-[#0052CC] mt-0.5">Create</span>
+          </div>
+
+          <button
+            onClick={() => setActiveNav("inbox")}
+            className={`flex flex-col items-center gap-0.5 ${activeNav === "inbox" ? "text-[#0052CC]" : "text-slate-400"}`}
+          >
+            <Inbox className="w-5 h-5" />
+            <span className="text-[10.5px] font-bold">Inbox</span>
+          </button>
+
+          <button
+            onClick={() => setActiveNav("profile")}
+            className={`flex flex-col items-center gap-0.5 ${activeNav === "profile" ? "text-[#0052CC]" : "text-slate-400"}`}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-[10.5px] font-bold">Profile</span>
+          </button>
+        </div>
+
       </div>
     </AppContainer>
   )

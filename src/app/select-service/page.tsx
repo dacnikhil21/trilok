@@ -11,20 +11,14 @@ import { cn } from "@/lib/utils"
 const SERVICES = [
   {
     id: "c2c",
-    title: "C2C (Personal)",
-    description: "Peer-to-peer agreement setup.",
+    title: "C2C (Individuals)",
+    description: "Buy or sell between individuals.",
     icon: User,
   },
   {
-    id: "b2b",
-    title: "B2B (Enterprise)",
-    description: "Company-to-company contracts.",
-    icon: Briefcase,
-  },
-  {
     id: "b2c",
-    title: "B2C (Merchant)",
-    description: "Business-to-customer waivers.",
+    title: "B2C (Shop/Business)",
+    description: "Buy/sell for shop or business.",
     icon: Store,
   },
 ]
@@ -39,8 +33,7 @@ export default function SelectServicePage() {
   }
 
   const cardContent = (
-    <div className="space-y-3">
-
+    <div className="space-y-4">
       <div className="flex flex-col gap-2.5">
         {SERVICES.map((srv) => {
           const Icon = srv.icon
@@ -78,6 +71,16 @@ export default function SelectServicePage() {
             </button>
           )
         })}
+      </div>
+
+      {/* Trust & Security Banner */}
+      <div className="mt-2 text-center px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center gap-1.5 text-[11.5px] sm:text-[12px] font-semibold text-primary">
+        <span>🔒</span>
+        <span>Aadhaar eKYC & eSign</span>
+        <span className="opacity-40">•</span>
+        <span>Secure Digital Agreements</span>
+        <span className="opacity-40">•</span>
+        <span>Privacy Protected</span>
       </div>
     </div>
   )
