@@ -75,20 +75,20 @@ export function AppContainer({ children, className = "", centered = false }: App
       </div>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────────── */}
-      <div className={`relative z-10 flex-1 flex flex-col ${centered ? "items-center justify-start sm:justify-center p-0 sm:p-6 lg:p-8 min-h-screen" : "w-full"}`}>
+      <div className={`relative z-10 flex-1 flex flex-col w-full ${centered ? "items-center justify-start py-0 sm:py-6 lg:py-8" : ""}`}>
         {centered ? (
           <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.99 }}
+            initial={{ opacity: 0, y: 10, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
-            className={`w-full min-h-screen sm:min-h-0 flex flex-col bg-surface rounded-none border-0 shadow-none sm:rounded-[24px] sm:border sm:border-primary/10 sm:shadow-[0_12px_40px_rgba(10,92,54,0.06)] overflow-hidden sm:max-w-[440px] ${className}`}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            className={`w-full flex flex-col bg-surface rounded-none border-0 shadow-none sm:rounded-[24px] sm:border sm:border-slate-200/80 sm:shadow-md overflow-hidden sm:max-w-[420px] ${className}`}
           >
-            <div className="flex flex-col flex-1 p-0 sm:p-4">
+            <div className="flex flex-col flex-1 p-0">
               {children}
             </div>
           </motion.div>
         ) : (
-          <div className={`flex flex-col flex-1 w-full min-h-screen bg-surface ${className}`}>
+          <div className={`flex flex-col flex-1 w-full bg-surface ${className}`}>
             {children}
           </div>
         )}
