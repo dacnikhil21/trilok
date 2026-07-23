@@ -46,57 +46,60 @@ export default function LoginPage() {
   return (
     <AppContainer centered>
       {/* ── Background Mesh Tint (Subtle Teal/Blue Ambient Top Wave) ─────────── */}
-      <div className="w-full h-[100dvh] bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-200/35 via-blue-100/20 to-transparent flex flex-col justify-between py-2.5 px-3.5 box-border select-none font-sans overflow-hidden">
+      <div className="w-full min-h-[100dvh] bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-200/35 via-blue-100/20 to-transparent flex flex-col items-center justify-between py-3 px-3.5 box-border select-none font-sans overflow-x-hidden">
         
-        {/* ── Top Bar: Segmented Tab Bar Navigation ────────────────────────────── */}
-        <div className="w-full flex items-center justify-between pt-0.5 pb-2.5 px-1 border-b border-slate-200/70 relative shrink-0">
-          <div className="flex-1 flex justify-center gap-12 relative">
+        {/* ── Outer Content Wrapper (Constrained 390px width for all phones) ──── */}
+        <div className="w-full max-w-[390px] flex flex-col flex-1">
+          
+          {/* ── Top Bar: Segmented Tab Bar Navigation ────────────────────────────── */}
+          <div className="w-full flex items-center justify-between pt-0.5 pb-2.5 px-1 border-b border-slate-200/70 relative shrink-0">
+            <div className="flex-1 flex justify-center gap-12 relative">
+              <button 
+                className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'login' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
+                onClick={() => setActiveTab('login')}
+              >
+                Login
+                {activeTab === 'login' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
+                )}
+              </button>
+              <button 
+                className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'register' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
+                onClick={() => setActiveTab('register')}
+              >
+                Register
+                {activeTab === 'register' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
+                )}
+              </button>
+            </div>
+
+            {/* Top Right Floating Sparkle Button */}
             <button 
-              className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'login' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
-              onClick={() => setActiveTab('login')}
+              type="button" 
+              className="w-7.5 h-7.5 rounded-full bg-slate-100/80 hover:bg-slate-200/80 flex items-center justify-center text-slate-500 transition-colors absolute right-1 top-0"
             >
-              Login
-              {activeTab === 'login' && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
-              )}
-            </button>
-            <button 
-              className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'register' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
-              onClick={() => setActiveTab('register')}
-            >
-              Register
-              {activeTab === 'register' && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
-              )}
+              <Sparkles className="w-3.5 h-3.5 text-slate-500" />
             </button>
           </div>
 
-          {/* Top Right Floating Sparkle Button */}
-          <button 
-            type="button" 
-            className="w-7.5 h-7.5 rounded-full bg-slate-100/80 hover:bg-slate-200/80 flex items-center justify-center text-slate-500 transition-colors absolute right-1 top-0"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-slate-500" />
-          </button>
-        </div>
+          {/* ── Headline & Logo Section (Cohesive top hero block) ───────────────── */}
+          <div className="flex flex-col items-center text-center mt-3 mb-4 px-2 shrink-0">
+            <div className="mb-1.5">
+              <BrandLogo size="md" />
+            </div>
 
-        {/* ── Headline & Logo Section ────────────────────────────────────────── */}
-        <div className="flex flex-col items-center text-center mt-2 mb-3 px-2 shrink-0">
-          <div className="mb-1.5">
-            <BrandLogo size="md" />
+            <h1 className="text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight flex items-center gap-1.5 mt-0.5">
+              <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
+              <span className="text-[21px]">👋</span>
+            </h1>
+            <p className="text-[12.5px] text-slate-500 font-medium max-w-[280px] leading-snug mt-0.5">
+              Join thousands securing smart, legal digital sale agreements.
+            </p>
           </div>
 
-          <h1 className="text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight flex items-center gap-1.5 mt-0.5">
-            <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
-            <span className="text-[21px]">👋</span>
-          </h1>
-          <p className="text-[12.5px] text-slate-500 font-medium max-w-[280px] leading-snug mt-0.5">
-            Join thousands securing smart, legal digital sale agreements.
-          </p>
-        </div>
-
-        {/* ── Form Section ───────────────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col justify-center my-auto w-full max-w-[390px] mx-auto">
+          {/* ── Form Section (Natural flow without giant blank gap) ─────────────── */}
+          <div className="w-full flex-1 flex flex-col justify-start">
           {activeTab === 'login' ? (
             <>
               {/* Mobile Number Field Header */}
@@ -270,8 +273,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       </div>
-    </AppContainer>
-  )
+      <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+    </div>
+  </AppContainer>
+)
 }
