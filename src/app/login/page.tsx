@@ -56,14 +56,14 @@ export default function LoginPage() {
             <BrandLogo size="lg" />
           </div>
 
-          {/* ── SECTION 1: Rich 46px Capsule Pill Segmented Control ─────────────────── */}
+          {/* ── SECTION 1: Rich 44px Capsule Pill Segmented Control ─────────────────── */}
           <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-1 shadow-2xs">
             <div className="grid grid-cols-2 gap-1">
               <button 
                 type="button"
                 className={`h-[44px] rounded-[15px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'login' 
-                    ? 'bg-[#0D59F2] text-white shadow-md shadow-[#0D59F2]/25' 
+                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/25' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -76,7 +76,7 @@ export default function LoginPage() {
                 type="button"
                 className={`h-[44px] rounded-[15px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'register' 
-                    ? 'bg-[#0D59F2] text-white shadow-md shadow-[#0D59F2]/25' 
+                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/25' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('register')}
@@ -102,14 +102,14 @@ export default function LoginPage() {
           {activeTab === 'login' ? (
             <div className="w-full flex flex-col space-y-3.5">
               
-              {/* SECTION 3: 52px Mobile Number Field (Unified 18px Corner Radius) */}
+              {/* SECTION 3: 52px Mobile Number Field */}
               <div>
                 <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
                   Mobile Number
                 </label>
 
                 {/* Custom 52px Phone Input Bar */}
-                <div className={`w-full h-[52px] rounded-[18px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2.5 transition-all focus-within:border-[#0D59F2] focus-within:ring-2 focus-within:ring-[#0D59F2]/15`}>
+                <div className={`w-full h-[52px] rounded-[18px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
                   
                   {/* Country Code Pill (+91 ⌄) */}
                   <div className="flex items-center gap-1 px-3 py-1.5 rounded-[12px] bg-slate-100/90 border border-slate-200 text-[#0F172A] font-bold text-[14px] shrink-0 mr-2.5 cursor-pointer hover:bg-slate-200/90 transition-colors">
@@ -118,7 +118,7 @@ export default function LoginPage() {
                   </div>
 
                   {/* Green Phone Icon */}
-                  <Phone className="w-4.5 h-4.5 text-[#00B074] shrink-0 mr-2.5" />
+                  <Phone className="w-4.5 h-4.5 text-[#10B981] shrink-0 mr-2.5" />
 
                   {/* Input Field */}
                   <input
@@ -133,20 +133,20 @@ export default function LoginPage() {
                 {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
               </div>
 
-              {/* SECTION 4: 52px PROMINENT GRADIENT "SEND OTP" BUTTON */}
+              {/* SECTION 4: HIGH-CONTRAST DEEP ROYAL BLUE TO EMERALD GREEN GRADIENT BUTTON */}
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isButtonDisabled || isLoading}
-                className={`w-full h-[52px] rounded-[18px] bg-gradient-to-r from-[#0D59F2] via-[#0066FF] to-[#00B074] text-white font-bold text-[15.5px] flex items-center justify-between px-4 transition-all shadow-[0_6px_20px_rgba(13,89,242,0.32)] active:scale-[0.985] ${
-                  isButtonDisabled ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-95'
+                className={`w-full h-[52px] rounded-[18px] bg-gradient-to-r from-[#0052CC] via-[#0077B6] to-[#10B981] text-white font-bold text-[15.5px] flex items-center justify-between px-4 transition-all shadow-[0_6px_20px_rgba(0,82,204,0.35)] active:scale-[0.985] ${
+                  isButtonDisabled ? 'opacity-85 cursor-not-allowed' : 'hover:opacity-95'
                 }`}
               >
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/20">
+                <div className="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center shrink-0 border border-white/30 backdrop-blur-2xs">
                   <Shield className="w-4 h-4 text-white fill-white/40" />
                 </div>
                 
-                <span className="tracking-wide font-extrabold text-[15.5px] drop-shadow-xs">{isLoading ? "Sending OTP..." : "Send OTP"}</span>
+                <span className="tracking-wide font-extrabold text-[15.5px] text-white drop-shadow-xs">{isLoading ? "Sending OTP..." : "Send OTP"}</span>
 
                 <ArrowRight className="w-5 h-5 text-white shrink-0 stroke-[2.5]" />
               </button>
@@ -201,8 +201,8 @@ export default function LoginPage() {
               
               {/* Item 1: Secure Login */}
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#0D59F2] flex items-center justify-center shrink-0 shadow-2xs">
-                  <ShieldCheck className="w-4 h-4 text-[#0D59F2]" />
+                <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#0052CC] flex items-center justify-center shrink-0 shadow-2xs">
+                  <ShieldCheck className="w-4 h-4 text-[#0052CC]" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">Secure Login</span>
@@ -212,8 +212,8 @@ export default function LoginPage() {
 
               {/* Item 2: Aadhaar eKYC */}
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#ECFDF5] text-[#00B074] flex items-center justify-center shrink-0 shadow-2xs">
-                  <Fingerprint className="w-4 h-4 text-[#00B074]" />
+                <div className="w-8 h-8 rounded-full bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 shadow-2xs">
+                  <Fingerprint className="w-4 h-4 text-[#10B981]" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
@@ -249,7 +249,7 @@ export default function LoginPage() {
           {/* ── SECTION 7: Legal Terms & Conditions ────────────────────────────────── */}
           <div className="w-full text-center pt-1">
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-600 font-semibold">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#00B074] shrink-0" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
               <span>By continuing, you agree to our</span>
             </div>
 
@@ -257,7 +257,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0D59F2] hover:underline"
+                className="text-[#0052CC] hover:underline"
               >
                 Terms & Conditions
               </button>
@@ -265,7 +265,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0D59F2] hover:underline"
+                className="text-[#0052CC] hover:underline"
               >
                 Privacy Policy
               </button>
@@ -276,7 +276,7 @@ export default function LoginPage() {
           <div className="w-full flex items-center justify-center gap-2 pt-1 pb-0.5">
             <div className="flex-1 border-t border-slate-200" />
             <div className="flex items-center gap-1.5 text-[10.5px] text-slate-700 font-bold px-2.5 py-0.5 rounded-full bg-slate-100/90 border border-slate-200/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0D59F2]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0052CC]" />
               <span>Trusted by 10,000+ users across India</span>
             </div>
             <div className="flex-1 border-t border-slate-200" />
