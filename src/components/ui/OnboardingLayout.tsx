@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { BrandLogo } from "@/components/ui/BrandLogo"
+import { ArrowRight } from "lucide-react"
 
 interface OnboardingLayoutProps {
   title: string
@@ -32,10 +33,10 @@ export function OnboardingLayout({
   stepperStep
 }: OnboardingLayoutProps) {
   return (
-    <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-start min-h-screen sm:min-h-0 py-4 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
+    <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-start min-h-screen sm:min-h-0 py-3.5 px-3.5 pb-[calc(24px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
       
       {/* ── Material Design 3 Centered Content Stack (8-Point System) ───────────────── */}
-      <div className="w-full max-w-[390px] flex flex-col space-y-4 my-auto sm:my-0">
+      <div className="w-full max-w-[390px] flex flex-col space-y-3.5 my-auto sm:my-0">
 
         {/* Top Navigation Bar (Header) */}
         <div className="w-full flex items-center justify-between h-11 relative border-b border-slate-200/70 pb-2">
@@ -43,7 +44,7 @@ export function OnboardingLayout({
             <button 
               type="button"
               onClick={onBackClick}
-              className="w-9 h-9 rounded-full bg-slate-100/80 hover:bg-slate-200/80 flex items-center justify-center text-slate-700 active:scale-95 transition-all z-20 shrink-0"
+              className="w-9 h-9 rounded-full bg-slate-100/90 hover:bg-slate-200/90 flex items-center justify-center text-slate-700 active:scale-95 transition-all z-20 shrink-0"
               aria-label="Go Back"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
@@ -58,11 +59,11 @@ export function OnboardingLayout({
         </div>
 
         {/* Page Heading */}
-        <div className="text-center space-y-1 pt-1">
-          <h1 className="text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight">
+        <div className="text-center space-y-0.5 pt-0.5">
+          <h1 className="text-[21px] font-extrabold text-[#0F172A] tracking-tight leading-tight">
             {title}
           </h1>
-          <p className="text-[12.5px] text-slate-500 font-medium leading-snug max-w-[300px] mx-auto">
+          <p className="text-[12.5px] text-slate-700 font-medium leading-snug max-w-[300px] mx-auto">
             {subtitle}
           </p>
         </div>
@@ -75,29 +76,32 @@ export function OnboardingLayout({
         )}
 
         {/* Primary Content Card */}
-        <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[20px] p-3.5 shadow-2xs">
+        <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-3.5 shadow-2xs">
           {cardContent}
         </div>
 
-        {/* Primary Action Button (Gradient Send/Continue Button) */}
+        {/* Primary Action Button (52px Gradient Send/Continue Button) */}
         <div className="w-full">
           <button
             type="button"
             onClick={onButtonClick}
             disabled={isButtonDisabled || isButtonLoading}
-            className="w-full h-[48px] rounded-[16px] bg-gradient-to-r from-[#0052CC] to-[#10B981] text-white font-bold text-[15px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_16px_rgba(0,82,204,0.22)] active:scale-[0.985] hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full h-[52px] rounded-[18px] bg-gradient-to-r from-[#0052CC] via-[#0077B6] to-[#10B981] text-white font-bold text-[15.5px] flex items-center justify-center gap-2 transition-all shadow-[0_6px_20px_rgba(0,82,204,0.35)] active:scale-[0.985] hover:opacity-95 disabled:opacity-75 disabled:cursor-not-allowed"
           >
             {isButtonLoading ? (
               <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
-              <span>{buttonText}</span>
+              <>
+                <span className="tracking-wide font-extrabold text-[15.5px] text-white drop-shadow-xs">{buttonText}</span>
+                <ArrowRight className="w-5 h-5 text-white shrink-0 stroke-[2.5]" />
+              </>
             )}
           </button>
         </div>
 
         {/* Bottom Helper Text */}
         {bottomHelperText && (
-          <div className="text-center text-[12px] text-slate-500 font-medium">
+          <div className="text-center text-[12px] text-slate-600 font-medium">
             {bottomHelperText}
           </div>
         )}
