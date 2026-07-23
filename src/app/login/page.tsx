@@ -3,14 +3,14 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { AppContainer } from "@/components/ui/AppContainer"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ServiceSelectionForm } from "@/components/auth/ServiceSelectionForm"
-
-import { ArrowLeft } from "lucide-react"
-
 import { TermsModal } from "@/components/ui/TermsModal"
 import { BrandLogo } from "@/components/ui/BrandLogo"
+import { 
+  ShieldCheck, Phone, ChevronDown, ArrowRight, Shield, 
+  Fingerprint, Lock, CheckCircle2, Sparkles 
+} from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -46,165 +46,228 @@ export default function LoginPage() {
 
   return (
     <AppContainer centered>
-      <div className="w-full flex flex-col justify-between flex-1 py-3 px-1 min-h-[100dvh] box-border">
+      {/* ── Background Mesh Tint (Subtle Teal/Blue Top Wave) ──────────────────── */}
+      <div className="w-full min-h-[100dvh] bg-[#FAFCFF] bg-gradient-to-b from-[#F0FDF4]/60 via-[#FAFCFF] to-[#F0F7FF]/50 flex flex-col justify-between py-3 px-3.5 box-border select-none font-sans">
         
-        {/* Top Tab Bar Navigation */}
-        <div className="flex border-b border-divider/70 mb-4 relative shrink-0">
+        {/* ── Top Bar: Segmented Tab Bar Navigation ────────────────────────────── */}
+        <div className="w-full flex items-center justify-between pt-1 pb-3 px-1 border-b border-slate-200/70 relative shrink-0">
+          <div className="flex-1 flex justify-center gap-12 relative">
+            <button 
+              className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'login' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
+              onClick={() => setActiveTab('login')}
+            >
+              Login
+              {activeTab === 'login' && (
+                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
+              )}
+            </button>
+            <button 
+              className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'register' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
+              onClick={() => setActiveTab('register')}
+            >
+              Register
+              {activeTab === 'register' && (
+                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
+              )}
+            </button>
+          </div>
+
+          {/* Top Right Floating Sparkle Button */}
           <button 
-            className={`flex-1 pb-2.5 text-[15px] font-bold transition-all text-center relative ${activeTab === 'login' ? 'text-primary' : 'text-secondary-text hover:text-foreground'}`}
-            onClick={() => setActiveTab('login')}
+            type="button" 
+            className="w-8 h-8 rounded-full bg-slate-100/80 hover:bg-slate-200/80 flex items-center justify-center text-slate-500 transition-colors absolute right-1 top-0.5"
           >
-            Login
-            {activeTab === 'login' && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-primary rounded-t-full" />
-            )}
-          </button>
-          <button 
-            className={`flex-1 pb-2.5 text-[15px] font-bold transition-all text-center relative ${activeTab === 'register' ? 'text-primary' : 'text-secondary-text hover:text-foreground'}`}
-            onClick={() => setActiveTab('register')}
-          >
-            Register
-            {activeTab === 'register' && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-primary rounded-t-full" />
-            )}
+            <Sparkles className="w-4 h-4 text-slate-500" />
           </button>
         </div>
 
-        {/* Brand Icon & Welcome Headline */}
-        <div className="flex flex-col items-center text-center mt-1 mb-4 px-2 shrink-0">
+        {/* ── Headline & Logo Section ────────────────────────────────────────── */}
+        <div className="flex flex-col items-center text-center mt-3 mb-4 px-2 shrink-0">
           <div className="mb-2">
             <BrandLogo size="md" />
           </div>
-          <h1 className="text-[20px] font-extrabold text-foreground tracking-tight mb-1">
-            {activeTab === 'login' ? "Welcome Back!" : "Create your account"}
+
+          <h1 className="text-[23px] font-extrabold text-[#0F172A] tracking-tight leading-tight flex items-center gap-1.5 mt-1">
+            <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
+            <span className="text-[22px]">👋</span>
           </h1>
-          <p className="text-[12.5px] text-secondary-text font-medium max-w-[270px] leading-snug">
+          <p className="text-[13px] text-slate-500 font-medium max-w-[280px] leading-snug mt-1">
             Join thousands securing smart, legal digital sale agreements.
           </p>
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center my-auto">
+        {/* ── Form Section ───────────────────────────────────────────────────── */}
+        <div className="flex-1 flex flex-col justify-center my-auto w-full max-w-[390px] mx-auto">
           {activeTab === 'login' ? (
             <>
-              {/* Input */}
-              <div className="mb-3 px-1">
-                <Input
-                  label="Mobile Number"
-                  type="tel"
-                  inputMode="numeric"
-                  prefixNode="+91"
-                  value={mobile}
-                  onChange={(e) => handleMobileChange(e.target.value)}
-                  placeholder="2345678909"
-                  error={error}
-                />
-              </div>
+              {/* Mobile Number Field Header */}
+              <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
+                Mobile Number
+              </label>
 
-              {/* Action Button */}
-              <div className="px-1 mb-4">
-                <Button 
-                  className="w-full rounded-[12px] h-[46px] text-[15px] font-bold tracking-wide shadow-xs" 
-                  onClick={handleSubmit} 
-                  disabled={isButtonDisabled}
-                  loading={isLoading}
-                >
-                  Send OTP
-                </Button>
-              </div>
+              {/* Custom Phone Input Bar (Exact 1:1 match image.png) */}
+              <div className="mb-3.5">
+                <div className={`w-full h-[52px] rounded-[18px] bg-white border ${error ? 'border-red-500' : 'border-slate-200/90'} shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex items-center px-2.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
+                  
+                  {/* Country Code Pill Button (+91 ⌄) */}
+                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-[12px] bg-slate-50 border border-slate-100 text-[#0F172A] font-bold text-[14px] shrink-0 mr-2 cursor-pointer hover:bg-slate-100/80 transition-colors">
+                    <span>+91</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </div>
 
-              {/* Divider */}
-              <div className="relative flex items-center justify-center mb-4 px-4">
-                <div className="absolute inset-0 flex items-center px-4">
-                  <div className="w-full border-t border-divider/60"></div>
+                  {/* Green Phone Icon */}
+                  <Phone className="w-4.5 h-4.5 text-[#10B981] shrink-0 mr-2.5" />
+
+                  {/* Real Input Field */}
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={mobile}
+                    onChange={(e) => handleMobileChange(e.target.value)}
+                    placeholder="Enter mobile number"
+                    className="w-full h-full bg-transparent text-[14.5px] font-semibold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none"
+                  />
                 </div>
-                <div className="relative bg-surface px-3 text-[12px] text-secondary-text font-medium">
+                {error && <p className="text-[12px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
+              </div>
+
+              {/* High-Impact Gradient "Send OTP" Button */}
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isButtonDisabled || isLoading}
+                className={`w-full h-[52px] rounded-[18px] bg-gradient-to-r from-[#0052CC] to-[#10B981] text-white font-bold text-[15.5px] flex items-center justify-between px-4 transition-all shadow-[0_4px_16px_rgba(0,82,204,0.22)] active:scale-[0.985] ${
+                  isButtonDisabled ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-95'
+                } mb-4`}
+              >
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4 text-white fill-white/30" />
+                </div>
+                
+                <span className="tracking-wide">{isLoading ? "Sending OTP..." : "Send OTP"}</span>
+
+                <ArrowRight className="w-5 h-5 text-white shrink-0" />
+              </button>
+
+              {/* Floating Divider ("or continue with") */}
+              <div className="relative flex items-center justify-center mb-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200/80"></div>
+                </div>
+                <div className="relative bg-white px-3.5 py-1 rounded-full border border-slate-200/80 shadow-2xs text-[11.5px] text-slate-500 font-medium">
                   or continue with
                 </div>
               </div>
 
-              {/* Social Logins */}
-              <div className="flex gap-3 mb-4 px-1">
-                <button className="flex-1 h-[44px] flex items-center justify-center gap-2 border border-divider/70 rounded-[12px] text-[14px] font-bold text-primary hover:bg-gray-50 active:scale-[0.99] transition-all">
-                  <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              {/* Social Logins (Side-by-Side Rounded White Cards) */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Google Card */}
+                <button 
+                  type="button"
+                  className="h-[50px] bg-white border border-slate-200/90 rounded-[16px] flex items-center justify-center gap-2.5 shadow-2xs hover:bg-slate-50 active:scale-[0.98] transition-all"
+                >
+                  <svg width="19" height="19" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
-                  Google
+                  <span className="text-[14px] font-bold text-[#0F172A]">Google</span>
                 </button>
-                <button className="flex-1 h-[44px] flex items-center justify-center gap-2 border border-divider/70 rounded-[12px] text-[14px] font-bold text-primary hover:bg-gray-50 active:scale-[0.99] transition-all">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                {/* WhatsApp Card */}
+                <button 
+                  type="button"
+                  className="h-[50px] bg-white border border-slate-200/90 rounded-[16px] flex items-center justify-center gap-2.5 shadow-2xs hover:bg-slate-50 active:scale-[0.98] transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.88-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.576-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.98 1.005-3.648-.235-.373a9.86 9.86 0 01-1.51-5.26c0-5.445 4.433-9.879 9.882-9.879 2.64 0 5.122 1.029 6.988 2.895A9.825 9.825 0 0121.93 11.91c0 5.442-4.433 9.875-9.879 9.875M19.39 4.606A11.759 11.759 0 0012.053 1.15C5.58 1.15.312 6.417.31 12.89c0 2.071.542 4.09 1.576 5.87L0 25l6.402-1.677a11.8 11.8 0 005.648 1.43h.005c6.47 0 11.737-5.267 11.739-11.74a11.755 11.755 0 00-3.404-8.407" fill="#25D366"/>
                   </svg>
-                  WhatsApp
+                  <span className="text-[14px] font-bold text-[#0F172A]">WhatsApp</span>
                 </button>
               </div>
             </>
           ) : (
-            <div className="px-1 mb-4">
+            <div className="px-0.5 mb-4">
               <ServiceSelectionForm />
             </div>
           )}
-        </div>
 
-        {/* Bottom Section: Trust Badges & Legal Disclaimer */}
-        <div className="shrink-0 pt-2 border-t border-slate-100">
-          {/* Trust Badges Bar */}
-          <div className="grid grid-cols-4 gap-1 items-center justify-between w-full py-1.5 px-0.5 bg-slate-50/70 rounded-xl mb-2">
-            <div className="flex flex-col items-center text-center">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="mb-0.5">
-                <path d="M12 21.5c-4-2-7.5-6-7.5-11V6l7.5-2.5L19.5 6v4.5c0 5-3.5 9-7.5 11z" stroke="#0052CC" strokeWidth="2" strokeLinejoin="round"/>
-                <circle cx="12" cy="10" r="1.8" fill="#10B981"/>
-                <path d="M8.5 16.5c0-1.8 1.5-3.2 3.5-3.2s3.5 1.4 3.5 3.2v.3H8.5v-.3z" fill="#10B981"/>
-              </svg>
-              <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Secure Login</span>
-            </div>
+          {/* ── 2×2 TRUST CARD GRID CONTAINER (Exact 1:1 match image.png) ────── */}
+          <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[20px] p-3 shadow-2xs">
+            <div className="grid grid-cols-2 gap-2.5">
+              
+              {/* Card 1: Secure Login */}
+              <div className="flex items-start gap-2.5 p-2.5 rounded-[14px] bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="w-9 h-9 rounded-[12px] bg-[#EFF6FF] text-[#0052CC] flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-5 h-5 text-[#0052CC]" />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[12.5px] font-bold text-[#0F172A] leading-tight truncate">Secure Login</span>
+                  <span className="text-[10.5px] text-slate-500 leading-tight mt-0.5">Your data is safe and protected</span>
+                </div>
+              </div>
 
-            <div className="flex flex-col items-center text-center border-l border-slate-200">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="mb-0.5">
-                <g fill="#0052CC">
-                  <polygon points="11.3,4 12,1.5 12.7,4" transform="rotate(-80 12 12)" />
-                  <polygon points="11.3,4 12,1.5 12.7,4" transform="rotate(-40 12 12)" />
-                  <polygon points="11.3,4 12,1.5 12.7,4" />
-                  <polygon points="11.3,4 12,1.5 12.7,4" transform="rotate(40 12 12)" />
-                  <polygon points="11.3,4 12,1.5 12.7,4" transform="rotate(80 12 12)" />
-                </g>
-                <path d="M12 20.5v-1M9.5 20.5V19a2.5 2.5 0 0 1 5 0v1.5M7 20.5V18a5 5 0 0 1 10 0v2.5" stroke="#0052CC" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-              <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
-            </div>
+              {/* Card 2: Aadhaar eKYC */}
+              <div className="flex items-start gap-2.5 p-2.5 rounded-[14px] bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="w-9 h-9 rounded-[12px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0">
+                  <Fingerprint className="w-5 h-5 text-[#10B981]" />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[12.5px] font-bold text-[#0F172A] leading-tight truncate">Aadhaar eKYC</span>
+                  <span className="text-[10.5px] text-slate-500 leading-tight mt-0.5">Verify securely with Aadhaar</span>
+                </div>
+              </div>
 
-            <div className="flex flex-col items-center text-center border-l border-slate-200">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="mb-0.5">
-                <path d="M12 21.5c-4-2-7.5-6-7.5-11V6l7.5-2.5L19.5 6v4.5c0 5-3.5 9-7.5 11z" stroke="#0052CC" strokeWidth="2" strokeLinejoin="round"/>
-                <rect x="9.5" y="7.5" width="5" height="7" rx="0.5" stroke="#10B981" strokeWidth="1.5"/>
-              </svg>
-              <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">DPDP Compliant</span>
-            </div>
+              {/* Card 3: DPDP Compliant */}
+              <div className="flex items-start gap-2.5 p-2.5 rounded-[14px] bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="w-9 h-9 rounded-[12px] bg-[#F5F3FF] text-[#7C3AED] flex items-center justify-center shrink-0">
+                  <Shield className="w-5 h-5 text-[#7C3AED]" />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[12.5px] font-bold text-[#0F172A] leading-tight truncate">DPDP Compliant</span>
+                  <span className="text-[10.5px] text-slate-500 leading-tight mt-0.5">We respect your privacy rights</span>
+                </div>
+              </div>
 
-            <div className="flex flex-col items-center text-center border-l border-slate-200">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="mb-0.5">
-                <rect x="7" y="11" width="10" height="8" rx="1.5" stroke="#0052CC" strokeWidth="2"/>
-                <path d="M9 11V7.5a3 3 0 0 1 6 0V11" stroke="#0052CC" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Encrypted</span>
+              {/* Card 4: End-to-End Encrypted */}
+              <div className="flex items-start gap-2.5 p-2.5 rounded-[14px] bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                <div className="w-9 h-9 rounded-[12px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0">
+                  <Lock className="w-5 h-5 text-[#D97706]" />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[12.5px] font-bold text-[#0F172A] leading-tight truncate">End-to-End Encrypted</span>
+                  <span className="text-[10.5px] text-slate-500 leading-tight mt-0.5">100% encrypted transactions</span>
+                </div>
+              </div>
+
             </div>
           </div>
+        </div>
 
-          {/* Legal Terms Disclaimer */}
-          <div className="text-center pb-1">
-            <p className="text-[11.5px] text-secondary-text font-medium leading-tight">
-              By continuing you agree to our{" "}
-              <button
-                type="button"
-                onClick={() => setIsTermsOpen(true)}
-                className="text-primary font-bold underline hover:opacity-80 transition-opacity"
-              >
-                terms and conditions
-              </button>
-            </p>
+        {/* ── Bottom Legal Disclaimer (Green Checkmark + Links) ─────────────── */}
+        <div className="shrink-0 pt-3 text-center pb-1">
+          <div className="flex items-center justify-center gap-1.5 text-[11.5px] text-slate-500 font-medium">
+            <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
+            <span>By continuing, you agree to our</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-[12px] font-bold mt-1">
+            <button
+              type="button"
+              onClick={() => setIsTermsOpen(true)}
+              className="text-[#0052CC] hover:underline"
+            >
+              Terms & Conditions
+            </button>
+            <span className="text-slate-300">•</span>
+            <button
+              type="button"
+              onClick={() => setIsTermsOpen(true)}
+              className="text-[#0052CC] hover:underline"
+            >
+              Privacy Policy
+            </button>
           </div>
         </div>
 
