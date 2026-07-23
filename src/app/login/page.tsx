@@ -51,37 +51,24 @@ export default function LoginPage() {
         {/* ── Universal Mobile Shell (Constrained 390px Max Width) ────────────────── */}
         <div className="w-full max-w-[390px] flex flex-col space-y-3.5 my-auto sm:my-0 relative">
 
-          {/* ── TOP BADGE & BRAND HEADER BAR ───────────────────────────────────────── */}
-          <div className="w-full flex items-center justify-between relative pt-0.5 pb-1">
-            
-            {/* Left Spacer for Balance */}
-            <div className="w-16" />
-
-            {/* Center: Brand Logo (Hero Anchor) */}
-            <div className="flex items-center justify-center py-0.5">
-              <BrandLogo size="lg" />
-            </div>
-
-            {/* Right: Top-Right "100% Secure" Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-[#10B981] shadow-2xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
-              <span className="text-[10.5px] font-extrabold tracking-wide uppercase">100% Secure</span>
-            </div>
+          {/* ── TOP HEADER BAR: 100% Centered Brand Logo (Zero Collisions) ─────────── */}
+          <div className="w-full flex items-center justify-center pt-1 pb-1">
+            <BrandLogo size="lg" />
           </div>
 
-          {/* ── SECTION 1: Capsule Pill Segmented Control (Login / Register) ───────── */}
-          <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[18px] p-1 shadow-2xs">
+          {/* ── SECTION 1: Rich Capsule Pill Segmented Control (Login / Register) ──── */}
+          <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-1 shadow-2xs">
             <div className="grid grid-cols-2 gap-1">
               <button 
                 type="button"
                 className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'login' 
-                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/20' 
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                    ? 'bg-[#0040A8] text-white shadow-md shadow-[#0040A8]/25' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('login')}
               >
-                <User className={`w-4 h-4 ${activeTab === 'login' ? 'text-white' : 'text-slate-400'}`} />
+                <User className={`w-4 h-4 ${activeTab === 'login' ? 'text-white' : 'text-slate-500'}`} />
                 <span>Login</span>
               </button>
 
@@ -89,24 +76,24 @@ export default function LoginPage() {
                 type="button"
                 className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'register' 
-                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/20' 
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                    ? 'bg-[#0040A8] text-white shadow-md shadow-[#0040A8]/25' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('register')}
               >
-                <UserPlus className={`w-4 h-4 ${activeTab === 'register' ? 'text-white' : 'text-slate-400'}`} />
+                <UserPlus className={`w-4 h-4 ${activeTab === 'register' ? 'text-white' : 'text-slate-500'}`} />
                 <span>Register</span>
               </button>
             </div>
           </div>
 
-          {/* ── SECTION 2: Welcome Headline & Subtext ──────────────────────────────── */}
+          {/* ── SECTION 2: Welcome Headline & Subtext (Optically Centered H2) ──────── */}
           <div className="text-center space-y-0.5 pt-0.5">
-            <h2 className="text-[18px] font-bold text-slate-800 tracking-tight leading-snug flex items-center justify-center gap-1.5">
+            <h2 className="text-[17.5px] font-bold text-[#0F172A] tracking-tight leading-snug flex items-center justify-center gap-1.5">
               <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
               <span className="text-[17px]">👋</span>
             </h2>
-            <p className="text-[12px] text-slate-500 font-medium max-w-[290px] leading-snug mx-auto">
+            <p className="text-[12.5px] text-slate-700 font-medium max-w-[290px] leading-snug mx-auto">
               Secure access to your digital sale agreements.
             </p>
           </div>
@@ -122,16 +109,16 @@ export default function LoginPage() {
                 </label>
 
                 {/* Custom Phone Input Bar */}
-                <div className={`w-full h-[48px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-200/90'} shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex items-center px-2 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
+                <div className={`w-full h-[48px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2 transition-all focus-within:border-[#0040A8] focus-within:ring-2 focus-within:ring-[#0040A8]/15`}>
                   
                   {/* Country Code Pill (+91 ⌄) */}
-                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-[10px] bg-slate-50 border border-slate-100 text-[#0F172A] font-bold text-[13.5px] shrink-0 mr-2 cursor-pointer hover:bg-slate-100/80 transition-colors">
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-[10px] bg-slate-100/80 border border-slate-200 text-[#0F172A] font-bold text-[13.5px] shrink-0 mr-2 cursor-pointer hover:bg-slate-200/80 transition-colors">
                     <span>+91</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                   </div>
 
                   {/* Green Phone Icon */}
-                  <Phone className="w-4 h-4 text-[#10B981] shrink-0 mr-2" />
+                  <Phone className="w-4 h-4 text-[#059669] shrink-0 mr-2" />
 
                   {/* Input Field */}
                   <input
@@ -140,18 +127,18 @@ export default function LoginPage() {
                     value={mobile}
                     onChange={(e) => handleMobileChange(e.target.value)}
                     placeholder="Enter mobile number"
-                    className="w-full h-full bg-transparent text-[14px] font-semibold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none"
+                    className="w-full h-full bg-transparent text-[14.5px] font-semibold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none"
                   />
                 </div>
                 {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
               </div>
 
-              {/* SECTION 4: High-Impact Gradient "Send OTP" Button */}
+              {/* SECTION 4: Deep High-Contrast Gradient "Send OTP" Button */}
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isButtonDisabled || isLoading}
-                className={`w-full h-[48px] rounded-[16px] bg-gradient-to-r from-[#0052CC] to-[#10B981] text-white font-bold text-[15px] flex items-center justify-between px-3.5 transition-all shadow-[0_4px_16px_rgba(0,82,204,0.22)] active:scale-[0.985] ${
+                className={`w-full h-[48px] rounded-[16px] bg-gradient-to-r from-[#0040A8] to-[#059669] text-white font-bold text-[15px] flex items-center justify-between px-3.5 transition-all shadow-[0_4px_18px_rgba(0,64,168,0.28)] active:scale-[0.985] ${
                   isButtonDisabled ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-95'
                 }`}
               >
@@ -167,9 +154,9 @@ export default function LoginPage() {
               {/* Floating Divider ("or continue with") */}
               <div className="relative flex items-center justify-center py-0.5">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200/80"></div>
+                  <div className="w-full border-t border-slate-200"></div>
                 </div>
-                <div className="relative bg-white px-3 py-0.5 rounded-full border border-slate-200/80 shadow-2xs text-[11px] text-slate-500 font-medium">
+                <div className="relative bg-white px-3 py-0.5 rounded-full border border-slate-200 shadow-2xs text-[11px] text-slate-600 font-semibold">
                   or continue with
                 </div>
               </div>
@@ -209,50 +196,50 @@ export default function LoginPage() {
           )}
 
           {/* ── SECTION 6: 2×2 TRUST CARD GRID CONTAINER ───────────────────────────── */}
-          <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[18px] p-2.5 shadow-2xs">
+          <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-2.5 shadow-2xs">
             <div className="grid grid-cols-2 gap-2">
               
               {/* Card 1: Secure Login */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/60 hover:bg-slate-50 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#EFF6FF] text-[#0052CC] flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-4.5 h-4.5 text-[#0052CC]" />
+              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#EFF6FF] text-[#0040A8] flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4.5 h-4.5 text-[#0040A8]" />
                 </div>
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Secure Login</span>
-                  <span className="text-[10px] text-slate-500 leading-tight mt-0.5">Your data is safe & protected</span>
+                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">Your data is safe & protected</span>
                 </div>
               </div>
 
               {/* Card 2: Aadhaar eKYC */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/60 hover:bg-slate-50 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0">
-                  <Fingerprint className="w-4.5 h-4.5 text-[#10B981]" />
+              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
+                  <Fingerprint className="w-4.5 h-4.5 text-[#059669]" />
                 </div>
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
-                  <span className="text-[10px] text-slate-500 leading-tight mt-0.5">Verify securely with Aadhaar</span>
+                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">Verify securely with Aadhaar</span>
                 </div>
               </div>
 
               {/* Card 3: DPDP Compliant */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/60 hover:bg-slate-50 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#F5F3FF] text-[#7C3AED] flex items-center justify-center shrink-0">
-                  <Shield className="w-4.5 h-4.5 text-[#7C3AED]" />
+              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#F5F3FF] text-[#6D28D9] flex items-center justify-center shrink-0">
+                  <Shield className="w-4.5 h-4.5 text-[#6D28D9]" />
                 </div>
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">DPDP Compliant</span>
-                  <span className="text-[10px] text-slate-500 leading-tight mt-0.5">We respect your privacy</span>
+                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">We respect your privacy</span>
                 </div>
               </div>
 
               {/* Card 4: End-to-End Encrypted */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/60 hover:bg-slate-50 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0">
-                  <Lock className="w-4.5 h-4.5 text-[#D97706]" />
+              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#FFFBEB] text-[#B45309] flex items-center justify-center shrink-0">
+                  <Lock className="w-4.5 h-4.5 text-[#B45309]" />
                 </div>
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">End-to-End Encrypted</span>
-                  <span className="text-[10px] text-slate-500 leading-tight mt-0.5">100% encrypted transactions</span>
+                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">100% encrypted transactions</span>
                 </div>
               </div>
 
@@ -261,8 +248,8 @@ export default function LoginPage() {
 
           {/* ── SECTION 7: Legal Terms & Conditions ────────────────────────────────── */}
           <div className="w-full text-center pt-0.5">
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-600 font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#059669] shrink-0" />
               <span>By continuing, you agree to our</span>
             </div>
 
@@ -270,15 +257,15 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0052CC] hover:underline"
+                className="text-[#0040A8] hover:underline"
               >
                 Terms & Conditions
               </button>
-              <span className="text-slate-300">•</span>
+              <span className="text-slate-400">•</span>
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0052CC] hover:underline"
+                className="text-[#0040A8] hover:underline"
               >
                 Privacy Policy
               </button>
@@ -287,12 +274,12 @@ export default function LoginPage() {
 
           {/* ── SECTION 8: Bottom Social Proof ("Trusted by 10,000+ users across India") ── */}
           <div className="w-full flex items-center justify-center gap-2 pt-1 pb-0.5">
-            <div className="flex-1 border-t border-slate-200/60" />
-            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-500 font-semibold px-2 py-0.5 rounded-full bg-slate-100/70 border border-slate-200/50">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0052CC]" />
+            <div className="flex-1 border-t border-slate-200" />
+            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-700 font-bold px-2.5 py-0.5 rounded-full bg-slate-100/90 border border-slate-200/80">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0040A8]" />
               <span>Trusted by 10,000+ users across India</span>
             </div>
-            <div className="flex-1 border-t border-slate-200/60" />
+            <div className="flex-1 border-t border-slate-200" />
           </div>
 
         </div>
