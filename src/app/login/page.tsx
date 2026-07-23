@@ -195,45 +195,44 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* ── SECTION 6: HYBRID RESPONSIVE TRUST CARD CONTAINER ───────────────────── */}
-          {/* Mobile: 2x2 Grid (Unclipped text) | Tablet/Desktop: 4-Column Horizontal Row */}
-          <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-2.5 shadow-2xs">
-            <div className="grid grid-cols-2 min-[440px]:grid-cols-4 gap-2">
+          {/* ── SECTION 6: COMPACT HYBRID RESPONSIVE TRUST CARDS ─────────────────────── */}
+          <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[16px] p-2 shadow-2xs">
+            <div className="grid grid-cols-2 min-[440px]:grid-cols-4 gap-1.5">
               
               {/* Card 1: Secure Login */}
-              <div className="flex flex-col items-center text-center p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#EFF6FF] text-[#0052CC] flex items-center justify-center shrink-0 mb-1.5">
-                  <ShieldCheck className="w-4.5 h-4.5 text-[#0052CC]" />
+              <div className="flex flex-col items-center text-center p-1.5 rounded-[10px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-7.5 h-7.5 rounded-[8px] bg-[#EFF6FF] text-[#0052CC] flex items-center justify-center shrink-0 mb-1">
+                  <ShieldCheck className="w-4 h-4 text-[#0052CC]" />
                 </div>
-                <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Secure Login</span>
-                <span className="text-[10px] text-slate-500 leading-tight mt-0.5">Data protected</span>
+                <span className="text-[11px] font-bold text-[#0F172A] leading-tight">Secure Login</span>
+                <span className="text-[9.5px] text-slate-500 leading-tight mt-0.5">Data protected</span>
               </div>
 
               {/* Card 2: Aadhaar eKYC */}
-              <div className="flex flex-col items-center text-center p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 mb-1.5">
-                  <Fingerprint className="w-4.5 h-4.5 text-[#10B981]" />
+              <div className="flex flex-col items-center text-center p-1.5 rounded-[10px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-7.5 h-7.5 rounded-[8px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 mb-1">
+                  <Fingerprint className="w-4 h-4 text-[#10B981]" />
                 </div>
-                <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
-                <span className="text-[10px] text-slate-500 leading-tight mt-0.5">UIDAI eKYC</span>
+                <span className="text-[11px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
+                <span className="text-[9.5px] text-slate-500 leading-tight mt-0.5">UIDAI eKYC</span>
               </div>
 
               {/* Card 3: End-to-End Encrypted */}
-              <div className="flex flex-col items-center text-center p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#FFFBEB] text-[#B45309] flex items-center justify-center shrink-0 mb-1.5">
-                  <Lock className="w-4.5 h-4.5 text-[#B45309]" />
+              <div className="flex flex-col items-center text-center p-1.5 rounded-[10px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-7.5 h-7.5 rounded-[8px] bg-[#FFFBEB] text-[#B45309] flex items-center justify-center shrink-0 mb-1">
+                  <Lock className="w-4 h-4 text-[#B45309]" />
                 </div>
-                <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">End-to-End</span>
-                <span className="text-[10px] text-slate-500 leading-tight mt-0.5">100% Encrypted</span>
+                <span className="text-[11px] font-bold text-[#0F172A] leading-tight">End-to-End</span>
+                <span className="text-[9.5px] text-slate-500 leading-tight mt-0.5">100% Encrypted</span>
               </div>
 
               {/* Card 4: DPDP Compliant */}
-              <div className="flex flex-col items-center text-center p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#F5F3FF] text-[#6D28D9] flex items-center justify-center shrink-0 mb-1.5">
-                  <Shield className="w-4.5 h-4.5 text-[#6D28D9]" />
+              <div className="flex flex-col items-center text-center p-1.5 rounded-[10px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
+                <div className="w-7.5 h-7.5 rounded-[8px] bg-[#F5F3FF] text-[#6D28D9] flex items-center justify-center shrink-0 mb-1">
+                  <Shield className="w-4 h-4 text-[#6D28D9]" />
                 </div>
-                <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">DPDP Compliant</span>
-                <span className="text-[10px] text-slate-500 leading-tight mt-0.5">Privacy respected</span>
+                <span className="text-[11px] font-bold text-[#0F172A] leading-tight">DPDP Compliant</span>
+                <span className="text-[9.5px] text-slate-500 leading-tight mt-0.5">Privacy respected</span>
               </div>
 
             </div>
