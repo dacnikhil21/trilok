@@ -8,7 +8,7 @@ import { TermsModal } from "@/components/ui/TermsModal"
 import { BrandLogo } from "@/components/ui/BrandLogo"
 import { 
   ShieldCheck, Phone, ChevronDown, ArrowRight, Shield, 
-  Fingerprint, Lock, CheckCircle2 
+  Fingerprint, Lock, CheckCircle2, User, UserPlus
 } from "lucide-react"
 
 export default function LoginPage() {
@@ -45,66 +45,83 @@ export default function LoginPage() {
 
   return (
     <AppContainer centered>
-      {/* ── Outer Scrollable Container (Content-Driven, NO Viewport Height Calculations) ── */}
-      <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-start min-h-screen sm:min-h-0 py-4 px-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
+      {/* ── Outer Scrollable Container (Material Design 3 Content-Driven Layout) ──── */}
+      <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-start min-h-screen sm:min-h-0 py-3.5 px-3.5 pb-[calc(16px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
         
-        {/* ── Material Design 3 Centered Content Stack (8-Point System) ───────────────── */}
-        <div className="w-full max-w-[390px] flex flex-col space-y-4 my-auto sm:my-0">
+        {/* ── Universal Mobile Shell (Constrained 390px Max Width) ────────────────── */}
+        <div className="w-full max-w-[390px] flex flex-col space-y-3.5 my-auto sm:my-0 relative">
 
-          {/* ── SECTION 1: Login / Register Segmented Tabs ───────────────────────────── */}
-          <div className="w-full flex items-center justify-center pt-1 pb-2 border-b border-slate-200/80">
-            <div className="flex justify-center gap-12 relative w-full">
-              <button 
-                className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'login' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
-                onClick={() => setActiveTab('login')}
-              >
-                Login
-                {activeTab === 'login' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
-                )}
-              </button>
-              <button 
-                className={`pb-2 text-[15px] font-bold transition-all relative ${activeTab === 'register' ? 'text-[#0052CC]' : 'text-slate-500 hover:text-slate-800'}`}
-                onClick={() => setActiveTab('register')}
-              >
-                Register
-                {activeTab === 'register' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0052CC] rounded-full" />
-                )}
-              </button>
-            </div>
-          </div>
+          {/* ── TOP BADGE & BRAND HEADER BAR ───────────────────────────────────────── */}
+          <div className="w-full flex items-center justify-between relative pt-0.5 pb-1">
+            
+            {/* Left Spacer for Balance */}
+            <div className="w-16" />
 
-          {/* ── SECTION 2 & 3: Brand Logo & Welcome Message ─────────────────────────── */}
-          <div className="flex flex-col items-center text-center pt-1 space-y-2">
-            {/* Section 2: Brand Logo (Hero Anchor) */}
-            <div className="py-0.5">
+            {/* Center: Brand Logo (Hero Anchor) */}
+            <div className="flex items-center justify-center py-0.5">
               <BrandLogo size="lg" />
             </div>
 
-            {/* Section 3: Welcome Message (Semantic H2, Optically Centered) */}
-            <div className="space-y-0.5">
-              <h2 className="text-[17px] font-bold text-slate-800 tracking-tight leading-snug flex items-center justify-center gap-1.5">
-                <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
-                <span className="text-[16px]">👋</span>
-              </h2>
-              <p className="text-[12px] text-slate-500 font-medium max-w-[280px] leading-snug mx-auto">
-                Join thousands securing smart, legal digital sale agreements.
-              </p>
+            {/* Right: Top-Right "100% Secure" Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-[#10B981] shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+              <span className="text-[10.5px] font-extrabold tracking-wide uppercase">100% Secure</span>
             </div>
           </div>
 
-          {/* ── MAIN ACTION FLOW (Sections 4 - 6) ────────────────────────────────────── */}
+          {/* ── SECTION 1: Capsule Pill Segmented Control (Login / Register) ───────── */}
+          <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[18px] p-1 shadow-2xs">
+            <div className="grid grid-cols-2 gap-1">
+              <button 
+                type="button"
+                className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
+                  activeTab === 'login' 
+                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/20' 
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                }`}
+                onClick={() => setActiveTab('login')}
+              >
+                <User className={`w-4 h-4 ${activeTab === 'login' ? 'text-white' : 'text-slate-400'}`} />
+                <span>Login</span>
+              </button>
+
+              <button 
+                type="button"
+                className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
+                  activeTab === 'register' 
+                    ? 'bg-[#0052CC] text-white shadow-md shadow-[#0052CC]/20' 
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                }`}
+                onClick={() => setActiveTab('register')}
+              >
+                <UserPlus className={`w-4 h-4 ${activeTab === 'register' ? 'text-white' : 'text-slate-400'}`} />
+                <span>Register</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ── SECTION 2: Welcome Headline & Subtext ──────────────────────────────── */}
+          <div className="text-center space-y-0.5 pt-0.5">
+            <h2 className="text-[18px] font-bold text-slate-800 tracking-tight leading-snug flex items-center justify-center gap-1.5">
+              <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
+              <span className="text-[17px]">👋</span>
+            </h2>
+            <p className="text-[12px] text-slate-500 font-medium max-w-[290px] leading-snug mx-auto">
+              Secure access to your digital sale agreements.
+            </p>
+          </div>
+
+          {/* ── MAIN ACTION FLOW (Sections 3 - 5) ────────────────────────────────────── */}
           {activeTab === 'login' ? (
-            <div className="w-full flex flex-col space-y-3.5">
+            <div className="w-full flex flex-col space-y-3">
               
-              {/* SECTION 4: Mobile Number Field */}
+              {/* SECTION 3: Mobile Number Field */}
               <div>
                 <label className="block text-[13px] font-bold text-[#0F172A] mb-1 px-0.5">
                   Mobile Number
                 </label>
 
-                {/* Phone Input Bar */}
+                {/* Custom Phone Input Bar */}
                 <div className={`w-full h-[48px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-200/90'} shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex items-center px-2 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
                   
                   {/* Country Code Pill (+91 ⌄) */}
@@ -129,7 +146,7 @@ export default function LoginPage() {
                 {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
               </div>
 
-              {/* SECTION 5: Gradient Send OTP Button */}
+              {/* SECTION 4: High-Impact Gradient "Send OTP" Button */}
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -157,7 +174,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* SECTION 6: Social Login Buttons (Google & WhatsApp) */}
+              {/* SECTION 5: Social Login Buttons (Google & WhatsApp) */}
               <div className="grid grid-cols-2 gap-2.5">
                 {/* Google Card */}
                 <button 
@@ -191,7 +208,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* ── SECTION 7: Trust Features (2x2 Card Grid) ─────────────────────────────── */}
+          {/* ── SECTION 6: 2×2 TRUST CARD GRID CONTAINER ───────────────────────────── */}
           <div className="w-full bg-white/90 backdrop-blur-xs border border-slate-200/80 rounded-[18px] p-2.5 shadow-2xs">
             <div className="grid grid-cols-2 gap-2">
               
@@ -242,8 +259,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ── SECTION 8: Terms & Conditions Disclaimer ──────────────────────────────── */}
-          <div className="w-full text-center pt-0.5 pb-1">
+          {/* ── SECTION 7: Legal Terms & Conditions ────────────────────────────────── */}
+          <div className="w-full text-center pt-0.5">
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
               <span>By continuing, you agree to our</span>
@@ -266,6 +283,16 @@ export default function LoginPage() {
                 Privacy Policy
               </button>
             </div>
+          </div>
+
+          {/* ── SECTION 8: Bottom Social Proof ("Trusted by 10,000+ users across India") ── */}
+          <div className="w-full flex items-center justify-center gap-2 pt-1 pb-0.5">
+            <div className="flex-1 border-t border-slate-200/60" />
+            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-500 font-semibold px-2 py-0.5 rounded-full bg-slate-100/70 border border-slate-200/50">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0052CC]" />
+              <span>Trusted by 10,000+ users across India</span>
+            </div>
+            <div className="flex-1 border-t border-slate-200/60" />
           </div>
 
         </div>
