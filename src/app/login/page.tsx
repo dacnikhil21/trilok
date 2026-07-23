@@ -63,7 +63,7 @@ export default function LoginPage() {
                 type="button"
                 className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'login' 
-                    ? 'bg-[#0040A8] text-white shadow-md shadow-[#0040A8]/25' 
+                    ? 'bg-[#0D59F2] text-white shadow-md shadow-[#0D59F2]/25' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -76,7 +76,7 @@ export default function LoginPage() {
                 type="button"
                 className={`h-[42px] rounded-[14px] font-bold text-[14px] flex items-center justify-center gap-2 transition-all ${
                   activeTab === 'register' 
-                    ? 'bg-[#0040A8] text-white shadow-md shadow-[#0040A8]/25' 
+                    ? 'bg-[#0D59F2] text-white shadow-md shadow-[#0D59F2]/25' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
                 onClick={() => setActiveTab('register')}
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 </label>
 
                 {/* Custom Phone Input Bar */}
-                <div className={`w-full h-[48px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2 transition-all focus-within:border-[#0040A8] focus-within:ring-2 focus-within:ring-[#0040A8]/15`}>
+                <div className={`w-full h-[48px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2 transition-all focus-within:border-[#0D59F2] focus-within:ring-2 focus-within:ring-[#0D59F2]/15`}>
                   
                   {/* Country Code Pill (+91 ⌄) */}
                   <div className="flex items-center gap-1 px-2.5 py-1 rounded-[10px] bg-slate-100/80 border border-slate-200 text-[#0F172A] font-bold text-[13.5px] shrink-0 mr-2 cursor-pointer hover:bg-slate-200/80 transition-colors">
@@ -118,7 +118,7 @@ export default function LoginPage() {
                   </div>
 
                   {/* Green Phone Icon */}
-                  <Phone className="w-4 h-4 text-[#059669] shrink-0 mr-2" />
+                  <Phone className="w-4 h-4 text-[#00B074] shrink-0 mr-2" />
 
                   {/* Input Field */}
                   <input
@@ -133,22 +133,22 @@ export default function LoginPage() {
                 {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
               </div>
 
-              {/* SECTION 4: Deep High-Contrast Gradient "Send OTP" Button */}
+              {/* SECTION 4: EXACT MATCH REFERENCE GRADIENT "Send OTP" BUTTON */}
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isButtonDisabled || isLoading}
-                className={`w-full h-[48px] rounded-[16px] bg-gradient-to-r from-[#0040A8] to-[#059669] text-white font-bold text-[15px] flex items-center justify-between px-3.5 transition-all shadow-[0_4px_18px_rgba(0,64,168,0.28)] active:scale-[0.985] ${
+                className={`w-full h-[50px] rounded-[18px] bg-gradient-to-r from-[#0D59F2] via-[#0066FF] to-[#00B074] text-white font-bold text-[15.5px] flex items-center justify-between px-3.5 transition-all shadow-[0_6px_20px_rgba(13,89,242,0.32)] active:scale-[0.985] ${
                   isButtonDisabled ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-95'
                 }`}
               >
-                <div className="w-7.5 h-7.5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                  <Shield className="w-3.5 h-3.5 text-white fill-white/30" />
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/20">
+                  <Shield className="w-4 h-4 text-white fill-white/40" />
                 </div>
                 
-                <span className="tracking-wide">{isLoading ? "Sending OTP..." : "Send OTP"}</span>
+                <span className="tracking-wide font-extrabold text-[15.5px] drop-shadow-xs">{isLoading ? "Sending OTP..." : "Send OTP"}</span>
 
-                <ArrowRight className="w-4.5 h-4.5 text-white shrink-0" />
+                <ArrowRight className="w-5 h-5 text-white shrink-0 stroke-[2.5]" />
               </button>
 
               {/* Floating Divider ("or continue with") */}
@@ -195,51 +195,51 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* ── SECTION 6: 2×2 TRUST CARD GRID CONTAINER ───────────────────────────── */}
-          <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-2.5 shadow-2xs">
-            <div className="grid grid-cols-2 gap-2">
+          {/* ── SECTION 6: SLEEK MINIMALIST 2×2 TRUST LIST (Option 1 - No Heavy Boxes) ── */}
+          <div className="w-full pt-1 px-1">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-3">
               
-              {/* Card 1: Secure Login */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#EFF6FF] text-[#0040A8] flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-4.5 h-4.5 text-[#0040A8]" />
+              {/* Item 1: Secure Login */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#0D59F2] flex items-center justify-center shrink-0 shadow-2xs">
+                  <ShieldCheck className="w-4 h-4 text-[#0D59F2]" />
                 </div>
-                <div className="flex flex-col text-left min-w-0">
-                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Secure Login</span>
-                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">Your data is safe & protected</span>
-                </div>
-              </div>
-
-              {/* Card 2: Aadhaar eKYC */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
-                  <Fingerprint className="w-4.5 h-4.5 text-[#059669]" />
-                </div>
-                <div className="flex flex-col text-left min-w-0">
-                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
-                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">Verify securely with Aadhaar</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">Secure Login</span>
+                  <span className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">Data protected</span>
                 </div>
               </div>
 
-              {/* Card 3: DPDP Compliant */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#F5F3FF] text-[#6D28D9] flex items-center justify-center shrink-0">
-                  <Shield className="w-4.5 h-4.5 text-[#6D28D9]" />
+              {/* Item 2: Aadhaar eKYC */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#ECFDF5] text-[#00B074] flex items-center justify-center shrink-0 shadow-2xs">
+                  <Fingerprint className="w-4 h-4 text-[#00B074]" />
                 </div>
-                <div className="flex flex-col text-left min-w-0">
-                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">DPDP Compliant</span>
-                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">We respect your privacy</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
+                  <span className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">Instant UIDAI eKYC</span>
                 </div>
               </div>
 
-              {/* Card 4: End-to-End Encrypted */}
-              <div className="flex items-start gap-2 p-2 rounded-[12px] bg-slate-50/70 hover:bg-slate-100/60 transition-colors">
-                <div className="w-8.5 h-8.5 rounded-[10px] bg-[#FFFBEB] text-[#B45309] flex items-center justify-center shrink-0">
-                  <Lock className="w-4.5 h-4.5 text-[#B45309]" />
+              {/* Item 3: DPDP Compliant */}
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#F5F3FF] text-[#6D28D9] flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                  <Shield className="w-4 h-4 text-[#6D28D9]" />
                 </div>
-                <div className="flex flex-col text-left min-w-0">
-                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">End-to-End Encrypted</span>
-                  <span className="text-[10px] text-slate-600 leading-tight mt-0.5">100% encrypted transactions</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">DPDP Compliant</span>
+                  <span className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">Privacy respected</span>
+                </div>
+              </div>
+
+              {/* Item 4: End-to-End Encrypted */}
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#FFFBEB] text-[#B45309] flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
+                  <Lock className="w-4 h-4 text-[#B45309]" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[12px] font-extrabold text-[#0F172A] leading-tight">End-to-End</span>
+                  <span className="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">100% Encrypted</span>
                 </div>
               </div>
 
@@ -247,9 +247,9 @@ export default function LoginPage() {
           </div>
 
           {/* ── SECTION 7: Legal Terms & Conditions ────────────────────────────────── */}
-          <div className="w-full text-center pt-0.5">
+          <div className="w-full text-center pt-1">
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-600 font-semibold">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#059669] shrink-0" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#00B074] shrink-0" />
               <span>By continuing, you agree to our</span>
             </div>
 
@@ -257,7 +257,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0040A8] hover:underline"
+                className="text-[#0D59F2] hover:underline"
               >
                 Terms & Conditions
               </button>
@@ -265,7 +265,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setIsTermsOpen(true)}
-                className="text-[#0040A8] hover:underline"
+                className="text-[#0D59F2] hover:underline"
               >
                 Privacy Policy
               </button>
@@ -276,7 +276,7 @@ export default function LoginPage() {
           <div className="w-full flex items-center justify-center gap-2 pt-1 pb-0.5">
             <div className="flex-1 border-t border-slate-200" />
             <div className="flex items-center gap-1.5 text-[10.5px] text-slate-700 font-bold px-2.5 py-0.5 rounded-full bg-slate-100/90 border border-slate-200/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0040A8]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0D59F2]" />
               <span>Trusted by 10,000+ users across India</span>
             </div>
             <div className="flex-1 border-t border-slate-200" />
