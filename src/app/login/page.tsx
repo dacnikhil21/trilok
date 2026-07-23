@@ -76,19 +76,19 @@ export default function LoginPage() {
           </div>
 
           {/* ── SECTION 2 & 3: Brand Logo & Welcome Message ─────────────────────────── */}
-          <div className="flex flex-col items-center text-center pt-1 space-y-1.5">
-            {/* Section 2: Brand Logo */}
-            <div>
-              <BrandLogo size="md" />
+          <div className="flex flex-col items-center text-center pt-1 space-y-2">
+            {/* Section 2: Brand Logo (Hero Anchor) */}
+            <div className="py-0.5">
+              <BrandLogo size="lg" />
             </div>
 
-            {/* Section 3: Welcome Message */}
-            <div className="space-y-1">
-              <h1 className="text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight flex items-center justify-center gap-1.5">
+            {/* Section 3: Welcome Message (Semantic H2, Optically Centered) */}
+            <div className="space-y-0.5">
+              <h2 className="text-[17px] font-bold text-slate-800 tracking-tight leading-snug flex items-center justify-center gap-1.5">
                 <span>{activeTab === 'login' ? "Welcome Back!" : "Create your account"}</span>
-                <span className="text-[21px]">👋</span>
-              </h1>
-              <p className="text-[12.5px] text-slate-500 font-medium max-w-[280px] leading-snug mx-auto">
+                <span className="text-[16px]">👋</span>
+              </h2>
+              <p className="text-[12px] text-slate-500 font-medium max-w-[280px] leading-snug mx-auto">
                 Join thousands securing smart, legal digital sale agreements.
               </p>
             </div>
