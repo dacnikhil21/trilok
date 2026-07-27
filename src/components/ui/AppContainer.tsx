@@ -33,7 +33,7 @@ export function AppContainer({ children, className = "", centered = false }: App
 
       {/* ── DEVELOPER QUICK SKIP FAB (Dev Environment Only) ─────────────────────────── */}
       {process.env.NODE_ENV === "development" && (
-        <div className="fixed top-4 right-4 z-[100] flex flex-col items-end gap-2">
+        <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end gap-2">
 
           {/* FAB Toggle Button */}
           <motion.button

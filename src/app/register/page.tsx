@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
+import { TermsModal, LegalDocTab } from "@/components/ui/TermsModal"
 import { 
   ShieldCheck, Smartphone, CheckCircle2, Lock, MapPin, 
-  Check, Sparkles, CreditCard, QrCode, ArrowRight, User, Store, Phone, ChevronDown
+  Check, Sparkles, CreditCard, QrCode, ArrowRight, User, Store, Phone, ChevronDown, FileText
 } from "lucide-react"
 
 export function RegisterFormContent() {
@@ -150,32 +151,50 @@ export function RegisterFormContent() {
   const [aadhaarOtpSent, setAadhaarOtpSent] = React.useState(false)
   const [aadhaarOtp, setAadhaarOtp] = React.useState("")
 
-  // STEP 1: Mobile & OTP (52px Input Bar)
+  // STEP 1: Mobile & OTP (Hero Security Badge + 🇮🇳 +91 Pill + Input Field)
   const renderStep1 = () => (
-    <div className="space-y-3.5">
+    <div className="space-y-4">
+      {/* Hero Badge Icon (Blue Shield + Green Phone Badge) */}
+      <div className="w-full flex justify-center pt-1 pb-1">
+        <div className="w-20 h-20 rounded-full bg-[#EEF2FF] flex items-center justify-center relative shadow-xs">
+          {/* Blue Shield */}
+          <div className="w-11 h-11 rounded-2xl bg-[#0052CC] text-white flex items-center justify-center shadow-md">
+            <ShieldCheck className="w-6 h-6 text-white" />
+          </div>
+          {/* Green Phone Overlay */}
+          <div className="w-9 h-9 rounded-xl bg-[#10B981] text-white flex items-center justify-center shadow-md absolute -bottom-1 -right-1 border-2 border-white">
+            <Phone className="w-4.5 h-4.5 text-white" />
+          </div>
+        </div>
+      </div>
+
       <div>
-        <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
+        <label className="block text-[14px] font-bold text-[#0F172A] mb-2 px-0.5">
           Mobile Number
         </label>
         
-        {/* Custom 52px Phone Input Bar */}
-        <div className={`w-full h-[52px] rounded-[18px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-2.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
-          <div className="flex items-center gap-1 px-3 py-1.5 rounded-[12px] bg-slate-100/90 border border-slate-200 text-[#0F172A] font-bold text-[14px] shrink-0 mr-2.5 cursor-pointer">
+        {/* Input Row: Indian Flag Pill + Phone Input */}
+        <div className="flex items-center gap-2.5 w-full">
+          {/* Flag Pill: 🇮🇳 +91 */}
+          <div className="h-[48px] px-3.5 rounded-[14px] bg-slate-100/90 border border-slate-200 text-[#0F172A] font-bold text-[14.5px] flex items-center gap-2 shrink-0">
+            <span className="text-[17px]">🇮🇳</span>
             <span>+91</span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
           </div>
-          <Phone className="w-4.5 h-4.5 text-[#10B981] shrink-0 mr-2.5" />
-          <input
-            type="tel"
-            inputMode="numeric"
-            value={mobile}
-            onChange={(e) => {
-              setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
-              setError("")
-            }}
-            placeholder="Enter mobile number"
-            className="w-full h-full bg-transparent text-[14.5px] font-semibold text-[#0F172A] placeholder:text-slate-400 focus:outline-none"
-          />
+
+          {/* Phone Input Box */}
+          <div className={`flex-1 h-[48px] rounded-[14px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={mobile}
+              onChange={(e) => {
+                setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
+                setError("")
+              }}
+              placeholder="Enter Your Mobile Number"
+              className="w-full h-full bg-transparent text-[14.5px] font-medium text-[#0F172A] placeholder:text-slate-400 focus:outline-none"
+            />
+          </div>
         </div>
         {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
       </div>
@@ -217,22 +236,32 @@ export function RegisterFormContent() {
           </div>
         </motion.div>
       ) : (
-        <p className="text-[12.5px] text-slate-600 font-medium px-1">
-          We will send a 6-digit verification code to authenticate your account.
+        <p className="text-[12px] text-slate-500 font-medium text-center pt-0.5 px-2 leading-relaxed">
+          We will send a 6-digit One Time Password (OTP) for verification.
         </p>
       )}
     </div>
   )
 
-  // STEP 2: Auto-Fetch Identity with Aadhaar OTP (52px Input Bar)
+  // State for DPDP Legal Documents Modal
+  const [isLegalModalOpen, setIsLegalModalOpen] = React.useState(false)
+  const [legalModalTab, setLegalModalTab] = React.useState<LegalDocTab>("terms")
+  const [step2ConsentChecked, setStep2ConsentChecked] = React.useState(true)
+
+  const openLegalDoc = (tab: LegalDocTab) => {
+    setLegalModalTab(tab)
+    setIsLegalModalOpen(true)
+  }
+
+  // STEP 2: Auto-Fetch Identity with Aadhaar OTP (C2C) or GSTIN/Udyam (B2C)
   const renderStep2 = () => (
-    <div className="space-y-3.5">
+    <div className="space-y-4 select-none">
       <div>
         <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
-          {isB2C ? "Udyam Aadhaar or GSTIN Number" : "Aadhaar Number"}
+          {isB2C ? "GSTIN or Udyam Registration Number" : "Aadhaar Number"}
         </label>
         
-        <div className={`w-full h-[52px] rounded-[18px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex items-center px-3 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15`}>
+        <div className={`w-full h-[52px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15 relative`}>
           <input
             type="text"
             value={idNumber}
@@ -242,14 +271,19 @@ export function RegisterFormContent() {
               setAadhaarOtpSent(false)
               setFetchedDetails(null)
             }}
-            placeholder={isB2C ? "e.g. 37AAAAA0000A1Z5 or UDYAM-AP-00-12345" : "XXXX - XXXX - XXXX"}
-            className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none uppercase tracking-wider"
+            placeholder={isB2C ? "E.g. 37AAAAA0000A1Z5 OR UDYAM-AP-00-1" : "XXXX - XXXX - XXXX"}
+            className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none uppercase tracking-wider pr-10"
           />
+          {!isB2C && (
+            <div className="shrink-0 flex items-center gap-1 bg-[#FFFBEB] px-2 py-1 rounded-lg border border-amber-200">
+              <span className="text-[10px] font-bold text-amber-700">AADHAAR</span>
+            </div>
+          )}
         </div>
         {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
       </div>
 
-      {/* Aadhaar OTP Verification block inline below number */}
+      {/* Aadhaar OTP Verification button */}
       {!fetchedDetails && (
         <div className="space-y-3">
           {!aadhaarOtpSent ? (
@@ -302,6 +336,87 @@ export function RegisterFormContent() {
         </div>
       )}
 
+      {/* ── GREEN LEGAL NOTICE & 3 SEPARATE DOCUMENTS BOX ── */}
+      <div className="p-4 rounded-[18px] bg-[#ECFDF5]/80 border border-[#10B981]/40 space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-full bg-[#10B981]/15 flex items-center justify-center text-[#10B981] shrink-0 mt-0.5">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-bold text-[14px] text-[#0F172A]">
+              {isB2C ? "Business Data Notice" : "Your Privacy Matters"}
+            </h4>
+            <p className="text-[12px] text-slate-600 leading-snug mt-1 font-medium">
+              {isB2C
+                ? "We collect and process your GST/Udyam verification details to verify your business identity, create your business profile, enable electronic agreements, prevent fraud, and comply with applicable Indian laws."
+                : "We collect and process your Aadhaar number and eKYC details only for identity verification, agreement creation, fraud prevention and compliance with applicable laws."}
+            </p>
+          </div>
+        </div>
+
+        {/* Checkbox */}
+        <div 
+          onClick={() => setStep2ConsentChecked(!step2ConsentChecked)}
+          className="flex items-start gap-2.5 pt-1 cursor-pointer"
+        >
+          <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+            step2ConsentChecked ? "bg-[#10B981] border-[#10B981] text-white" : "border-slate-300 bg-white"
+          }`}>
+            {step2ConsentChecked && <Check className="w-3 h-3" strokeWidth={3} />}
+          </div>
+          <p className="text-[11.5px] font-semibold text-slate-700 leading-tight">
+            {isB2C
+              ? "I confirm that I am authorised to verify this business and, where applicable, I consent to eSaleAgreement collecting and processing business information in accordance with applicable laws."
+              : "I voluntarily consent to eSaleAgreement collecting and processing my Aadhaar number and Aadhaar eKYC details solely for identity verification, agreement creation, fraud prevention, and compliance with applicable laws."}
+          </p>
+        </div>
+
+        {/* 3 Clickable Legal Document Pill Buttons with Icons */}
+        <div className="pt-2.5 border-t border-[#10B981]/25 text-[11px] font-bold">
+          <div className="grid grid-cols-3 gap-1.5 w-full text-center">
+            <button
+              type="button"
+              onClick={() => openLegalDoc("privacy")}
+              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs"
+            >
+              <FileText className="w-3.5 h-3.5 text-[#0052CC] shrink-0" />
+              <span className="truncate">Privacy Policy</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openLegalDoc("terms")}
+              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs"
+            >
+              <FileText className="w-3.5 h-3.5 text-[#0052CC] shrink-0" />
+              <span className="truncate">Terms & Conditions</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openLegalDoc("consent")}
+              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#10B981] hover:bg-slate-50 hover:border-[#10B981] transition-all shadow-2xs"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+              <span className="truncate">Consent Notice</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BLUE SECURITY ASSURANCE BAR ── */}
+      <div className="p-3 rounded-[16px] bg-blue-50/70 border border-blue-200/80 flex items-center gap-3">
+        <div className="w-7 h-7 rounded-full bg-[#0052CC] text-white flex items-center justify-center shrink-0">
+          <CheckCircle2 className="w-4 h-4 fill-[#0052CC] text-white" />
+        </div>
+        <p className="text-[11.5px] font-semibold text-slate-700 leading-tight">
+          {isB2C
+            ? "Your data is secure with us. We do not sell or use your information for marketing or advertising purposes."
+            : "Your Aadhaar information is encrypted during transmission and is used only for identity verification. eSaleAgreement does not use your Aadhaar data for marketing or advertising purposes."}
+        </p>
+      </div>
+
+      {/* Verified Details Result Box */}
       {fetchedDetails && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -319,6 +434,12 @@ export function RegisterFormContent() {
           </div>
         </motion.div>
       )}
+
+      {/* DPDP Tagline */}
+      <div className="text-center text-[11px] text-slate-500 font-semibold flex items-center justify-center gap-1 pt-0.5">
+        <Lock className="w-3 h-3 text-slate-400" />
+        <span>{isB2C ? "Secure. Compliant. Designed with privacy by design." : "Secure. Compliant. DPDP Act 2023 Compliant."}</span>
+      </div>
     </div>
   )
 
@@ -380,7 +501,7 @@ export function RegisterFormContent() {
     </div>
   )
 
-  // STEP 4: Permissions/Consent (C2C) or ₹99 Subscription (B2C)
+  // STEP 4: DPDP Consent & Agreement Authorization (LOCATION CAPTURING COMPLETELY REMOVED)
   const renderStep4 = () => (
     <div className="space-y-3.5">
       {isB2C ? (
@@ -433,35 +554,22 @@ export function RegisterFormContent() {
       ) : (
         <div className="space-y-3.5">
           <div 
-            onClick={() => setLocationAllowed(!locationAllowed)}
-            className={`p-3.5 rounded-[16px] border flex items-center justify-between cursor-pointer transition-all ${
-              locationAllowed ? "border-2 border-[#0052CC] bg-blue-50/40 text-[#0052CC]" : "border-slate-200/90 bg-white"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-[#0052CC]" />
-              <div>
-                <h4 className="font-bold text-[14px] leading-none text-[#0F172A]">Location Permission</h4>
-                <p className="text-[11.5px] text-slate-600 mt-1 font-medium">Required for legal audit stamping</p>
-              </div>
-            </div>
-            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${locationAllowed ? "bg-[#0052CC] text-white" : "border-slate-300"}`}>
-              {locationAllowed && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
-            </div>
-          </div>
-
-          <div 
             onClick={() => setDpdpChecked(!dpdpChecked)}
-            className={`p-3.5 rounded-[16px] border flex items-start gap-3 cursor-pointer transition-all ${
-              dpdpChecked ? "border-2 border-[#0052CC] bg-blue-50/40" : "border-slate-200/90 bg-white"
+            className={`p-4 rounded-[18px] border flex items-start gap-3 cursor-pointer transition-all ${
+              dpdpChecked ? "border-2 border-[#0052CC] bg-blue-50/40 shadow-2xs" : "border-slate-200/90 bg-white"
             }`}
           >
             <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${dpdpChecked ? "bg-[#0052CC] border-[#0052CC] text-white" : "border-slate-300"}`}>
               {dpdpChecked && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
             </div>
-            <span className="text-[12.5px] font-semibold text-[#0F172A] leading-snug select-none">
-              I agree to DPDP Act 2023 consent terms for identity verification and eSign execution.
-            </span>
+            <div className="space-y-1">
+              <span className="text-[13px] font-bold text-[#0F172A] leading-snug select-none block">
+                I agree to Digital Personal Data Protection (DPDP) Act 2023 terms for identity verification and eSign execution.
+              </span>
+              <p className="text-[11.5px] text-slate-500">
+                I have read and consent to the <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("privacy") }} className="text-[#0052CC] font-bold hover:underline">Privacy Policy</button>, <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("terms") }} className="text-[#0052CC] font-bold hover:underline">Terms & Conditions</button>, and <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("consent") }} className="text-[#10B981] font-bold hover:underline">Consent Notice</button>.
+              </p>
+            </div>
           </div>
           {error && <p className="text-[12px] text-red-500 font-bold text-center">{error}</p>}
         </div>
@@ -527,7 +635,7 @@ export function RegisterFormContent() {
       { title: "C2C Personal Registration", subtitle: "Step 1: Mobile & OTP Verification" },
       { title: "Aadhaar eKYC Verification", subtitle: "Step 2: Auto-fetch identity via Aadhaar" },
       { title: "Contact Information", subtitle: "Step 3: Email & notification settings" },
-      { title: "Location & Consent", subtitle: "Step 4: GPS permission & DPDP consent" },
+      { title: "DPDP Act 2023 Consent", subtitle: "Step 4: Explicit consent & registration confirmation" },
       { title: "Registration Successful", subtitle: "Step 5: Person Verified Tag Active" },
     ]
   }, [isB2C])
@@ -561,10 +669,19 @@ export function RegisterFormContent() {
         cardContent={renderCurrentContent()}
         buttonText={buttonTexts[currentStep - 1]}
         onButtonClick={handleNext}
-        isButtonLoading={isLoading}
-        showBackButton={currentStep > 1 && currentStep < 5}
         stepperStep={currentStep - 1}
-        onBackClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+        onBackClick={() => {
+          if (currentStep > 1) {
+            setCurrentStep(prev => prev - 1)
+          } else {
+            router.push("/login")
+          }
+        }}
+      />
+      <TermsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        initialTab={legalModalTab}
       />
     </AppContainer>
   )
