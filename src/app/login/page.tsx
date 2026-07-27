@@ -192,44 +192,40 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* ── SECTION 6: 4 TRUST CARDS IN SINGLE ROW (EXACT REFERENCE DESIGN) ─── */}
+          {/* ── SECTION 6: CLEAN 4 TRUST ICONS IN SINGLE ROW (SUBTEXT REMOVED) ─────── */}
           <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-2.5 shadow-xs">
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-4 gap-1.5 items-start">
 
               {/* Card 1: Secure Legal */}
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-1">
                 <div className="w-8.5 h-8.5 rounded-[12px] bg-[#EEF2FF] text-[#3B82F6] flex items-center justify-center shrink-0 mb-1.5">
                   <ShieldCheck className="w-4.5 h-4.5 text-[#3B82F6]" />
                 </div>
                 <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Secure Legal</span>
-                <span className="text-[8.5px] text-slate-500 font-medium leading-tight mt-0.5">Tamper-proof & protected</span>
               </div>
 
               {/* Card 2: Aadhaar eKYC */}
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-1">
                 <div className="w-8.5 h-8.5 rounded-[12px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 mb-1.5">
                   <Fingerprint className="w-4.5 h-4.5 text-[#10B981]" />
                 </div>
                 <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
-                <span className="text-[8.5px] text-slate-500 font-medium leading-tight mt-0.5">Verify identity with Aadhaar</span>
               </div>
 
               {/* Card 3: Bank-Grade Protection */}
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-1">
                 <div className="w-8.5 h-8.5 rounded-[12px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0 mb-1.5">
                   <Lock className="w-4.5 h-4.5 text-[#D97706]" />
                 </div>
                 <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Bank-Grade Protection</span>
-                <span className="text-[8.5px] text-slate-500 font-medium leading-tight mt-0.5">Data encrypted & safe</span>
               </div>
 
               {/* Card 4: DSDP Compliant */}
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center p-1">
                 <div className="w-8.5 h-8.5 rounded-[12px] bg-[#F5F3FF] text-[#8B5CF6] flex items-center justify-center shrink-0 mb-1.5">
                   <Shield className="w-4.5 h-4.5 text-[#8B5CF6]" />
                 </div>
                 <span className="text-[10px] font-bold text-[#0F172A] leading-tight">DSDP Compliant</span>
-                <span className="text-[8.5px] text-slate-500 font-medium leading-tight mt-0.5">We respect privacy rights</span>
               </div>
 
             </div>
