@@ -46,14 +46,15 @@ export default function LoginPage() {
   return (
     <AppContainer centered>
       {/* ── Outer Scrollable Container (Material Design 3 Content-Driven Layout) ──── */}
-      <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-start min-h-screen sm:min-h-0 py-3.5 px-3.5 pb-[calc(24px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
+      <div className="w-full bg-[#FAFCFF] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-100/40 via-blue-50/20 to-transparent flex flex-col items-center justify-center min-h-screen py-3.5 px-3.5 pb-[calc(24px+env(safe-area-inset-bottom,0px))] box-border select-none font-sans overflow-y-auto">
 
         {/* ── Universal Mobile Shell (Constrained 390px Max Width) ────────────────── */}
-        <div className="w-full max-w-[390px] flex flex-col space-y-3.5 my-auto sm:my-0 relative">
+        <div className="w-full max-w-[390px] flex flex-col space-y-3.5 my-auto relative">
 
-          {/* ── TOP HEADER BAR: 100% Centered Brand Logo ─────────── */}
-          <div className="w-full flex items-center justify-center pt-1 pb-1">
+          {/* ── TOP HEADER BAR: Centered Brand Logo with Thin Navbar Separator Line ── */}
+          <div className="w-full flex flex-col items-center pt-1 pb-1">
             <BrandLogo size="lg" />
+            <div className="w-full h-[1px] bg-slate-200/80 mt-2.5" />
           </div>
 
           {/* ── SECTION 1: Perfectly Centered Welcome Headline & Subtext ──────── */}
