@@ -77,15 +77,15 @@ export function AppContainer({ children, className = "", centered = false }: App
       )}
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────────── */}
-      <div className={`relative z-10 flex-1 flex flex-col w-full ${centered ? "items-center justify-start py-0 sm:py-6 lg:py-8" : ""}`}>
+      <div className={`relative z-10 flex-1 flex flex-col w-full ${centered ? "items-center justify-start py-0 sm:py-6" : ""}`}>
         {centered ? (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className={`w-full flex flex-col bg-surface rounded-none border-0 shadow-none sm:rounded-[24px] sm:border sm:border-slate-200/80 sm:shadow-md overflow-hidden sm:max-w-[420px] ${className}`}
+            className={`w-full flex-1 flex flex-col bg-surface rounded-none border-0 shadow-none sm:flex-initial sm:rounded-[24px] sm:border sm:border-slate-200/80 sm:shadow-md overflow-hidden sm:max-w-[440px] ${className}`}
           >
-            <div className="flex flex-col flex-1 p-0">
+            <div className="flex flex-col flex-1 p-0 w-full">
               {children}
             </div>
           </motion.div>
