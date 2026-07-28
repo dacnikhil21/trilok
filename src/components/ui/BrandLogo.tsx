@@ -11,9 +11,9 @@ interface BrandLogoProps {
 export function BrandLogo({ size = "md", showSubtitle = true, className = "" }: BrandLogoProps) {
   const dimensions = React.useMemo(() => {
     switch (size) {
-      case "sm": return { height: "h-[30px]", maxW: "max-w-[170px]" }
-      case "lg": return { height: "h-[50px] sm:h-[54px]", maxW: "max-w-[250px] sm:max-w-[270px]" }
-      default:   return { height: "h-[40px] sm:h-[44px]", maxW: "max-w-[215px] sm:max-w-[235px]" }
+      case "sm": return { height: "h-[34px]", maxW: "max-w-[190px]" }
+      case "lg": return { height: "h-[56px] sm:h-[60px]", maxW: "max-w-[270px] sm:max-w-[290px]" }
+      default:   return { height: "h-[46px] sm:h-[50px]", maxW: "max-w-[235px] sm:max-w-[255px]" }
     }
   }, [size])
 

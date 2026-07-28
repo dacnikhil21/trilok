@@ -77,45 +77,32 @@ function VerifyIdentityContent() {
   }, [step])
 
   const handlePrimaryAction = () => {
-    if (step === "aadhaar" && aadhaarNumber.length < 12) {
-      setError("Please enter a valid 12-digit Aadhaar number.")
-      return
-    }
-    if (step === "otp" && otp.length < 6) {
-      setError("Please enter valid 6-digit OTP.")
-      return
-    }
-
     setError("")
-    setIsLoading(true)
 
-    setTimeout(() => {
-      setIsLoading(false)
-      if (step === "aadhaar") {
-        setTimer(60)
-        setStep("otp")
-      } else if (step === "otp") {
-        setStep("upload-ekyc")
-      } else if (step === "upload-ekyc") {
-        setStep("consent")
-      } else if (step === "consent") {
-        setStep("permissions")
-      } else if (step === "permissions") {
-        setStep("liveness")
-      } else if (step === "liveness") {
-        setStep("location")
-      } else if (step === "location") {
-        if (isB2C) {
-          setStep("payment")
-        } else {
-          setStep("success")
-        }
-      } else if (step === "payment") {
+    if (step === "aadhaar") {
+      setTimer(60)
+      setStep("otp")
+    } else if (step === "otp") {
+      setStep("upload-ekyc")
+    } else if (step === "upload-ekyc") {
+      setStep("consent")
+    } else if (step === "consent") {
+      setStep("permissions")
+    } else if (step === "permissions") {
+      setStep("liveness")
+    } else if (step === "liveness") {
+      setStep("location")
+    } else if (step === "location") {
+      if (isB2C) {
+        setStep("payment")
+      } else {
         setStep("success")
-      } else if (step === "success") {
-        router.push(`/dashboard?module=${moduleType}`)
       }
-    }, 500)
+    } else if (step === "payment") {
+      setStep("success")
+    } else if (step === "success") {
+      router.push(`/dashboard?module=${moduleType}`)
+    }
   }
 
   // 1. Aadhaar manual screen content

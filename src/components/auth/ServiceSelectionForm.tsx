@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import { User, Store, ArrowRight, Star, ShoppingBag, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
+
 const SERVICES = [
   {
     id: "c2c",
@@ -21,11 +23,11 @@ const SERVICES = [
   },
   {
     id: "b2c",
-    title: "B2B (Businesses)",
-    description: "Buy/sell for shop or business.",
-    details: "Dealers, Retailers & Companies.",
+    title: "B2C: (Shops/Business)",
+    description: "Buy or sell for shop, store, or business.",
+    details: "Shops, Retailers, Dealers & Businesses.",
     icon: Store,
-    badgeText: "For Businesses",
+    badgeText: "For Shops & Businesses",
     badgeIcon: ShoppingBag,
     badgeBg: "bg-emerald-100/90 text-[#10B981]",
     iconBg: "bg-emerald-100/80 text-[#10B981]",
@@ -126,6 +128,18 @@ export function ServiceSelectionForm() {
           )
         })}
       </div>
+
+      {/* ── Dynamic B2C 5-Step Process Preview ───────────────────────────────── */}
+      {selectedId === "b2c" && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <B2CProcessGuide variant="compact" title="B2C Merchant 5-Step Journey" />
+        </motion.div>
+      )}
 
       {/* ── 52px Gradient Action Button ────────────────────────────────────────── */}
       <button

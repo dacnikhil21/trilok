@@ -73,16 +73,18 @@ export function WhatsAppInviteStep({ data, updateData, onNext }: Props) {
       {/* Action Buttons */}
       <div className="mt-auto mb-8 space-y-3 pt-6">
         <Button 
-          onClick={() => handleSend("whatsapp")}
+          onClick={() => handleSend("gmail")}
           disabled={!data.invitedPartyMobile || !data.invitedPartyName || !!sending}
-          className="w-full h-[52px] bg-[#1E9E40] hover:bg-[#198735] text-white rounded-[14px] text-[16px] font-bold shadow-lg shadow-[#1E9E40]/20 flex items-center justify-center gap-2"
+          className="w-full h-[52px] bg-[#EA4335] hover:bg-[#D93025] text-white rounded-[14px] text-[16px] font-bold shadow-lg shadow-[#EA4335]/20 flex items-center justify-center gap-2"
         >
-          {sending === "whatsapp" ? (
+          {sending === "gmail" ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              <MessageSquare className="w-5 h-5" strokeWidth={2} />
-              Send via WhatsApp
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#FFFFFF" />
+              </svg>
+              Send via Gmail
             </>
           )}
         </Button>

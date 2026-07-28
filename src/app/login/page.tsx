@@ -178,15 +178,15 @@ export default function LoginPage() {
                     <span className="text-[14px] font-bold text-[#0F172A]">Google</span>
                   </button>
 
-                  {/* WhatsApp Card */}
+                  {/* Gmail Card */}
                   <button
                     type="button"
                     className="h-[50px] bg-white border border-slate-200/90 rounded-[16px] flex items-center justify-center gap-2.5 shadow-2xs hover:bg-slate-50 active:scale-[0.98] transition-all"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.88-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.576-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.98 1.005-3.648-.235-.373a9.86 9.86 0 01-1.51-5.26c0-5.445 4.433-9.879 9.882-9.879 2.64 0 5.122 1.029 6.988 2.895A9.825 9.825 0 0121.93 11.91c0 5.442-4.433 9.875-9.879 9.875M19.39 4.606A11.759 11.759 0 0012.053 1.15C5.58 1.15.312 6.417.31 12.89c0 2.071.542 4.09 1.576 5.87L0 25l6.402-1.677a11.8 11.8 0 005.648 1.43h.005c6.47 0 11.737-5.267 11.739-11.74a11.755 11.755 0 00-3.404-8.407" fill="#25D366" />
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#EA4335" />
                     </svg>
-                    <span className="text-[14px] font-bold text-[#0F172A]">WhatsApp</span>
+                    <span className="text-[14px] font-bold text-[#0F172A]">Gmail</span>
                   </button>
                 </div>
               </div>
@@ -198,54 +198,54 @@ export default function LoginPage() {
           </div>
 
           {/* ── BOTTOM SECTION (TRUST CARDS + LEGAL TERMS + SOCIAL PROOF) ───────────── */}
-          <div className="w-full flex flex-col space-y-2.5 pt-0.5">
+          <div className="w-full flex flex-col space-y-4 pt-4 pb-2 items-center justify-center text-center">
             {/* SECTION 6: CLEAN 4 TRUST ICONS IN SINGLE ROW */}
-            <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[18px] p-2.5 shadow-xs">
-              <div className="grid grid-cols-4 gap-1.5 items-start">
+            <div className="w-full bg-white/95 backdrop-blur-xs border border-slate-200/90 rounded-[20px] p-3.5 sm:p-4 shadow-sm">
+              <div className="grid grid-cols-4 gap-2 items-start justify-items-center">
 
                 {/* Card 1: Secure Legal */}
-                <div className="flex flex-col items-center text-center p-1">
-                  <div className="w-8.5 h-8.5 rounded-[12px] bg-[#EEF2FF] text-[#3B82F6] flex items-center justify-center shrink-0 mb-1.5">
-                    <ShieldCheck className="w-4.5 h-4.5 text-[#3B82F6]" />
+                <div className="flex flex-col items-center justify-center text-center p-1 w-full">
+                  <div className="w-9.5 h-9.5 rounded-[12px] bg-[#EEF2FF] text-[#3B82F6] flex items-center justify-center shrink-0 mb-1.5 shadow-2xs">
+                    <ShieldCheck className="w-5 h-5 text-[#3B82F6]" />
                   </div>
-                  <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Secure Legal</span>
+                  <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Secure Legal</span>
                 </div>
 
                 {/* Card 2: Aadhaar eKYC */}
-                <div className="flex flex-col items-center text-center p-1">
-                  <div className="w-8.5 h-8.5 rounded-[12px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 mb-1.5">
-                    <Fingerprint className="w-4.5 h-4.5 text-[#10B981]" />
+                <div className="flex flex-col items-center justify-center text-center p-1 w-full">
+                  <div className="w-9.5 h-9.5 rounded-[12px] bg-[#ECFDF5] text-[#10B981] flex items-center justify-center shrink-0 mb-1.5 shadow-2xs">
+                    <Fingerprint className="w-5 h-5 text-[#10B981]" />
                   </div>
-                  <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
+                  <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Aadhaar eKYC</span>
                 </div>
 
                 {/* Card 3: Bank-Grade Protection */}
-                <div className="flex flex-col items-center text-center p-1">
-                  <div className="w-8.5 h-8.5 rounded-[12px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0 mb-1.5">
-                    <Lock className="w-4.5 h-4.5 text-[#D97706]" />
+                <div className="flex flex-col items-center justify-center text-center p-1 w-full">
+                  <div className="w-9.5 h-9.5 rounded-[12px] bg-[#FFFBEB] text-[#D97706] flex items-center justify-center shrink-0 mb-1.5 shadow-2xs">
+                    <Lock className="w-5 h-5 text-[#D97706]" />
                   </div>
-                  <span className="text-[10px] font-bold text-[#0F172A] leading-tight">Bank-Grade Protection</span>
+                  <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">Bank-Grade Protection</span>
                 </div>
 
                 {/* Card 4: DSDP Compliant */}
-                <div className="flex flex-col items-center text-center p-1">
-                  <div className="w-8.5 h-8.5 rounded-[12px] bg-[#F5F3FF] text-[#8B5CF6] flex items-center justify-center shrink-0 mb-1.5">
-                    <Shield className="w-4.5 h-4.5 text-[#8B5CF6]" />
+                <div className="flex flex-col items-center justify-center text-center p-1 w-full">
+                  <div className="w-9.5 h-9.5 rounded-[12px] bg-[#F5F3FF] text-[#8B5CF6] flex items-center justify-center shrink-0 mb-1.5 shadow-2xs">
+                    <Shield className="w-5 h-5 text-[#8B5CF6]" />
                   </div>
-                  <span className="text-[10px] font-bold text-[#0F172A] leading-tight">DSDP Compliant</span>
+                  <span className="text-[10.5px] font-bold text-[#0F172A] leading-tight">DSDP Compliant</span>
                 </div>
 
               </div>
             </div>
 
             {/* SECTION 7: Legal Terms & Conditions */}
-            <div className="w-full text-center pt-0.5">
-              <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-600 font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+            <div className="w-full flex flex-col items-center justify-center text-center space-y-1 pt-1">
+              <div className="flex items-center justify-center gap-1.5 text-[11.5px] text-slate-600 font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
                 <span>By continuing, you agree to our</span>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-[11.5px] font-bold mt-0.5">
+              <div className="flex items-center justify-center gap-2 text-[12px] font-bold">
                 <button
                   type="button"
                   onClick={() => setIsTermsOpen(true)}
@@ -265,9 +265,9 @@ export default function LoginPage() {
             </div>
 
             {/* SECTION 8: Bottom Social Proof */}
-            <div className="w-full flex items-center justify-center pt-1 pb-0.5">
-              <div className="flex items-center gap-1.5 text-[10.5px] text-slate-700 font-bold px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/80 shadow-2xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#0052CC]" />
+            <div className="w-full flex items-center justify-center pt-2 pb-1">
+              <div className="flex items-center gap-2 text-[11px] text-slate-700 font-bold px-3.5 py-1.5 rounded-full bg-slate-100/90 border border-slate-200/80 shadow-2xs">
+                <ShieldCheck className="w-4 h-4 text-[#0052CC]" />
                 <span>Trusted by 10,000+ users across India</span>
               </div>
             </div>

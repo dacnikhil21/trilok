@@ -8,6 +8,8 @@ import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { cn } from "@/lib/utils"
 
+import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
+
 const SERVICES = [
   {
     id: "c2c",
@@ -17,8 +19,8 @@ const SERVICES = [
   },
   {
     id: "b2c",
-    title: "B2C (Shop/Business)",
-    description: "Buy/sell for shop or business.",
+    title: "B2C: (Shops/Business)",
+    description: "Buy or sell for shop, store, or business.",
     icon: Store,
   },
 ]
@@ -72,6 +74,16 @@ export default function SelectServicePage() {
           )
         })}
       </div>
+
+      {selectedId === "b2c" && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.3 }}
+        >
+          <B2CProcessGuide variant="compact" title="B2C 5-Step Process" />
+        </motion.div>
+      )}
 
       {/* Trust & Security Banner */}
       <div className="mt-2 text-center px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center gap-1.5 text-[11.5px] sm:text-[12px] font-semibold text-primary">

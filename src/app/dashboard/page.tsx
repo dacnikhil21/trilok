@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
 import { BrandLogo } from "@/components/ui/BrandLogo"
+import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
@@ -81,6 +82,16 @@ function DashboardContent() {
               <PenTool className="w-7 h-7 text-[#0052CC] absolute right-0 bottom-0.5 transform rotate-12 drop-shadow-xs" />
             </div>
           </div>
+
+          {/* ── 2.5. 5-STEP WORKFLOW GUIDE (Shown for both C2C & B2C modules) ──────────── */}
+          <B2CProcessGuide
+            variant="horizontal"
+            title={moduleType === "b2c" ? "B2C Merchant 5-Step Process" : "C2C Personal 5-Step Process"}
+            currentStep={3}
+            onStepClick={(stepId) => {
+              if (stepId === 3) handleCreateNew()
+            }}
+          />
 
           {/* ── 3. CATEGORIES SECTION ────────────────────────────────────────── */}
           <div className="space-y-2.5">
