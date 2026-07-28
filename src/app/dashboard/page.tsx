@@ -97,8 +97,8 @@ function DashboardContent() {
           <div className="space-y-2.5">
             <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">Categories</h2>
 
-            {/* Top Row: 3 items (Always fits text + chevron arrow >) */}
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+            {/* Top Row: 3 items (Fits text + chevron arrow > cleanly on all mobile screens) */}
+            <div className="grid grid-cols-3 gap-1 sm:gap-2.5">
               {[
                 { name: "Electronics", icon: Smartphone, bg: "bg-[#ECFDF5] text-[#059669]" },
                 { name: "Vehicles", icon: Car, bg: "bg-[#EFF6FF] text-[#2563EB]" },
@@ -109,13 +109,13 @@ function DashboardContent() {
                   <div
                     key={cat.name}
                     onClick={handleCreateNew}
-                    className="h-[44px] px-1.5 sm:px-2.5 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group min-w-0"
+                    className="h-[44px] px-1 sm:px-2.5 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group min-w-0"
                   >
-                    <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-                      <div className={`w-6.5 h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
+                    <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 overflow-hidden">
+                      <div className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
                         <Icon className="w-3.5 h-3.5" />
                       </div>
-                      <span className="font-bold text-[11px] sm:text-[12.5px] text-[#0F172A] whitespace-nowrap overflow-hidden text-ellipsis">{cat.name}</span>
+                      <span className="font-bold text-[10px] sm:text-[12px] text-[#0F172A] whitespace-nowrap overflow-hidden tracking-tighter sm:tracking-normal">{cat.name}</span>
                     </div>
                     <ChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-0.5" />
                   </div>

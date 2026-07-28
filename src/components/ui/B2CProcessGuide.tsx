@@ -134,7 +134,9 @@ export function B2CProcessGuide({
       <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
         <div>
           <h3 className="text-[15px] font-extrabold text-[#0F172A] tracking-tight">{title}</h3>
-          <p className="text-[11.5px] font-medium text-slate-500">Automated B2C Shop Agreement Workflow</p>
+          <p className="text-[11.5px] font-medium text-slate-500">
+            {title.toLowerCase().includes("c2c") ? "Automated C2C Personal Agreement Workflow" : "Automated B2C Shop Agreement Workflow"}
+          </p>
         </div>
         <div className="flex items-center gap-1 bg-[#EEF2FF] px-2.5 py-1 rounded-full text-[11px] font-bold text-[#0052CC] border border-blue-100">
           <span>5-Step Process</span>

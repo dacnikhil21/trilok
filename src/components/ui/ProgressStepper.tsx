@@ -75,7 +75,7 @@ export function ProgressStepper({
           const isActive = idx === currentStep
 
           return (
-            <div key={idx} className="flex flex-col items-center relative z-10 shrink-0 w-[60px] text-center">
+            <div key={idx} className="flex-1 min-w-0 flex flex-col items-center relative z-10 text-center px-0.5">
               {/* Square-Shaped Node Container */}
               <motion.div
                 initial={false}
@@ -84,7 +84,7 @@ export function ProgressStepper({
                 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "w-9.5 h-9.5 sm:w-10 sm:h-10 rounded-[12px] sm:rounded-[14px] border flex items-center justify-center transition-all mx-auto shadow-2xs",
+                  "w-9 h-9 sm:w-10 sm:h-10 rounded-[12px] sm:rounded-[14px] border flex items-center justify-center transition-all mx-auto shadow-2xs shrink-0",
                   isCompleted
                     ? "bg-[#10B981] border-[#10B981] text-white shadow-xs"
                     : isActive
@@ -93,15 +93,15 @@ export function ProgressStepper({
                 )}
               >
                 {isCompleted ? (
-                  <Check className="w-4.5 h-4.5 text-white" strokeWidth={3} />
+                  <Check className="w-4 h-4 text-white" strokeWidth={3} />
                 ) : (
-                  <Icon className={cn("w-4.5 h-4.5 stroke-[2.2]", isActive ? "text-[#0052CC]" : "text-slate-400")} />
+                  <Icon className={cn("w-4 h-4 stroke-[2.2]", isActive ? "text-[#0052CC]" : "text-slate-400")} />
                 )}
               </motion.div>
 
-              {/* Step Label */}
+              {/* Step Label (Clean 2-line auto-wrap, no truncation) */}
               <span className={cn(
-                "text-[9.5px] sm:text-[10px] font-bold mt-1.5 leading-tight truncate w-full px-0.5",
+                "text-[9.5px] sm:text-[10px] font-bold mt-1 leading-[1.15] text-center w-full min-h-[24px] flex items-center justify-center tracking-tighter sm:tracking-normal",
                 isActive ? "text-[#0052CC] font-extrabold" : isCompleted ? "text-[#10B981]" : "text-slate-500 font-medium"
               )}>
                 {item.label}
