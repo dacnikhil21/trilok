@@ -131,14 +131,14 @@ export function B2CProcessGuide({
 
   return (
     <div className={cn("w-full bg-white border border-slate-200/90 rounded-[22px] p-4 shadow-2xs space-y-3.5 select-none", className)}>
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-        <div>
-          <h3 className="text-[15px] font-extrabold text-[#0F172A] tracking-tight">{title}</h3>
-          <p className="text-[11.5px] font-medium text-slate-500">
+      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[14.5px] font-extrabold text-[#0F172A] tracking-tight truncate">{title}</h3>
+          <p className="text-[11px] font-medium text-slate-500 truncate">
             {title.toLowerCase().includes("c2c") ? "Automated C2C Personal Agreement Workflow" : "Automated B2C Shop Agreement Workflow"}
           </p>
         </div>
-        <div className="flex items-center gap-1 bg-[#EEF2FF] px-2.5 py-1 rounded-full text-[11px] font-bold text-[#0052CC] border border-blue-100">
+        <div className="flex items-center gap-1 bg-[#EEF2FF] px-2.5 py-1 rounded-full text-[11px] font-bold text-[#0052CC] border border-blue-100 shrink-0 whitespace-nowrap">
           <span>5-Step Process</span>
         </div>
       </div>

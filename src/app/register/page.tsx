@@ -16,8 +16,8 @@ import {
 
 const B2C_REGISTRATION_STEPS = [
   { label: "Mobile OTP", icon: Smartphone },
+  { label: "Aadhaar eKYC", icon: IdCard },
   { label: "Business ID", icon: Building2 },
-  { label: "Contact Info", icon: Mail },
   { label: "Tag Activate", icon: Sparkles },
   { label: "Complete", icon: CheckCircle2 },
 ]
@@ -48,20 +48,28 @@ export function RegisterFormContent() {
   const [otp, setOtp] = React.useState("")
   const [timer, setTimer] = React.useState(0)
 
-  // Step 2: Aadhaar (C2C) or Udyam/GST (B2C)
-  const [idNumber, setIdNumber] = React.useState("")
-  const [fetchedDetails, setFetchedDetails] = React.useState<{
+  // Step 2: Aadhaar eKYC Verification (Required for both B2C Owner & C2C Person)
+  const [aadhaarNumber, setAadhaarNumber] = React.useState("")
+  const [aadhaarOtpSent, setAadhaarOtpSent] = React.useState(false)
+  const [aadhaarOtp, setAadhaarOtp] = React.useState("")
+  const [aadhaarDetails, setAadhaarDetails] = React.useState<{
     name: string
     address: string
     extra?: string
   } | null>(null)
+  const [step2ConsentChecked, setStep2ConsentChecked] = React.useState(false)
 
-  // Step 3: Email (C2C) or Business Verification (B2C)
+  // Step 3: Business Credentials (B2C: GST/PAN/Udyam) or Contact Email (C2C)
+  const [businessIdNumber, setBusinessIdNumber] = React.useState("")
+  const [businessDetails, setBusinessDetails] = React.useState<{
+    name: string
+    address: string
+    extra?: string
+  } | null>(null)
   const [email, setEmail] = React.useState("")
 
-  // Step 4: Permissions & DPDP Consent (C2C) or ₹99 Subscription Payment (B2C)
+  // Step 4: Tag Activation & DPDP Consent / ₹99 Subscription Payment
   const [dpdpChecked, setDpdpChecked] = React.useState(false)
-  const [locationAllowed, setLocationAllowed] = React.useState(false)
   const [paymentMethod, setPaymentMethod] = React.useState<"upi" | "qr">("upi")
 
   React.useEffect(() => {
@@ -76,124 +84,112 @@ export function RegisterFormContent() {
     }
   }, [timer])
 
-  // Dynamic Format Detector & Official Government Registry Validation
-  const detectedType = React.useMemo(() => {
-    const val = idNumber.trim().toUpperCase()
-    const digitsOnly = val.replace(/\D/g, "")
+  // Aadhaar Format Detector (Step 2)
+  const aadhaarDetectedType = React.useMemo(() => {
+    const digitsOnly = aadhaarNumber.replace(/\D/g, "")
+    if (!aadhaarNumber) {
+      return {
+        label: "AADHAAR eKYC",
+        color: "bg-slate-100 text-slate-700 border-slate-300",
+        description: "Enter 12-digit UIDAI Aadhaar Number"
+      }
+    }
+    if (digitsOnly.length === 12 && /^[2-9]\d{11}$/.test(digitsOnly)) {
+      return {
+        label: "AADHAAR VERIFIED",
+        color: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        description: "UIDAI 12-Digit Aadhaar (Verhoeff Checksum Validated)"
+      }
+    }
+    return {
+      label: `ENTERING (${digitsOnly.length}/12)`,
+      color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      description: `Entering Aadhaar: ${digitsOnly.length} of 12 digits`
+    }
+  }, [aadhaarNumber])
 
+  // Business ID Format Detector (Step 3 for B2C)
+  const businessDetectedType = React.useMemo(() => {
+    const val = businessIdNumber.trim().toUpperCase()
     if (!val) {
       return { 
-        type: "AUTO", 
-        label: isB2C ? "GST / UDYAM / AADHAAR / PAN" : "AADHAAR eKYC", 
+        label: "GSTIN / UDYAM / PAN", 
         color: "bg-slate-100 text-slate-700 border-slate-300",
-        description: "Enter GSTIN, Udyam MSME, PAN or Aadhaar Number"
+        description: "Enter GSTIN (15-char), Udyam MSME, or Business PAN"
       }
     }
 
-    // 1. UDYAM Registration Format: UDYAM-XX-00-0000000
     if (val.startsWith("UDYAM") || val.includes("UDYAM")) {
-      const isValidFormat = /^UDYAM-[A-Z]{2}-\d{2}-\d{7}$/.test(val) || val.length >= 10
       return { 
-        type: "UDYAM", 
         label: "UDYAM MSME", 
         color: "bg-emerald-100 text-emerald-800 border-emerald-300",
-        isValid: isValidFormat,
         description: "Government of India MSME Udyam Registration"
       }
     }
 
-    // 2. GSTIN Format: 15 chars - 2 Digits (State) + 10 Chars (PAN) + 1 Entity + Z + 1 Checksum
     if (/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z0-9]{1}Z[A-Z0-9]{1}$/.test(val) || (val.length === 15 && /^\d{2}/.test(val))) {
       return { 
-        type: "GSTIN", 
         label: "GSTIN VERIFIED", 
         color: "bg-blue-100 text-blue-800 border-blue-300",
-        isValid: true,
         description: "15-Digit GSTIN (State Code + Entity PAN + Z + Checksum)"
       }
     }
 
-    // 3. PAN Format: 10 chars - 5 Letters + 4 Digits + 1 Letter
     if (/^[A-Z]{5}\d{4}[A-Z]{1}$/.test(val)) {
       const entityLetter = val[3]
       const entityType = entityLetter === 'C' ? 'Company' : entityLetter === 'F' ? 'Firm' : entityLetter === 'P' ? 'Proprietor' : 'Business'
       return { 
-        type: "PAN", 
         label: `PAN (${entityType})`, 
         color: "bg-purple-100 text-purple-800 border-purple-300",
-        isValid: true,
         description: "Income Tax Department 10-Character Business PAN"
       }
     }
 
-    // 4. Aadhaar Format: 12 numeric digits (cannot start with 0 or 1)
-    if (digitsOnly.length === 12 && /^[2-9]\d{11}$/.test(digitsOnly)) {
-      return { 
-        type: "AADHAAR", 
-        label: "AADHAAR VERIFIED", 
-        color: "bg-emerald-100 text-emerald-800 border-emerald-300",
-        isValid: true,
-        description: "UIDAI 12-Digit Aadhaar (Verhoeff Checksum Validated)"
-      }
-    }
-
-    // Partial Detection Feedback
-    if (/^\d{1,12}$/.test(digitsOnly) && digitsOnly.length < 12) {
-      return { 
-        type: "AUTO", 
-        label: `ENTERING AADHAAR (${digitsOnly.length}/12)`, 
-        color: "bg-emerald-50 text-emerald-700 border-emerald-200",
-        isValid: false,
-        description: `Entering Aadhaar: ${digitsOnly.length} of 12 digits`
-      }
-    }
-
     return { 
-      type: "AUTO", 
       label: "CHECKING FORMAT...", 
       color: "bg-blue-50 text-[#0052CC] border-blue-200",
-      isValid: false,
-      description: "Auto-detecting GSTIN, Udyam, PAN or Aadhaar format"
+      description: "Auto-detecting GSTIN, Udyam, or PAN format"
     }
-  }, [idNumber, isB2C])
+  }, [businessIdNumber])
 
-  // Handle auto-fetch simulation
-  const handleFetchIdentity = () => {
+  // Fetch Aadhaar eKYC Details
+  const handleFetchAadhaarDetails = () => {
     setError("")
     setIsLoading(true)
-
     setTimeout(() => {
       setIsLoading(false)
-      const dtype = detectedType.type
-      if (dtype === "UDYAM") {
-        setFetchedDetails({
+      setAadhaarDetails({
+        name: isB2C ? "Venkateswara Rao (Business Owner)" : "Ramesh Kumar Sharma",
+        address: "Flat 302, Green Towers, Main Road, Kakinada, AP - 533003",
+        extra: "Aadhaar eKYC Verified • UIDAI Status: Active & Authentic"
+      })
+    }, 200)
+  }
+
+  // Fetch Business Credentials Details (Step 3 B2C)
+  const handleFetchBusinessDetails = () => {
+    setError("")
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+      const val = businessIdNumber.trim().toUpperCase()
+      if (val.startsWith("UDYAM")) {
+        setBusinessDetails({
           name: "Sri Lakshmi Tirumala Agencies",
           address: "Plot No 45, Industrial Estate, Kakinada, AP - 533005",
           extra: "Udyam MSME Category: Micro Enterprise • Udyam Status: Verified Active"
         })
-      } else if (dtype === "GSTIN") {
-        setFetchedDetails({
+      } else if (/^\d{2}/.test(val) || val.length === 15) {
+        setBusinessDetails({
           name: "Venkateswara Enterprises & Traders",
-          address: "D.No 12-4-8, Main Road, Kakinada, AP - 533001",
+          address: "D.No 12-4-8, Main Commercial Street, Kakinada, AP - 533001",
           extra: "GSTIN Category: Retail & Commercial Shop • GST Status: Active Registered"
         })
-      } else if (dtype === "PAN") {
-        setFetchedDetails({
+      } else {
+        setBusinessDetails({
           name: "Venkateswara Traders (Proprietorship)",
           address: "Main Commercial Street, Kakinada, AP - 533003",
           extra: "Income Tax PAN Status: Active & Validated • Business Tag Eligible"
-        })
-      } else if (isB2C) {
-        setFetchedDetails({
-          name: "Venkateswara Enterprises & Traders",
-          address: "D.No 12-4-8, Main Road, Kakinada, AP - 533001",
-          extra: "Category: Retail & Commercial Shop • GST / Udyam Verified"
-        })
-      } else {
-        setFetchedDetails({
-          name: "Ramesh Kumar Sharma",
-          address: "Flat 302, Green Towers, Kakinada, Andhra Pradesh - 533003",
-          extra: "DOB: 14/08/1992 • Gender: Male"
         })
       }
     }, 200)
@@ -202,7 +198,7 @@ export function RegisterFormContent() {
   const handleNext = () => {
     setError("")
 
-    // Step 1: Advance directly to Step 2
+    // Step 1: Mobile OTP
     if (currentStep === 1) {
       if (!otpSent) {
         setOtpSent(true)
@@ -211,48 +207,49 @@ export function RegisterFormContent() {
       return
     }
 
-    // Step 2: Validate agreement authorization checkbox before advancing
+    // Step 2: Owner / Person Aadhaar eKYC Verification
     if (currentStep === 2) {
       if (!step2ConsentChecked) {
-        setError("Please check and confirm the authorization box to proceed to the next step.")
+        setError(isB2C 
+          ? "Please click and confirm the business owner Aadhaar verification authorization box." 
+          : "Please check and confirm the Aadhaar verification authorization box to proceed."
+        )
         return
       }
-      if (!fetchedDetails) {
-        handleFetchIdentity()
+      if (!aadhaarDetails) {
+        handleFetchAadhaarDetails()
       }
       setCurrentStep(3)
       return
     }
 
-    // Step 3: Advance directly to Step 4
+    // Step 3: Business Credentials (B2C) or Contact Info (C2C)
     if (currentStep === 3) {
+      if (isB2C && !businessDetails) {
+        handleFetchBusinessDetails()
+      }
       setCurrentStep(4)
       return
     }
 
-    // Step 4: Validate DPDP consent checkbox before advancing
+    // Step 4: Tag Activation / Payment (B2C) or DPDP Consent (C2C)
     if (currentStep === 4) {
       if (!dpdpChecked) {
-        setError("Please check and accept the DPDP Act 2023 consent box to complete registration.")
+        setError(isB2C 
+          ? "Please click and confirm the Verified Business Tag registration consent box." 
+          : "Please check and accept the DPDP Act 2023 consent box to complete registration."
+        )
         return
       }
       setCurrentStep(5)
       return
     }
 
-    // Step 5: Direct redirect to Dashboard or Create Agreement
+    // Step 5: Direct redirect to Dashboard after registration completion
     if (currentStep === 5) {
-      if (isB2C) {
-        router.push(`/create-agreement?module=b2c`)
-      } else {
-        router.push(`/dashboard?module=${moduleType}`)
-      }
+      router.push(`/dashboard?module=${moduleType}`)
     }
   }
-
-  // Aadhaar OTP State
-  const [aadhaarOtpSent, setAadhaarOtpSent] = React.useState(false)
-  const [aadhaarOtp, setAadhaarOtp] = React.useState("")
 
   // STEP 1: Mobile & OTP (Hero Security Badge + 🇮🇳 +91 Pill + Input Field)
   const renderStep1 = () => (
@@ -349,38 +346,37 @@ export function RegisterFormContent() {
   // State for DPDP Legal Documents Modal
   const [isLegalModalOpen, setIsLegalModalOpen] = React.useState(false)
   const [legalModalTab, setLegalModalTab] = React.useState<LegalDocTab>("terms")
-  const [step2ConsentChecked, setStep2ConsentChecked] = React.useState(false)
 
   const openLegalDoc = (tab: LegalDocTab) => {
     setLegalModalTab(tab)
     setIsLegalModalOpen(true)
   }
 
-  // STEP 2: Auto-Fetch Identity with Aadhaar OTP (C2C) or GSTIN/Udyam (B2C)
+  // STEP 2: Owner / Person Aadhaar eKYC Verification
   const renderStep2 = () => (
     <div className="space-y-4 select-none">
       <div>
         <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
-          {isB2C ? "Aadhaar & PAN or GSTIN / Udyam Number" : "Aadhaar Number"}
+          {isB2C ? "Business Owner Aadhaar Number" : "Aadhaar Number"}
         </label>
         
         <div className={`w-full h-[52px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15 relative`}>
           <input
             type="text"
-            value={idNumber}
-            maxLength={isB2C ? 19 : 12}
+            value={aadhaarNumber}
+            maxLength={12}
             onChange={(e) => {
-              setIdNumber(e.target.value.toUpperCase())
+              setAadhaarNumber(e.target.value.replace(/\D/g, "").slice(0, 12))
               setError("")
               setAadhaarOtpSent(false)
-              setFetchedDetails(null)
+              setAadhaarDetails(null)
             }}
-            placeholder={isB2C ? "E.g. Aadhaar, PAN, GSTIN or UDYAM-AP-00-1" : "XXXX - XXXX - XXXX"}
-            className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none uppercase tracking-wider pr-10"
+            placeholder="XXXX - XXXX - XXXX"
+            className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none tracking-wider pr-10"
           />
           <div className="shrink-0 flex items-center gap-1">
-            <span className={cn("text-[10px] font-extrabold px-2.5 py-1 rounded-lg border transition-all shadow-2xs", detectedType.color)}>
-              {detectedType.label}
+            <span className={cn("text-[10px] font-extrabold px-2.5 py-1 rounded-lg border transition-all shadow-2xs", aadhaarDetectedType.color)}>
+              {aadhaarDetectedType.label}
             </span>
           </div>
         </div>
@@ -388,10 +384,10 @@ export function RegisterFormContent() {
         {/* Live Character Counter Progress Bar */}
         <div className="flex items-center justify-between pt-1.5 px-0.5">
           <span className="text-[11px] font-medium text-slate-500 truncate max-w-[240px]">
-            {detectedType.description}
+            {aadhaarDetectedType.description}
           </span>
           <span className="text-[10.5px] font-extrabold text-[#0052CC] bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-100/90 shrink-0">
-            {idNumber.replace(/\D/g, "").length > 0 ? `${idNumber.replace(/\D/g, "").length}/12 Digits` : `${idNumber.length}/15 Chars`}
+            {aadhaarNumber.length}/12 Digits
           </span>
         </div>
 
@@ -399,40 +395,28 @@ export function RegisterFormContent() {
       </div>
 
       {/* Aadhaar OTP Verification button */}
-      {!fetchedDetails && (
+      {!aadhaarDetails && (
         <div className="space-y-3">
           {!aadhaarOtpSent ? (
             <button
               type="button"
               onClick={() => {
-                const digits = idNumber.replace(/\D/g, "")
-                const cleanVal = idNumber.trim()
-                
-                // Requirement 1: Require full 12 digits for Aadhaar
-                if (digits.length > 0 && !cleanVal.startsWith("UDYAM") && cleanVal.length !== 15 && cleanVal.length !== 10) {
-                  if (digits.length < 12) {
-                    setError(`Incomplete Aadhaar Number: Entered ${digits.length} out of 12 digits. Please enter complete 12-digit Aadhaar number.`)
-                    return
-                  }
-                }
-
-                if (digits.length === 12 && (digits.startsWith("0") || digits.startsWith("1") || /^(\d)\1{11}$/.test(digits))) {
-                  setError("UIDAI Verification Failed: The entered 12-digit Aadhaar number is not registered in the UIDAI database. Please check the number or verify using GSTIN / Udyam.")
+                const digits = aadhaarNumber.replace(/\D/g, "")
+                if (digits.length < 12) {
+                  setError(`Incomplete Aadhaar Number: Entered ${digits.length} out of 12 digits. Please enter complete 12-digit Aadhaar number.`)
                   return
                 }
-
-                if (cleanVal.length < 8) {
-                  setError(isB2C ? "Please enter complete Aadhaar (12 digits), PAN (10 chars), GSTIN (15 chars) or Udyam number." : "Please enter complete 12-digit Aadhaar number.")
+                if (digits.startsWith("0") || digits.startsWith("1") || /^(\d)\1{11}$/.test(digits)) {
+                  setError("UIDAI Verification Failed: The entered 12-digit Aadhaar number is not registered in the UIDAI database. Please check the number.")
                   return
                 }
-
                 setError("")
                 setAadhaarOtpSent(true)
               }}
               className="w-full h-[48px] rounded-[16px] bg-blue-50 border border-blue-200 text-[#0052CC] font-bold text-[14px] hover:bg-blue-100/70 transition-all flex items-center justify-center gap-2"
             >
               <Smartphone className="w-4.5 h-4.5 text-[#0052CC]" />
-              <span>{isB2C ? "Verify Aadhaar & PAN / Business ID" : "Send Aadhaar OTP"}</span>
+              <span>{isB2C ? "Send Owner Aadhaar OTP" : "Send Aadhaar OTP"}</span>
             </button>
           ) : (
             <motion.div
@@ -457,11 +441,11 @@ export function RegisterFormContent() {
 
               <button
                 type="button"
-                onClick={handleFetchIdentity}
+                onClick={handleFetchAadhaarDetails}
                 disabled={aadhaarOtp.length < 6}
                 className="w-full h-[46px] rounded-[14px] bg-[#0052CC] text-white font-bold text-[14px] disabled:opacity-50 transition-opacity shadow-sm"
               >
-                Verify & Fetch eKYC Details
+                Verify & Fetch Aadhaar eKYC
               </button>
             </motion.div>
           )}
@@ -476,11 +460,11 @@ export function RegisterFormContent() {
           </div>
           <div>
             <h4 className="font-bold text-[14px] text-[#0F172A]">
-              {isB2C ? "Business Verification Notice" : "Your Privacy Matters"}
+              {isB2C ? "Owner Identity Verification" : "Your Privacy Matters"}
             </h4>
             <p className="text-[12px] text-slate-600 leading-snug mt-1 font-medium">
               {isB2C
-                ? "Business verifies with Aadhaar & PAN to complete one-time eSign setup and issue the Verified Business Tag."
+                ? "Business owner verifies with Aadhaar eKYC firstly to establish authorized identity before registering business credentials."
                 : "We collect and process your Aadhaar number and eKYC details only for identity verification, agreement creation, fraud prevention and compliance with applicable laws."}
             </p>
           </div>
@@ -498,12 +482,12 @@ export function RegisterFormContent() {
           </div>
           <p className="text-[11.5px] font-semibold text-slate-700 leading-tight">
             {isB2C
-              ? "I confirm that I am authorised to verify this business with Aadhaar & PAN and complete the one-time eSign agreement."
+              ? "I confirm that I am the authorized business owner and voluntarily consent to verify my identity via Aadhaar eKYC."
               : "I voluntarily consent to eSaleAgreement collecting and processing my Aadhaar number and Aadhaar eKYC details solely for identity verification, agreement creation, fraud prevention, and compliance with applicable laws."}
           </p>
         </div>
 
-        {/* 3 Clickable Legal Document Pill Buttons with Icons */}
+        {/* 3 Clickable Legal Document Pill Buttons */}
         <div className="pt-2.5 border-t border-[#10B981]/25 text-[11px] font-bold">
           <div className="grid grid-cols-3 gap-1.5 w-full text-center">
             <button
@@ -536,20 +520,8 @@ export function RegisterFormContent() {
         </div>
       </div>
 
-      {/* ── BLUE SECURITY ASSURANCE BAR ── */}
-      <div className="p-3 rounded-[16px] bg-blue-50/70 border border-blue-200/80 flex items-center gap-3">
-        <div className="w-7 h-7 rounded-full bg-[#0052CC] text-white flex items-center justify-center shrink-0">
-          <CheckCircle2 className="w-4 h-4 fill-[#0052CC] text-white" />
-        </div>
-        <p className="text-[11.5px] font-semibold text-slate-700 leading-tight">
-          {isB2C
-            ? "Your business credentials are encrypted and verified against UIDAI and Income Tax databases."
-            : "Your Aadhaar information is encrypted during transmission and is used only for identity verification. eSaleAgreement does not use your Aadhaar data for marketing or advertising purposes."}
-        </p>
-      </div>
-
       {/* Verified Details Result Box */}
-      {fetchedDetails && (
+      {aadhaarDetails && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -557,12 +529,12 @@ export function RegisterFormContent() {
         >
           <div className="flex items-center gap-2 text-[#10B981] font-bold text-[14px]">
             <CheckCircle2 className="w-5 h-5 fill-[#10B981] text-white" />
-            <span>{isB2C ? "Aadhaar & PAN Verification Complete" : "Aadhaar eKYC Verified"}</span>
+            <span>Owner Aadhaar eKYC Verified</span>
           </div>
           <div className="text-[#0F172A] font-semibold pt-1">
-            <p className="text-[15.5px] font-bold text-[#0052CC]">{fetchedDetails.name}</p>
-            <p className="text-[12.5px] text-slate-600 mt-0.5 leading-snug">{fetchedDetails.address}</p>
-            {fetchedDetails.extra && <p className="text-[12px] text-[#0052CC] font-bold mt-1.5">{fetchedDetails.extra}</p>}
+            <p className="text-[15.5px] font-bold text-[#0052CC]">{aadhaarDetails.name}</p>
+            <p className="text-[12.5px] text-slate-600 mt-0.5 leading-snug">{aadhaarDetails.address}</p>
+            {aadhaarDetails.extra && <p className="text-[12px] text-[#0052CC] font-bold mt-1.5">{aadhaarDetails.extra}</p>}
           </div>
         </motion.div>
       )}
@@ -570,40 +542,91 @@ export function RegisterFormContent() {
       {/* DPDP Tagline */}
       <div className="text-center text-[11px] text-slate-500 font-semibold flex items-center justify-center gap-1 pt-0.5">
         <Lock className="w-3 h-3 text-slate-400" />
-        <span>{isB2C ? "Secure. Compliant. Designed with privacy by design." : "Secure. Compliant. DPDP Act 2023 Compliant."}</span>
+        <span>Secure. Encrypted. UIDAI Compliant eKYC.</span>
       </div>
     </div>
   )
 
-  // STEP 3: Contact & Email (52px Input Bar)
+  // STEP 3: Business Credentials (GSTIN / Business PAN / Udyam MSME) for B2C / Contact Info for C2C
   const renderStep3 = () => (
-    <div className="space-y-3.5">
+    <div className="space-y-3.5 select-none">
       {isB2C ? (
-        <div className="space-y-3">
-          <div className="p-4 rounded-[18px] bg-slate-50 border border-slate-200/90 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] font-bold text-slate-700">Verification Status:</span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/90 border border-blue-200 text-[#0052CC] text-[12px] font-bold">
-                <CheckCircle2 className="w-4 h-4 fill-[#0052CC] text-white" />
-                Step 1 Complete: Aadhaar & PAN Verified
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
+              GSTIN / Business PAN / Udyam MSME Number
+            </label>
+            
+            <div className={`w-full h-[52px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15 relative`}>
+              <input
+                type="text"
+                value={businessIdNumber}
+                maxLength={19}
+                onChange={(e) => {
+                  setBusinessIdNumber(e.target.value.toUpperCase())
+                  setError("")
+                  setBusinessDetails(null)
+                }}
+                placeholder="E.g. 37AAAAA0000A1Z5 or UDYAM-AP-00-1"
+                className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none uppercase tracking-wider pr-10"
+              />
+              <div className="shrink-0 flex items-center gap-1">
+                <span className={cn("text-[10px] font-extrabold px-2.5 py-1 rounded-lg border transition-all shadow-2xs", businessDetectedType.color)}>
+                  {businessDetectedType.label}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1.5 px-0.5">
+              <span className="text-[11px] font-medium text-slate-500 truncate max-w-[240px]">
+                {businessDetectedType.description}
+              </span>
+              <span className="text-[10.5px] font-extrabold text-[#0052CC] bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-100/90 shrink-0">
+                {businessIdNumber.length}/15 Chars
               </span>
             </div>
-            <p className="text-[12.5px] text-slate-600 leading-relaxed font-medium">
-              Next step: Issue your Verified Business Tag & activate lifetime dashboard access.
-            </p>
+            {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
           </div>
+
+          {!businessDetails ? (
+            <button
+              type="button"
+              onClick={handleFetchBusinessDetails}
+              disabled={businessIdNumber.length < 8}
+              className="w-full h-[48px] rounded-[16px] bg-[#0052CC] text-white font-bold text-[14px] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Building2 className="w-4.5 h-4.5 text-white" />
+              <span>Verify Business Credentials</span>
+            </button>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-[18px] bg-blue-50/80 border border-blue-200/90 space-y-2 text-[13px]"
+            >
+              <div className="flex items-center gap-2 text-[#0052CC] font-bold text-[14px]">
+                <CheckCircle2 className="w-5 h-5 fill-[#0052CC] text-white" />
+                <span>Official Business Details Verified</span>
+              </div>
+              <div className="text-[#0F172A] font-semibold pt-1">
+                <p className="text-[15.5px] font-bold text-[#0052CC]">{businessDetails.name}</p>
+                <p className="text-[12.5px] text-slate-600 mt-0.5 leading-snug">{businessDetails.address}</p>
+                {businessDetails.extra && <p className="text-[12px] text-[#10B981] font-bold mt-1.5">{businessDetails.extra}</p>}
+              </div>
+            </motion.div>
+          )}
 
           <div>
             <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
               Official Business Email (Optional)
             </label>
-            <div className="w-full h-[52px] rounded-[18px] bg-white border border-slate-300 flex items-center px-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] focus-within:border-[#0052CC]">
+            <div className="w-full h-[50px] rounded-[16px] bg-white border border-slate-300 flex items-center px-3.5 shadow-2xs focus-within:border-[#0052CC]">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="business@example.com"
-                className="w-full h-full bg-transparent text-[14.5px] font-semibold text-[#0F172A] placeholder:text-slate-400 focus:outline-none"
+                className="w-full h-full bg-transparent text-[14px] font-semibold text-[#0F172A] placeholder:text-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -633,7 +656,7 @@ export function RegisterFormContent() {
     </div>
   )
 
-  // STEP 4: DPDP Consent & Agreement Authorization (LOCATION CAPTURING COMPLETELY REMOVED)
+  // STEP 4: Tag Activation & Payment (B2C) or DPDP Consent (C2C)
   const renderStep4 = () => (
     <div className="space-y-3.5">
       {isB2C ? (
@@ -682,6 +705,21 @@ export function RegisterFormContent() {
               </button>
             </div>
           </div>
+
+          <div 
+            onClick={() => setDpdpChecked(!dpdpChecked)}
+            className={`p-3.5 rounded-[16px] border flex items-start gap-2.5 cursor-pointer transition-all ${
+              dpdpChecked ? "border-2 border-[#0052CC] bg-blue-50/40 shadow-2xs" : "border-slate-200/90 bg-white"
+            }`}
+          >
+            <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${dpdpChecked ? "bg-[#0052CC] border-[#0052CC] text-white" : "border-slate-300"}`}>
+              {dpdpChecked && <Check className="w-3 h-3" strokeWidth={3} />}
+            </div>
+            <span className="text-[12px] font-bold text-[#0F172A] leading-tight select-none">
+              I authorize the activation of Verified Business Tag for ₹99 and agree to terms.
+            </span>
+          </div>
+          {error && <p className="text-[12px] text-red-500 font-bold text-center">{error}</p>}
         </div>
       ) : (
         <div className="space-y-3.5">
@@ -728,25 +766,31 @@ export function RegisterFormContent() {
 
         <p className="text-[12.5px] text-slate-600 font-medium leading-relaxed max-w-[290px] mx-auto pt-2">
           {isB2C 
-            ? "Your business profile is verified and active. Proceed to Step 3 to create your first customer agreement."
+            ? "Your business profile is verified and active. Welcome to your lifetime business dashboard."
             : "Your personal profile is authenticated via Aadhaar eKYC and ready for legal sale agreements."}
         </p>
       </div>
 
       <div className="p-4 bg-slate-50 border border-slate-200/90 rounded-[18px] text-left text-[12.5px] space-y-2">
         <div className="flex justify-between border-b border-slate-200/70 pb-2">
-          <span className="font-semibold text-slate-600">Step 1: Business Registration</span>
-          <span className="font-bold text-[#10B981]">Aadhaar & PAN eSign Complete</span>
+          <span className="font-semibold text-slate-600">Step 1: Owner Aadhaar eKYC</span>
+          <span className="font-bold text-[#10B981]">Verified Complete</span>
         </div>
         {isB2C && (
           <div className="flex justify-between border-b border-slate-200/70 pb-2">
-            <span className="font-semibold text-slate-600">Step 2: Verified Business Tag</span>
+            <span className="font-semibold text-slate-600">Step 2: Business GSTIN / PAN</span>
+            <span className="font-bold text-[#10B981]">Verified Complete</span>
+          </div>
+        )}
+        {isB2C && (
+          <div className="flex justify-between border-b border-slate-200/70 pb-2">
+            <span className="font-semibold text-slate-600">Verified Business Tag</span>
             <span className="font-bold text-[#0052CC]">Active (₹99 Paid)</span>
           </div>
         )}
         <div className="flex justify-between">
           <span className="font-semibold text-slate-600">Next Action</span>
-          <span className="font-bold text-[#059669]">Step 3: Create Agreement</span>
+          <span className="font-bold text-[#059669]">Dashboard Access</span>
         </div>
       </div>
     </div>
@@ -756,11 +800,11 @@ export function RegisterFormContent() {
   const stepTitles = React.useMemo(() => {
     if (isB2C) {
       return [
-        { title: "Step 1: Business Registration", subtitle: "Verify mobile number with OTP" },
-        { title: "Step 1: Aadhaar & PAN Verification", subtitle: "Business verifies with Aadhaar & PAN and completes eSign" },
-        { title: "Step 2: Verified Business Profile", subtitle: "Authenticate official business details" },
-        { title: "Step 2: Verified Tag & Access", subtitle: "Pay ₹99 for Verified Tag & lifetime dashboard access" },
-        { title: "Step 2 Complete: Verified Tag Active", subtitle: "Ready to proceed to Step 3: Create Agreement" },
+        { title: "Mobile & OTP Verification", subtitle: "Step 1: Verify your 10-digit mobile number with OTP" },
+        { title: "Owner Aadhaar eKYC", subtitle: "Step 2: Business owner verifies identity via Aadhaar eKYC" },
+        { title: "Business GST / PAN / Udyam", subtitle: "Step 3: Authenticate official business details via GSTIN or PAN" },
+        { title: "Verified Tag & Access", subtitle: "Step 4: Pay ₹99 for Verified Tag & lifetime dashboard access" },
+        { title: "Business Registration Complete", subtitle: "Step 5: Verified Business Tag Active. Welcome to Dashboard" },
       ]
     }
     return [
@@ -774,10 +818,10 @@ export function RegisterFormContent() {
 
   const buttonTexts = [
     otpSent ? "Verify OTP" : "Send OTP",
-    fetchedDetails ? "Continue to Next Step" : (isB2C ? "Verify Aadhaar & PAN" : "Fetch Aadhaar Details"),
-    "Continue Setup",
+    aadhaarDetails ? "Continue to Business Verification" : "Verify Aadhaar eKYC",
+    businessDetails ? "Continue to Tag Activation" : "Verify Business Credentials",
     isB2C ? "Pay ₹99 & Activate Tag" : "Confirm Consent & Complete",
-    isB2C ? "Proceed to Step 3: Create Agreement" : "Go to Dashboard"
+    "Go to Dashboard"
   ]
 
   const currentConfig = stepTitles[currentStep - 1]

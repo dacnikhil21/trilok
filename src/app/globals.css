@@ -96,3 +96,27 @@
   pointer-events: none;
   animation: light-sweep 4s infinite ease-in-out;
 }
+
+/* ── Fluid Native Mobile App Design Tokens ───────────────────────── */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .safe-top-padding {
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+
+  .safe-bottom-padding {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .safe-nav-padding {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+}
+

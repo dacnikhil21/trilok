@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft } from "lucide-react"
 import { AppContainer } from "@/components/ui/AppContainer"
+import { MobileAppShell } from "@/components/ui/MobileAppShell"
 
 // Import steps
 import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
@@ -138,39 +139,38 @@ function CreateAgreementContent() {
 
   const currentStepData = steps.find(s => s.id === currentStep)
 
-  return (
-    <AppContainer>
-      <div className="flex flex-col h-[100dvh] bg-[#fcfcfc] overflow-hidden">
-        {/* Header (Hidden on final success step) */}
-        {currentStep < 10 && (
-          <header className="flex items-center h-[60px] px-4 shrink-0 bg-white sticky top-0 z-10 shadow-sm border-b border-border/50">
-            <button 
-              onClick={handleBack}
-              className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center hover:bg-black/5 active:bg-black/10 transition-colors"
-            >
-              <ChevronLeft strokeWidth={2.5} className="w-[26px] h-[26px] text-[#041B4A]" />
-            </button>
-            <h1 className="font-semibold text-[17.5px] text-[#041B4A] tracking-tight ml-2">{currentStepData?.title}</h1>
-          </header>
-        )}
+  const headerContent = currentStep < 10 ? (
+    <div className="flex items-center h-[52px] px-1 relative">
+      <button 
+        type="button"
+        onClick={handleBack}
+        className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors z-10"
+      >
+        <ChevronLeft strokeWidth={2.5} className="w-5 h-5 text-[#0F172A]" />
+      </button>
+      <h1 className="font-extrabold text-[16px] text-[#0F172A] tracking-tight ml-2 truncate">
+        {currentStepData?.title}
+      </h1>
+    </div>
+  ) : undefined
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="absolute inset-0 p-5 pb-24 flex flex-col"
-            >
-              {currentStepData?.component}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+  return (
+    <MobileAppShell header={headerContent}>
+      <div className="w-full flex-1 relative py-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="w-full"
+          >
+            {currentStepData?.component}
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </AppContainer>
+    </MobileAppShell>
   )
 }
 

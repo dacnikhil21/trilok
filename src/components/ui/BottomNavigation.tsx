@@ -67,8 +67,8 @@ export function BottomNavigation({
   }
 
   return (
-    // Floating pill container — centered exactly using left-1/2 and -translate-x-1/2
-    <div className={`lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-24px)] max-w-[390px] z-40 ${className}`}>
+    // Floating pill container — centered exactly using left-1/2 and -translate-x-1/2 with safe area inset
+    <div className={`fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-[calc(100%-24px)] max-w-[400px] z-40 ${className}`}>
 
       {/* Floating pill nav bar — identical visual to the previous Instagram style */}
       <nav className="h-[60px] backdrop-blur-[28px] bg-surface/85 border border-border/60 rounded-[var(--radius-md)] flex items-center px-2 shadow-[var(--shadow-level-3)]">

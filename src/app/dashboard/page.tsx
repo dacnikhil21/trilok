@@ -12,6 +12,9 @@ import { AppContainer } from "@/components/ui/AppContainer"
 import { BrandLogo } from "@/components/ui/BrandLogo"
 import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
 
+import { MobileAppShell } from "@/components/ui/MobileAppShell"
+import { BottomNavigation } from "@/components/ui/BottomNavigation"
+
 function DashboardContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -20,31 +23,30 @@ function DashboardContent() {
 
   const handleCreateNew = () => router.push(`/create-agreement?module=${moduleType}`)
 
+  const headerContent = (
+    <div className="w-full flex items-center justify-between py-2.5">
+      <BrandLogo size="md" showSubtitle />
+
+      <div className="flex items-center gap-2">
+        {/* Notification Bell with Red Badge "3" */}
+        <button className="w-8.5 h-8.5 rounded-full bg-slate-100 flex items-center justify-center relative hover:bg-slate-200 transition-colors">
+          <Bell className="w-4 h-4 text-slate-700" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#EF4444] text-white text-[9.5px] font-bold flex items-center justify-center shadow-2xs">
+            3
+          </span>
+        </button>
+
+        {/* Profile Avatar "N" */}
+        <div className="w-8.5 h-8.5 rounded-full bg-[#0052CC] text-white font-extrabold text-[14px] flex items-center justify-center shadow-2xs">
+          N
+        </div>
+      </div>
+    </div>
+  )
+
   return (
-    <AppContainer centered>
-      <div className="w-full flex flex-col h-full bg-[#F8FAFC] pb-28 min-h-screen text-[#0F172A] font-sans select-none">
-
-        {/* ── 1. HEADER (1:1 Match image.png) ─────────────────────────────────── */}
-        <header className="flex items-center justify-between px-4 sm:px-5 pt-4 pb-3 bg-white border-b border-slate-100 shadow-sm shrink-0">
-          <BrandLogo size="md" showSubtitle />
-
-          <div className="flex items-center gap-2.5">
-            {/* Notification Bell with Red Badge "3" */}
-            <button className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center relative hover:bg-slate-200 transition-colors">
-              <Bell className="w-4.5 h-4.5 text-slate-700" />
-              <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-[#EF4444] text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
-                3
-              </span>
-            </button>
-
-            {/* Profile Avatar "N" */}
-            <div className="w-9 h-9 rounded-full bg-[#0052CC] text-white font-extrabold text-[15px] flex items-center justify-center shadow-sm">
-              N
-            </div>
-          </div>
-        </header>
-
-        <div className="p-3.5 sm:p-5 space-y-5">
+    <MobileAppShell header={headerContent} hasFloatingNav>
+      <div className="w-full space-y-4 py-1">
 
           {/* ── 2. HERO BANNER ("Create Agreement") — Optimized Mobile Perspective ─ */}
           <div className="w-full rounded-[20px] bg-gradient-to-r from-[#F0FDF4] via-[#F2F8F5] to-[#ECFDF5] border border-[#A7F3D0] p-4 sm:p-5 relative overflow-hidden shadow-xs flex items-center justify-between">
@@ -93,59 +95,39 @@ function DashboardContent() {
             }}
           />
 
-          {/* ── 3. CATEGORIES SECTION ────────────────────────────────────────── */}
-          <div className="space-y-2.5">
-            <h2 className="text-[16px] font-bold text-[#0F172A] tracking-tight">Categories</h2>
-
-            {/* Top Row: 3 items (Fits text + chevron arrow > cleanly on all mobile screens) */}
-            <div className="grid grid-cols-3 gap-1 sm:gap-2.5">
-              {[
-                { name: "Electronics", icon: Smartphone, bg: "bg-[#ECFDF5] text-[#059669]" },
-                { name: "Vehicles", icon: Car, bg: "bg-[#EFF6FF] text-[#2563EB]" },
-                { name: "Services", icon: Wrench, bg: "bg-[#ECFDF5] text-[#059669]" },
-              ].map((cat) => {
-                const Icon = cat.icon
-                return (
-                  <div
-                    key={cat.name}
-                    onClick={handleCreateNew}
-                    className="h-[44px] px-1 sm:px-2.5 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group min-w-0"
-                  >
-                    <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 overflow-hidden">
-                      <div className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="font-bold text-[10px] sm:text-[12px] text-[#0F172A] whitespace-nowrap overflow-hidden tracking-tighter sm:tracking-normal">{cat.name}</span>
-                    </div>
-                    <ChevronRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0 ml-0.5" />
-                  </div>
-                )
-              })}
+          {/* ── 3. CATEGORIES SECTION (Horizontal Swipe Ribbon) ─────────────── */}
+          <div className="space-y-2 select-none">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[15px] font-extrabold text-[#0F172A] tracking-tight">Categories</h2>
+              <span className="text-[11px] font-bold text-slate-400">Swipe →</span>
             </div>
 
-            {/* Bottom Row: 2 items */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-              {[
-                { name: "Rental", icon: Building2, bg: "bg-[#EFF6FF] text-[#2563EB]" },
-                { name: "Others", icon: Grid, bg: "bg-[#ECFDF5] text-[#059669]" },
-              ].map((cat) => {
-                const Icon = cat.icon
-                return (
-                  <div
-                    key={cat.name}
-                    onClick={handleCreateNew}
-                    className="h-[44px] px-3 py-1.5 rounded-[12px] bg-white border border-slate-200/80 hover:border-emerald-500/30 transition-all flex items-center justify-between cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.02)] group"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={`w-6.5 h-6.5 rounded-md ${cat.bg} flex items-center justify-center shrink-0`}>
-                        <Icon className="w-3.5 h-3.5" />
+            <div className="overflow-x-auto no-scrollbar pt-0.5 pb-1 -mx-1 px-1">
+              <div className="flex items-center gap-2.5 min-w-max">
+                {[
+                  { name: "Electronics", icon: Smartphone, bg: "bg-[#ECFDF5] text-[#059669]" },
+                  { name: "Vehicles", icon: Car, bg: "bg-[#EFF6FF] text-[#2563EB]" },
+                  { name: "Services", icon: Wrench, bg: "bg-[#ECFDF5] text-[#059669]" },
+                  { name: "Rental", icon: Building2, bg: "bg-[#EFF6FF] text-[#2563EB]" },
+                  { name: "Others", icon: Grid, bg: "bg-[#ECFDF5] text-[#059669]" },
+                ].map((cat) => {
+                  const Icon = cat.icon
+                  return (
+                    <button
+                      key={cat.name}
+                      type="button"
+                      onClick={handleCreateNew}
+                      className="h-[46px] px-3.5 py-2 rounded-[14px] bg-white border border-slate-200/90 hover:border-[#0052CC] transition-all flex items-center gap-2.5 shadow-2xs hover:shadow-xs active:scale-[0.98] group shrink-0"
+                    >
+                      <div className={`w-7 h-7 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="font-bold text-[12px] sm:text-[13px] text-[#0F172A] whitespace-nowrap">{cat.name}</span>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                  </div>
-                )
-              })}
+                      <span className="font-bold text-[13px] text-[#0F172A] whitespace-nowrap">{cat.name}</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
@@ -241,56 +223,15 @@ function DashboardContent() {
             })}
           </div>
 
-        </div>
-
-        {/* ── 6. FLOATING BOTTOM NAVIGATION ──────────────────────────────────── */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 px-5 py-2 shadow-lg flex items-center justify-between max-w-[440px] mx-auto rounded-t-[22px]">
-          <button
-            onClick={() => setActiveNav("home")}
-            className={`flex flex-col items-center gap-0.5 ${activeNav === "home" ? "text-[#0052CC]" : "text-slate-400"}`}
-          >
-            <Home className="w-5 h-5 fill-current" />
-            <span className="text-[10.5px] font-bold">Home</span>
-          </button>
-
-          <button
-            onClick={() => setActiveNav("agreements")}
-            className={`flex flex-col items-center gap-0.5 ${activeNav === "agreements" ? "text-[#0052CC]" : "text-slate-400"}`}
-          >
-            <FileText className="w-5 h-5" />
-            <span className="text-[10.5px] font-bold">Agreements</span>
-          </button>
-
-          {/* Floating Center Create FAB */}
-          <div className="flex flex-col items-center -mt-6">
-            <button
-              onClick={handleCreateNew}
-              className="w-13 h-13 rounded-full bg-[#0052CC] hover:bg-[#0033A0] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform border-4 border-white"
-            >
-              <Plus className="w-6 h-6" strokeWidth={2.8} />
-            </button>
-            <span className="text-[10.5px] font-bold text-[#0052CC] mt-0.5">Create</span>
-          </div>
-
-          <button
-            onClick={() => setActiveNav("inbox")}
-            className={`flex flex-col items-center gap-0.5 ${activeNav === "inbox" ? "text-[#0052CC]" : "text-slate-400"}`}
-          >
-            <Inbox className="w-5 h-5" />
-            <span className="text-[10.5px] font-bold">Inbox</span>
-          </button>
-
-          <button
-            onClick={() => setActiveNav("profile")}
-            className={`flex flex-col items-center gap-0.5 ${activeNav === "profile" ? "text-[#0052CC]" : "text-slate-400"}`}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-[10.5px] font-bold">Profile</span>
-          </button>
-        </div>
-
       </div>
-    </AppContainer>
+
+      <BottomNavigation
+        activeTab={activeNav}
+        onTabChange={(id) => setActiveNav(id as any)}
+        onLogout={() => router.push("/login")}
+        onCreateNew={handleCreateNew}
+      />
+    </MobileAppShell>
   )
 }
 
