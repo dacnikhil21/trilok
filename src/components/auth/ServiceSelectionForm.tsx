@@ -129,18 +129,6 @@ export function ServiceSelectionForm() {
         })}
       </div>
 
-      {/* ── Dynamic B2C 5-Step Process Preview ───────────────────────────────── */}
-      {selectedId === "b2c" && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <B2CProcessGuide variant="compact" title="B2C Merchant 5-Step Journey" />
-        </motion.div>
-      )}
-
       {/* ── 52px Gradient Action Button ────────────────────────────────────────── */}
       <button
         type="button"

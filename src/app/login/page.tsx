@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
+import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -258,6 +259,9 @@ export default function LoginPage() {
       </div>
 
       <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+      <DeveloperSettingsModal
+        onAutoFillAadhaar={() => setMobile("9876543210")}
+      />
     </MobileAppShell>
   )
 }

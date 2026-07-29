@@ -14,6 +14,7 @@ import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
 
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
 import { BottomNavigation } from "@/components/ui/BottomNavigation"
+import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
@@ -231,6 +232,7 @@ function DashboardContent() {
         onLogout={() => router.push("/login")}
         onCreateNew={handleCreateNew}
       />
+      <DeveloperSettingsModal />
     </MobileAppShell>
   )
 }

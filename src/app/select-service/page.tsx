@@ -75,16 +75,6 @@ export default function SelectServicePage() {
         })}
       </div>
 
-      {selectedId === "b2c" && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          transition={{ duration: 0.3 }}
-        >
-          <B2CProcessGuide variant="compact" title="B2C 5-Step Process" />
-        </motion.div>
-      )}
-
       {/* Trust & Security Banner */}
       <div className="mt-2 text-center px-3 py-2.5 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center gap-1.5 text-[11.5px] sm:text-[12px] font-semibold text-primary">
         <span>🔒</span>
