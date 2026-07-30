@@ -6,8 +6,8 @@ import { BrandLogo } from "@/components/ui/BrandLogo"
 import { ArrowRight } from "lucide-react"
 
 interface OnboardingLayoutProps {
-  title: string
-  subtitle?: string
+  title: React.ReactNode
+  subtitle?: React.ReactNode
   cardContent: React.ReactNode
   buttonText: string
   onButtonClick: () => void
@@ -19,6 +19,8 @@ interface OnboardingLayoutProps {
   stepperStep?: number
   stepperSteps?: (string | StepIconItem)[]
   moduleType?: "c2c" | "b2c"
+  hideFooterButton?: boolean
+  noCardWrapper?: boolean
 }
 
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
@@ -36,7 +38,9 @@ export function OnboardingLayout({
   onBackClick,
   stepperStep,
   stepperSteps,
-  moduleType
+  moduleType,
+  hideFooterButton = false,
+  noCardWrapper = false
 }: OnboardingLayoutProps) {
   const headerContent = (
     <div className="w-full flex items-center justify-between h-[52px] sm:h-[56px] relative px-0.5">
@@ -59,7 +63,7 @@ export function OnboardingLayout({
     </div>
   )
 
-  const footerContent = (
+  const footerContent = hideFooterButton ? undefined : (
     <div className="w-full space-y-3 pb-1">
       <button
         type="button"
@@ -105,9 +109,9 @@ export function OnboardingLayout({
             {title}
           </h1>
           {subtitle && (
-            <p className="text-[12px] text-slate-600 font-medium leading-snug max-w-[320px] mx-auto">
+            <div className="text-[12px] text-slate-600 font-medium leading-snug max-w-[320px] mx-auto">
               {subtitle}
-            </p>
+            </div>
           )}
         </div>
 
@@ -119,9 +123,15 @@ export function OnboardingLayout({
         )}
 
         {/* Primary Content Card */}
-        <div className="w-full bg-white border border-slate-200/90 rounded-[20px] p-4 sm:p-5 shadow-md">
-          {cardContent}
-        </div>
+        {noCardWrapper ? (
+          <div className="w-full">
+            {cardContent}
+          </div>
+        ) : (
+          <div className="w-full bg-white border border-slate-200/90 rounded-[20px] p-4 sm:p-5 shadow-md">
+            {cardContent}
+          </div>
+        )}
       </div>
     </MobileAppShell>
   )

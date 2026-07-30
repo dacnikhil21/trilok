@@ -8,6 +8,10 @@ import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { TermsModal, LegalDocTab } from "@/components/ui/TermsModal"
 import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
+import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
+import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
+import { C2CVerificationStep } from "@/components/agreement/C2CVerificationStep"
+import { C2CVerifiedSuccessStep } from "@/components/agreement/C2CVerifiedSuccessStep"
 import { cn } from "@/lib/utils"
 import { 
   ShieldCheck, Smartphone, CheckCircle2, Lock, MapPin, 
@@ -18,8 +22,8 @@ import {
 const B2C_REGISTRATION_STEPS = [
   { label: "Mobile OTP", icon: Smartphone },
   { label: "Aadhaar eKYC", icon: IdCard },
-  { label: "Business ID", icon: Building2 },
-  { label: "Tag Activate", icon: Sparkles },
+  { label: "Business Details", icon: Building2 },
+  { label: "Verify & Activate", icon: Sparkles },
   { label: "Complete", icon: CheckCircle2 },
 ]
 
@@ -27,7 +31,7 @@ const C2C_REGISTRATION_STEPS = [
   { label: "Mobile OTP", icon: Smartphone },
   { label: "Aadhaar eKYC", icon: IdCard },
   { label: "Contact Info", icon: Mail },
-  { label: "DPDP Consent", icon: ShieldCheck },
+  { label: "Verify & Activate", icon: Sparkles },
   { label: "Complete", icon: CheckCircle2 },
 ]
 
@@ -657,163 +661,64 @@ export function RegisterFormContent() {
     </div>
   )
 
-  // STEP 4: Tag Activation & Payment (B2C) or DPDP Consent (C2C)
+  // STEP 4: Tag Activation & Verification (B2C & C2C)
   const renderStep4 = () => (
     <div className="space-y-3.5">
       {isB2C ? (
-        <div className="space-y-3.5">
-          <div className="p-4 bg-gradient-to-br from-blue-50 via-teal-50/50 to-transparent border border-blue-200/90 rounded-[20px] text-center space-y-2">
-            <div className="w-12 h-12 bg-[#0052CC] text-white rounded-full flex items-center justify-center mx-auto shadow-md">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-bold text-[18px] text-[#0F172A] tracking-tight">Verified Business Tag Activation</h3>
-            <p className="text-[12.5px] text-slate-600 font-medium leading-relaxed">
-              Business gets Verified Tag and lifetime access to dashboard.
-            </p>
-            <div className="pt-2 flex items-baseline justify-center gap-1">
-              <span className="text-[32px] font-bold text-[#0052CC]">₹99</span>
-              <span className="text-[13px] font-bold text-slate-600">/ Lifetime Access</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[12px] font-bold uppercase tracking-wider text-slate-700 px-1">Payment Method</span>
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("upi")}
-                className={`p-3.5 rounded-[16px] border flex flex-col items-center justify-center gap-1.5 transition-all ${
-                  paymentMethod === "upi"
-                    ? "border-2 border-[#0052CC] bg-blue-50/50 text-[#0052CC] shadow-xs font-bold"
-                    : "border-slate-200/90 bg-white text-slate-700 hover:border-slate-300"
-                }`}
-              >
-                <Smartphone className="w-5 h-5" />
-                <span className="text-[13px]">UPI / GPay</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("qr")}
-                className={`p-3.5 rounded-[16px] border flex flex-col items-center justify-center gap-1.5 transition-all ${
-                  paymentMethod === "qr"
-                    ? "border-2 border-[#0052CC] bg-blue-50/50 text-[#0052CC] shadow-xs font-bold"
-                    : "border-slate-200/90 bg-white text-slate-700 hover:border-slate-300"
-                }`}
-              >
-                <QrCode className="w-5 h-5" />
-                <span className="text-[13px]">Instant QR</span>
-              </button>
-            </div>
-          </div>
-
-          <div 
-            onClick={() => setDpdpChecked(!dpdpChecked)}
-            className={`p-3.5 rounded-[16px] border flex items-start gap-2.5 cursor-pointer transition-all ${
-              dpdpChecked ? "border-2 border-[#0052CC] bg-blue-50/40 shadow-2xs" : "border-slate-200/90 bg-white"
-            }`}
-          >
-            <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${dpdpChecked ? "bg-[#0052CC] border-[#0052CC] text-white" : "border-slate-300"}`}>
-              {dpdpChecked && <Check className="w-3 h-3" strokeWidth={3} />}
-            </div>
-            <span className="text-[12px] font-bold text-[#0F172A] leading-tight select-none">
-              I authorize the activation of Verified Business Tag for ₹99 and agree to terms.
-            </span>
-          </div>
-          {error && <p className="text-[12px] text-red-500 font-bold text-center">{error}</p>}
-        </div>
+        <BusinessVerificationStep
+          onProceed={() => handleNext()}
+          isLoading={isLoading}
+          selectedMethod={paymentMethod}
+          onMethodChange={setPaymentMethod}
+        />
       ) : (
-        <div className="space-y-3.5">
-          <div 
-            onClick={() => setDpdpChecked(!dpdpChecked)}
-            className={`p-4 rounded-[18px] border flex items-start gap-3 cursor-pointer transition-all ${
-              dpdpChecked ? "border-2 border-[#0052CC] bg-blue-50/40 shadow-2xs" : "border-slate-200/90 bg-white"
-            }`}
-          >
-            <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 ${dpdpChecked ? "bg-[#0052CC] border-[#0052CC] text-white" : "border-slate-300"}`}>
-              {dpdpChecked && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
-            </div>
-            <div className="space-y-1">
-              <span className="text-[13px] font-bold text-[#0F172A] leading-snug select-none block">
-                I agree to Digital Personal Data Protection (DPDP) Act 2023 terms for identity verification and eSign execution.
-              </span>
-              <p className="text-[11.5px] text-slate-500">
-                I have read and consent to the <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("privacy") }} className="text-[#0052CC] font-bold hover:underline">Privacy Policy</button>, <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("terms") }} className="text-[#0052CC] font-bold hover:underline">Terms & Conditions</button>, and <button type="button" onClick={(e) => { e.stopPropagation(); openLegalDoc("consent") }} className="text-[#10B981] font-bold hover:underline">Consent Notice</button>.
-              </p>
-            </div>
-          </div>
-          {error && <p className="text-[12px] text-red-500 font-bold text-center">{error}</p>}
-        </div>
+        <C2CVerificationStep
+          onProceed={() => handleNext()}
+          isLoading={isLoading}
+          selectedMethod={paymentMethod}
+          onMethodChange={setPaymentMethod}
+        />
       )}
     </div>
   )
 
   // STEP 5: Verified Status Card & Completion
   const renderStep5 = () => (
-    <div className="space-y-4 text-center">
-      <div className="w-16 h-16 rounded-full bg-[#ECFDF5] border border-[#10B981]/40 text-[#10B981] flex items-center justify-center mx-auto shadow-sm">
-        <CheckCircle2 className="w-10 h-10 fill-[#10B981] text-white" />
-      </div>
-
-      <div className="space-y-1.5">
-        <h2 className="text-[21px] font-bold text-[#0F172A] tracking-tight">
-          {isB2C ? "Step 1 & 2 Complete!" : "Registration Complete!"}
-        </h2>
-        
-        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#ECFDF5] border border-[#10B981]/40 text-[#10B981] text-[13.5px] font-bold shadow-xs mt-1">
-          <CheckCircle2 className="w-4 h-4 fill-[#10B981] text-white" />
-          <span>{isB2C ? "Verified Business Tag Active" : "Person Verified"}</span>
-        </div>
-
-        <p className="text-[12.5px] text-slate-600 font-medium leading-relaxed max-w-[290px] mx-auto pt-2">
-          {isB2C 
-            ? "Your business profile is verified and active. Welcome to your lifetime business dashboard."
-            : "Your personal profile is authenticated via Aadhaar eKYC and ready for legal sale agreements."}
-        </p>
-      </div>
-
-      <div className="p-4 bg-slate-50 border border-slate-200/90 rounded-[18px] text-left text-[12.5px] space-y-2">
-        <div className="flex justify-between border-b border-slate-200/70 pb-2">
-          <span className="font-semibold text-slate-600">Step 1: Owner Aadhaar eKYC</span>
-          <span className="font-bold text-[#10B981]">Verified Complete</span>
-        </div>
-        {isB2C && (
-          <div className="flex justify-between border-b border-slate-200/70 pb-2">
-            <span className="font-semibold text-slate-600">Step 2: Business GSTIN / PAN</span>
-            <span className="font-bold text-[#10B981]">Verified Complete</span>
-          </div>
-        )}
-        {isB2C && (
-          <div className="flex justify-between border-b border-slate-200/70 pb-2">
-            <span className="font-semibold text-slate-600">Verified Business Tag</span>
-            <span className="font-bold text-[#0052CC]">Active (₹99 Paid)</span>
-          </div>
-        )}
-        <div className="flex justify-between">
-          <span className="font-semibold text-slate-600">Next Action</span>
-          <span className="font-bold text-[#059669]">Dashboard Access</span>
-        </div>
-      </div>
+    <div className="space-y-4">
+      {isB2C ? (
+        <BusinessVerifiedSuccessStep
+          onContinue={() => handleNext()}
+          businessName={businessDetails?.name || "Trilok Infotech Pvt. Ltd."}
+          ownerName={aadhaarDetails?.name || "Gulshan Kumar"}
+        />
+      ) : (
+        <C2CVerifiedSuccessStep
+          onContinue={() => handleNext()}
+          fullName={aadhaarDetails?.name || "Gulshan Kumar"}
+          mobile={mobile || "98765 43210"}
+          aadhaarLast4={aadhaarNumber ? aadhaarNumber.slice(-4) : "1234"}
+        />
+      )}
     </div>
   )
 
   // Title Configs per Step
-  const stepTitles = React.useMemo(() => {
+  const stepTitles = React.useMemo<{ title: React.ReactNode; subtitle: React.ReactNode }[]>(() => {
     if (isB2C) {
       return [
         { title: "Mobile & OTP Verification", subtitle: "Step 1: Verify your 10-digit mobile number with OTP" },
         { title: "Owner Aadhaar eKYC", subtitle: "Step 2: Business owner verifies identity via Aadhaar eKYC" },
         { title: "Business GST / PAN / Udyam", subtitle: "Step 3: Authenticate official business details via GSTIN or PAN" },
-        { title: "Verified Tag & Access", subtitle: "Step 4: Pay ₹99 for Verified Tag & lifetime dashboard access" },
-        { title: "Business Registration Complete", subtitle: "Step 5: Verified Business Tag Active. Welcome to Dashboard" },
+        { title: "Business Verification", subtitle: <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹99</span> for lifetime verification & access</span> },
+        { title: <span><span className="text-[#10B981]">Business</span> Verified!</span>, subtitle: "Your business is successfully verified and ready to create agreements." },
       ]
     }
     return [
       { title: "C2C Personal Registration", subtitle: "Step 1: Mobile & OTP Verification" },
       { title: "Aadhaar eKYC Verification", subtitle: "Step 2: Auto-fetch identity via Aadhaar" },
       { title: "Contact Information", subtitle: "Step 3: Email & notification settings" },
-      { title: "DPDP Act 2023 Consent", subtitle: "Step 4: Explicit consent & registration confirmation" },
-      { title: "Registration Successful", subtitle: "Step 5: Person Verified Tag Active" },
+      { title: "Person Verification", subtitle: <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹0</span> for lifetime verification & access</span> },
+      { title: <span><span className="text-[#10B981]">Person</span> Verified!</span>, subtitle: "Your profile is successfully verified and ready to create agreements." },
     ]
   }, [isB2C])
 
@@ -849,6 +754,8 @@ export function RegisterFormContent() {
         stepperStep={currentStep - 1}
         stepperSteps={isB2C ? B2C_REGISTRATION_STEPS : C2C_REGISTRATION_STEPS}
         moduleType={moduleType as "c2c" | "b2c"}
+        hideFooterButton={currentStep === 4 || currentStep === 5}
+        noCardWrapper={currentStep === 4 || currentStep === 5}
         onBackClick={() => {
           if (currentStep > 1) {
             setCurrentStep(prev => prev - 1)
