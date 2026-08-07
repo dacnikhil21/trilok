@@ -31,9 +31,9 @@ const C2C_REGISTRATION_STEPS = [
   { label: "Mobile OTP", icon: Smartphone },
   { label: "Aadhaar eKYC", icon: IdCard },
   { label: "Contact Info", icon: Mail },
-  { label: "Verify & Activate", icon: Sparkles },
   { label: "Complete", icon: CheckCircle2 },
 ]
+
 
 export function RegisterFormContent() {
   const searchParams = useSearchParams()
@@ -239,15 +239,13 @@ export function RegisterFormContent() {
 
     // Step 4: Tag Activation / Payment (B2C) or DPDP Consent (C2C)
     if (currentStep === 4) {
-      if (!dpdpChecked) {
-        setError(isB2C 
-          ? "Please click and confirm the Verified Business Tag registration consent box." 
-          : "Please check and accept the DPDP Act 2023 consent box to complete registration."
-        )
+      if (isB2C) {
+        setCurrentStep(5)
+        return
+      } else {
+        router.push(`/dashboard?module=${moduleType}`)
         return
       }
-      setCurrentStep(5)
-      return
     }
 
     // Step 5: Direct redirect to Dashboard after registration completion
@@ -717,18 +715,27 @@ export function RegisterFormContent() {
       { title: "C2C Personal Registration", subtitle: "Step 1: Mobile & OTP Verification" },
       { title: "Aadhaar eKYC Verification", subtitle: "Step 2: Auto-fetch identity via Aadhaar" },
       { title: "Contact Information", subtitle: "Step 3: Email & notification settings" },
-      { title: "Person Verification", subtitle: <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹0</span> for lifetime verification & access</span> },
       { title: <span><span className="text-[#10B981]">Person</span> Verified!</span>, subtitle: "Your profile is successfully verified and ready to create agreements." },
     ]
   }, [isB2C])
 
-  const buttonTexts = [
-    otpSent ? "Verify OTP" : "Send OTP",
-    aadhaarDetails ? "Continue to Business Verification" : "Verify Aadhaar eKYC",
-    businessDetails ? "Continue to Tag Activation" : "Verify Business Credentials",
-    isB2C ? "Pay ₹99 & Activate Tag" : "Confirm Consent & Complete",
-    "Go to Dashboard"
-  ]
+  const buttonTexts = React.useMemo(() => {
+    if (isB2C) {
+      return [
+        otpSent ? "Verify OTP" : "Send OTP",
+        aadhaarDetails ? "Continue to Business Verification" : "Verify Aadhaar eKYC",
+        businessDetails ? "Continue to Tag Activation" : "Verify Business Credentials",
+        "Pay ₹99 & Activate Tag",
+        "Go to Dashboard"
+      ]
+    }
+    return [
+      otpSent ? "Verify OTP" : "Send OTP",
+      aadhaarDetails ? "Continue to Contact Information" : "Verify Aadhaar eKYC",
+      "Confirm Consent & Complete",
+      "Go to Dashboard"
+    ]
+  }, [isB2C, otpSent, aadhaarDetails, businessDetails])
 
   const currentConfig = stepTitles[currentStep - 1]
 
@@ -737,8 +744,8 @@ export function RegisterFormContent() {
       case 1: return renderStep1()
       case 2: return renderStep2()
       case 3: return renderStep3()
-      case 4: return renderStep4()
-      case 5: return renderStep5()
+      case 4: return isB2C ? renderStep4() : renderStep5()
+      case 5: return isB2C ? renderStep5() : null
       default: return renderStep1()
     }
   }
@@ -754,8 +761,8 @@ export function RegisterFormContent() {
         stepperStep={currentStep - 1}
         stepperSteps={isB2C ? B2C_REGISTRATION_STEPS : C2C_REGISTRATION_STEPS}
         moduleType={moduleType as "c2c" | "b2c"}
-        hideFooterButton={currentStep === 4 || currentStep === 5}
-        noCardWrapper={currentStep === 4 || currentStep === 5}
+        hideFooterButton={isB2C ? (currentStep === 4 || currentStep === 5) : (currentStep === 4)}
+        noCardWrapper={isB2C ? (currentStep === 4 || currentStep === 5) : (currentStep === 4)}
         onBackClick={() => {
           if (currentStep > 1) {
             setCurrentStep(prev => prev - 1)
