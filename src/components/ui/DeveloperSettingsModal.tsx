@@ -120,8 +120,17 @@ function DeveloperSettingsContent({
 
                     <button
                       type="button"
-                      onClick={() => { router.push("/dashboard?module=b2c"); setIsOpen(false) }}
+                      onClick={() => { router.push("/business-category"); setIsOpen(false) }}
                       className="p-2.5 rounded-[12px] bg-blue-50 hover:bg-blue-100 text-[#0052CC] font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>Business Category Selection</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard?module=b2c"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
                     >
                       <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
                       <span>B2C Dashboard (/dashboard?module=b2c)</span>

@@ -21,14 +21,12 @@ export default function Home() {
   if (!isMounted) return null
 
   return (
-    <div className="h-[100dvh] w-full bg-[#fcfcfc] flex flex-col items-center justify-between px-5 py-6 overflow-hidden">
-      
-      {/* Top Logo Section */}
-      <motion.div 
+    <div className="mobile-app-shell flex flex-col bg-[#fcfcfc] px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-[max(12px,env(safe-area-inset-top))]">
+      <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col items-center shrink-0 w-full mt-2"
+        className="mt-2 flex w-full shrink-0 flex-col items-center"
       >
         <div className="w-[320px] h-[105px] overflow-hidden relative flex justify-center">
           <img 
@@ -39,13 +37,13 @@ export default function Home() {
         </div>
       </motion.div>
 
-      {/* Central Video Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="w-full max-w-[340px] aspect-[1.52] rounded-[20px] overflow-hidden bg-white shadow-sm border border-gray-100 flex-shrink-0 my-auto"
+        className="my-auto flex w-full flex-1 items-center justify-center"
       >
+        <div className="aspect-[1.52] w-full max-w-[340px] flex-shrink-0 overflow-hidden rounded-[20px] border border-gray-100 bg-white shadow-sm">
         <video
           autoPlay
           muted
@@ -56,14 +54,14 @@ export default function Home() {
           className="w-full h-full object-cover scale-[1.18]"
           src="/splash%20screen.jpg%20(2).mp4"
         />
+        </div>
       </motion.div>
 
-      {/* Bottom Content Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="w-full flex flex-col items-center text-center shrink-0 mb-2"
+        className="mb-2 flex w-full shrink-0 flex-col items-center text-center"
       >
         {/* Headlines */}
         <h1 className="text-[28px] font-display font-extrabold leading-[1.15] text-[#041B4A] tracking-tight">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,14 @@ export const metadata: Metadata = {
   description: "Indian Digital Agreement Platform",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#FFFFFF",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,8 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${outfit.variable} h-full antialiased`}
     >
-      <body className="min-h-full w-full bg-background font-sans text-foreground selection:bg-primary selection:text-surface">
-        {/* Global responsive canvas */}
+      <body className="h-full w-full overflow-hidden bg-white font-sans text-foreground selection:bg-primary selection:text-surface">
         {children}
       </body>
     </html>

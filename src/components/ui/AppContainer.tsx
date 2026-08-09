@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Sparkles } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface AppContainerProps {
   children: React.ReactNode
@@ -11,7 +12,8 @@ interface AppContainerProps {
   centered?: boolean
 }
 
-export function AppContainer({ children, className = "", centered = false }: AppContainerProps) {
+/** Thin wrapper for dev tools only. App shell lives in MobileAppShell / MobileScreen. */
+export function AppContainer({ children, className = "" }: AppContainerProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -26,28 +28,20 @@ export function AppContainer({ children, className = "", centered = false }: App
   ]
 
   return (
-    <div className="min-h-screen w-full bg-background relative overflow-hidden flex flex-col">
-      {/* Premium ambient glows */}
-      <div className="absolute top-[-15%] left-[-10%] w-[55%] h-[45%] bg-primary/[0.04] rounded-full blur-[110px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[45%] bg-[#D4AF37]/[0.02] rounded-full blur-[110px] pointer-events-none" />
-
-      {/* ── DEVELOPER QUICK SKIP FAB (Dev Environment Only) ─────────────────────────── */}
+    <>
       {process.env.NODE_ENV === "development" && (
         <div className="fixed bottom-4 right-4 z-[100] flex flex-col items-end gap-2">
-
-          {/* FAB Toggle Button */}
           <motion.button
             onClick={() => setIsOpen(!isOpen)}
             whileTap={{ scale: 0.9 }}
-            className="w-8 h-8 rounded-full backdrop-blur-xl bg-slate-900/80 border border-white/20 text-white flex items-center justify-center shadow-lg hover:bg-slate-900 transition-all opacity-40 hover:opacity-100"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-slate-900/80 text-white opacity-40 shadow-lg backdrop-blur-xl transition-all hover:bg-slate-900 hover:opacity-100"
             title="Dev Quick Skip"
           >
             <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="h-3.5 w-3.5" />
             </motion.div>
           </motion.button>
 
-          {/* Expanded Nav Grid */}
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -55,9 +49,11 @@ export function AppContainer({ children, className = "", centered = false }: App
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.92 }}
                 transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                className="backdrop-blur-xl bg-slate-900/95 border border-white/10 text-white rounded-[16px] shadow-2xl p-2.5 grid grid-cols-2 gap-1.5 w-[168px]"
+                className="grid w-[168px] grid-cols-2 gap-1.5 rounded-[16px] border border-white/10 bg-slate-900/95 p-2.5 text-white shadow-2xl backdrop-blur-xl"
               >
-                <p className="col-span-2 text-[9px] font-bold uppercase tracking-widest text-slate-400 px-1 pb-0.5">Dev Navigation</p>
+                <p className="col-span-2 px-1 pb-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                  Dev Navigation
+                </p>
                 {devLinks.map((link) => (
                   <button
                     key={link.path}
@@ -65,7 +61,7 @@ export function AppContainer({ children, className = "", centered = false }: App
                       router.push(link.path)
                       setIsOpen(false)
                     }}
-                    className="px-2 py-1 rounded-[8px] text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all text-left"
+                    className="rounded-[8px] px-2 py-1 text-left text-[11px] font-bold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
                   >
                     {link.name}
                   </button>
@@ -76,25 +72,7 @@ export function AppContainer({ children, className = "", centered = false }: App
         </div>
       )}
 
-      {/* ── MAIN CONTENT ─────────────────────────────────────────────────────── */}
-      <div className={`relative z-10 flex-1 flex flex-col w-full ${centered ? "items-center justify-start py-0 sm:py-6" : ""}`}>
-        {centered ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.99 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className={`w-full flex-1 flex flex-col bg-surface rounded-none border-0 shadow-none sm:flex-initial sm:rounded-[24px] sm:border sm:border-slate-200/80 sm:shadow-md overflow-hidden sm:max-w-[440px] ${className}`}
-          >
-            <div className="flex flex-col flex-1 p-0 w-full">
-              {children}
-            </div>
-          </motion.div>
-        ) : (
-          <div className={`flex flex-col flex-1 w-full bg-surface ${className}`}>
-            {children}
-          </div>
-        )}
-      </div>
-    </div>
+      <div className={cn("h-full w-full", className)}>{children}</div>
+    </>
   )
 }

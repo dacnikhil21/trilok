@@ -46,7 +46,17 @@ function DashboardContent() {
   )
 
   return (
-    <MobileAppShell header={headerContent} hasFloatingNav>
+    <MobileAppShell
+      header={headerContent}
+      bottomBar={
+        <BottomNavigation
+          activeTab={activeNav}
+          onTabChange={(id) => setActiveNav(id as typeof activeNav)}
+          onLogout={() => router.push("/login")}
+          onCreateNew={handleCreateNew}
+        />
+      }
+    >
       <div className="w-full space-y-4 py-1">
 
           {/* ── 2. HERO BANNER ("Create Agreement") — Optimized Mobile Perspective ─ */}
@@ -226,12 +236,6 @@ function DashboardContent() {
 
       </div>
 
-      <BottomNavigation
-        activeTab={activeNav}
-        onTabChange={(id) => setActiveNav(id as any)}
-        onLogout={() => router.push("/login")}
-        onCreateNew={handleCreateNew}
-      />
       <DeveloperSettingsModal />
     </MobileAppShell>
   )

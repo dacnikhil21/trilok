@@ -243,14 +243,14 @@ export function RegisterFormContent() {
         setCurrentStep(5)
         return
       } else {
-        router.push(`/dashboard?module=${moduleType}`)
+        router.push("/business-category")
         return
       }
     }
 
-    // Step 5: Direct redirect to Dashboard after registration completion
+    // Step 5: Business category selection before dashboard
     if (currentStep === 5) {
-      router.push(`/dashboard?module=${moduleType}`)
+      router.push("/business-category")
     }
   }
 

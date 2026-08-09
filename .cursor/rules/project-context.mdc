@@ -1,0 +1,44 @@
+---
+description: eSaleAgreement (trilok) project context — always apply
+alwaysApply: true
+---
+
+# eSaleAgreement — trilok (canonical repo)
+
+- **This is the correct project.** GitHub: https://github.com/dacnikhil21/trilok | Vercel: trilok-iota.vercel.app
+- **Ignore** `Desktop/eSaleAgreement` — old wrong copy, never use or reference it.
+
+## Flow (client-approved, do not redesign)
+
+Registration (`/register`) → Business Category (`/business-category`) → category dashboard
+
+| Category | Route |
+|---|---|
+| Mobile & Electronics | `/dashboard/mobile` |
+| Bikes or Cars | `/dashboard/vehicle` |
+| Furniture Sale | `/dashboard/furniture` |
+| Rental Services | `/dashboard/rental` |
+| Service Agreement | `/dashboard/service` |
+| Others | `/dashboard/others` |
+
+## Already built — extend, do NOT rebuild from scratch
+
+- Full auth/onboarding: splash, login, OTP, select-service, multi-step register (Aadhaar, B2C/C2C)
+- `/business-category` — migrated from old folder; may need pixel polish vs `image.png`
+- `/dashboard/*` — migrated category dashboards
+- Dev Settings (localhost wrench icon) for quick route jumps
+
+## Implementation rules
+
+- **Implementation only** — match reference images exactly; no redesign
+- Source of truth: `image.png`, `design-previews/`, `client_feedback/`
+- Mobile-native feel, not responsive website
+- Read existing files before editing; minimal diffs; reuse components
+
+## Dev
+
+```bash
+npm run dev
+```
+
+Test: `/business-category`, `/register?module=b2c`, Dev Settings for route jumper.

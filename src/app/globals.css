@@ -36,15 +36,17 @@
 }
 
 @layer base {
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    background-color: var(--background);
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(0, 51, 160, 0.04) 0px, transparent 45%),
-      radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.03) 0px, transparent 45%);
-    background-attachment: fixed;
+    background-color: #ffffff;
     color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
   }
 }
 
@@ -116,7 +118,28 @@
   }
 
   .safe-nav-padding {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Full-bleed mobile app shell — phone frame only on desktop preview */
+  .mobile-app-shell {
+    display: flex;
+    height: 100dvh;
+    width: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-app-shell {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 430px;
+      border-left: 1px solid rgba(226, 232, 240, 0.8);
+      border-right: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+    }
   }
 }
 
