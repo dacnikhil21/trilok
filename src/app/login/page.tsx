@@ -2,16 +2,14 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { AppContainer } from "@/components/ui/AppContainer"
 import { ServiceSelectionForm } from "@/components/auth/ServiceSelectionForm"
 import { TermsModal } from "@/components/ui/TermsModal"
-import { BrandLogo } from "@/components/ui/BrandLogo"
 import {
   ShieldCheck, Phone, ChevronDown, ArrowRight, Shield,
   Fingerprint, Lock, CheckCircle2, User, UserPlus
 } from "lucide-react"
-
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
+import { OnboardingHeader } from "@/components/layout/OnboardingHeader"
 import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 export default function LoginPage() {
@@ -46,14 +44,10 @@ export default function LoginPage() {
 
   const isButtonDisabled = mobile.length !== 10
 
-  const headerContent = (
-    <div className="w-full flex items-center justify-center py-2.5">
-      <BrandLogo size="md" />
-    </div>
-  )
+  const headerContent = <OnboardingHeader />
 
   return (
-    <MobileAppShell header={headerContent}>
+    <MobileAppShell header={headerContent} contentClassName="pb-4">
       <div className="w-full flex flex-col space-y-4 py-1">
         {/* SECTION 1: Welcome Headline & Subtext */}
         <div className="w-full text-center space-y-1">

@@ -3,8 +3,8 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { AppContainer } from "@/components/ui/AppContainer"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
+import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
 import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
@@ -554,7 +554,7 @@ function VerifyIdentityContent() {
   }
 
   return (
-    <AppContainer centered>
+    <>
       <OnboardingLayout
         title={pageConfig.title}
         subtitle={pageConfig.subtitle}
@@ -577,7 +577,8 @@ function VerifyIdentityContent() {
           else router.back()
         }}
       />
-    </AppContainer>
+      <DeveloperSettingsModal />
+    </>
   )
 }
 

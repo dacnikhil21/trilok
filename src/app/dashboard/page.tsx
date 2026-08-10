@@ -2,252 +2,45 @@
 
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import {
-  Plus, FileText, Bell, Home, ChevronRight,
-  Smartphone, Car, Wrench, Building2, Grid, UserPlus, ClipboardList,
-  ScanLine, BarChart3, Inbox, User, Shield, PenTool
-} from "lucide-react"
-import { AppContainer } from "@/components/ui/AppContainer"
-import { BrandLogo } from "@/components/ui/BrandLogo"
-import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
-
-import { MobileAppShell } from "@/components/ui/MobileAppShell"
-import { BottomNavigation } from "@/components/ui/BottomNavigation"
+import { C2CDashboardScreen } from "@/components/dashboard/C2CDashboardScreen"
 import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
-  const [activeNav, setActiveNav] = React.useState<"home" | "agreements" | "inbox" | "profile">("home")
 
-  const handleCreateNew = () => router.push(`/create-agreement?module=${moduleType}`)
+  React.useEffect(() => {
+    if (moduleType === "b2c") {
+      router.replace("/business-category")
+    }
+  }, [moduleType, router])
 
-  const headerContent = (
-    <div className="w-full flex items-center justify-between py-2.5">
-      <BrandLogo size="md" showSubtitle />
-
-      <div className="flex items-center gap-2">
-        {/* Notification Bell with Red Badge "3" */}
-        <button className="w-8.5 h-8.5 rounded-full bg-slate-100 flex items-center justify-center relative hover:bg-slate-200 transition-colors">
-          <Bell className="w-4 h-4 text-slate-700" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#EF4444] text-white text-[9.5px] font-bold flex items-center justify-center shadow-2xs">
-            3
-          </span>
-        </button>
-
-        {/* Profile Avatar "N" */}
-        <div className="w-8.5 h-8.5 rounded-full bg-[#0052CC] text-white font-extrabold text-[14px] flex items-center justify-center shadow-2xs">
-          N
-        </div>
+  if (moduleType === "b2c") {
+    return (
+      <div className="mobile-app-shell flex items-center justify-center bg-white">
+        <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#2563EB] border-t-transparent" />
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
-    <MobileAppShell
-      header={headerContent}
-      bottomBar={
-        <BottomNavigation
-          activeTab={activeNav}
-          onTabChange={(id) => setActiveNav(id as typeof activeNav)}
-          onLogout={() => router.push("/login")}
-          onCreateNew={handleCreateNew}
-        />
-      }
-    >
-      <div className="w-full space-y-4 py-1">
-
-          {/* ── 2. HERO BANNER ("Create Agreement") — Optimized Mobile Perspective ─ */}
-          <div className="w-full rounded-[20px] bg-gradient-to-r from-[#F0FDF4] via-[#F2F8F5] to-[#ECFDF5] border border-[#A7F3D0] p-4 sm:p-5 relative overflow-hidden shadow-xs flex items-center justify-between">
-            <div className="space-y-2 max-w-[200px] sm:max-w-[270px] z-10">
-              <h1 className="text-[19px] sm:text-[22px] font-extrabold text-[#0F172A] tracking-tight leading-tight">
-                Create Agreement
-              </h1>
-              <p className="text-[12px] sm:text-[13px] text-[#475569] font-medium leading-snug">
-                Create eSign agreement for your customer in just 2 minutes
-              </p>
-              <button
-                onClick={handleCreateNew}
-                className="h-[38px] px-3.5 rounded-[10px] bg-[#059669] hover:bg-[#047857] text-white font-bold text-[13px] flex items-center gap-1.5 shadow-xs transition-all active:scale-95 mt-1"
-              >
-                <Plus className="w-4 h-4" strokeWidth={2.8} />
-                <span>New Agreement</span>
-              </button>
-            </div>
-
-            {/* Document & Pen Signature Illustration (Mobile-Sized Proportions) */}
-            <div className="relative w-24 h-28 shrink-0 flex items-center justify-center -right-0.5 sm:right-0">
-              <div className="w-18 h-24 bg-white rounded-lg shadow-sm border border-slate-200/80 p-2 relative flex flex-col gap-1">
-                <div className="w-9 h-1 bg-slate-200 rounded-full" />
-                <div className="w-12 h-1 bg-slate-200 rounded-full" />
-                <div className="w-10 h-1 bg-slate-200 rounded-full" />
-                {/* Blue Checkmark Shield */}
-                <div className="w-6 h-6 rounded-full bg-[#0052CC] text-white flex items-center justify-center absolute -left-2.5 top-7 shadow-xs">
-                  <Shield className="w-3 h-3 fill-[#0052CC]" />
-                </div>
-                {/* Pen Signature */}
-                <div className="mt-auto flex justify-end pr-0.5 text-[#059669] font-serif italic text-[13px] font-bold">
-                  am
-                </div>
-              </div>
-              <PenTool className="w-7 h-7 text-[#0052CC] absolute right-0 bottom-0.5 transform rotate-12 drop-shadow-xs" />
-            </div>
-          </div>
-
-          {/* ── 2.5. 5-STEP WORKFLOW GUIDE (Shown for both C2C & B2C modules) ──────────── */}
-          <B2CProcessGuide
-            variant="horizontal"
-            title={moduleType === "b2c" ? "B2C Merchant 5-Step Process" : "C2C Personal 5-Step Process"}
-            currentStep={3}
-            onStepClick={(stepId) => {
-              if (stepId === 3) handleCreateNew()
-            }}
-          />
-
-          {/* ── 3. CATEGORIES SECTION (Horizontal Swipe Ribbon) ─────────────── */}
-          <div className="space-y-2 select-none">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-extrabold text-[#0F172A] tracking-tight">Categories</h2>
-              <span className="text-[11px] font-bold text-slate-400">Swipe →</span>
-            </div>
-
-            <div className="overflow-x-auto no-scrollbar pt-0.5 pb-1 -mx-1 px-1">
-              <div className="flex items-center gap-2.5 min-w-max">
-                {[
-                  { name: "Electronics", icon: Smartphone, bg: "bg-[#ECFDF5] text-[#059669]" },
-                  { name: "Vehicles", icon: Car, bg: "bg-[#EFF6FF] text-[#2563EB]" },
-                  { name: "Services", icon: Wrench, bg: "bg-[#ECFDF5] text-[#059669]" },
-                  { name: "Rental", icon: Building2, bg: "bg-[#EFF6FF] text-[#2563EB]" },
-                  { name: "Others", icon: Grid, bg: "bg-[#ECFDF5] text-[#059669]" },
-                ].map((cat) => {
-                  const Icon = cat.icon
-                  return (
-                    <button
-                      key={cat.name}
-                      type="button"
-                      onClick={handleCreateNew}
-                      className="h-[46px] px-3.5 py-2 rounded-[14px] bg-white border border-slate-200/90 hover:border-[#0052CC] transition-all flex items-center gap-2.5 shadow-2xs hover:shadow-xs active:scale-[0.98] group shrink-0"
-                    >
-                      <div className={`w-7 h-7 rounded-lg ${cat.bg} flex items-center justify-center shrink-0`}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="font-bold text-[13px] text-[#0F172A] whitespace-nowrap">{cat.name}</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* ── 4. MY AGREEMENTS & PENDING AGREEMENTS (2-Column Grid) ──────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-
-            {/* Left: My Agreements */}
-            <div className="bg-white rounded-[18px] border border-slate-200/80 p-4 space-y-3.5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                <h2 className="text-[14.5px] font-bold text-[#0F172A] tracking-tight">My Agreements</h2>
-                <button className="text-[11.5px] font-bold text-[#0052CC] hover:underline">View All</button>
-              </div>
-
-              <div className="space-y-3.5 divide-y divide-slate-100">
-                {[
-                  { title: "Electronics Purchase Agreement", date: "12 May 2025", status: "Completed", iconBg: "bg-[#059669]" },
-                  { title: "Mobile Sale Agreement", date: "10 May 2025", status: "Completed", iconBg: "bg-[#0052CC]" },
-                  { title: "Laptop Purchase Agreement", date: "08 May 2025", status: "Pending", iconBg: "bg-[#059669]" },
-                ].map((item, idx) => (
-                  <div key={idx} className={`flex items-center justify-between ${idx > 0 ? "pt-3" : ""} hover:bg-slate-50 transition-colors cursor-pointer rounded-lg p-1`}>
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-8.5 h-8.5 rounded-full ${item.iconBg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-bold text-[12.5px] text-[#0F172A] truncate leading-snug">{item.title}</h3>
-                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                          {item.date} • <span className={item.status === "Completed" ? "text-[#059669] font-bold" : "text-[#D97706] font-bold"}>{item.status}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Pending Agreements */}
-            <div className="bg-white rounded-[18px] border border-slate-200/80 p-4 space-y-3.5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                <h2 className="text-[14.5px] font-bold text-[#0F172A] tracking-tight">Pending Agreements</h2>
-                <button className="text-[11.5px] font-bold text-[#0052CC] hover:underline">View All</button>
-              </div>
-
-              <div className="space-y-3.5 divide-y divide-slate-100">
-                {[
-                  { title: "Customer eSign Pending", desc: "Mobile Purchase", date: "11 May 2025", bg: "bg-[#DBEAFE] text-[#2563EB]" },
-                  { title: "Customer eSign Pending", desc: "AC Service Agreement", date: "09 May 2025", bg: "bg-[#D1FAE5] text-[#059669]" },
-                ].map((item, idx) => (
-                  <div key={idx} className={`flex items-center justify-between ${idx > 0 ? "pt-3" : ""} hover:bg-slate-50 transition-colors cursor-pointer rounded-lg p-1`}>
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-8.5 h-8.5 rounded-full ${item.bg} flex items-center justify-center shrink-0`}>
-                        <User className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-bold text-[12.5px] text-[#0F172A] truncate leading-snug">{item.title}</h3>
-                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">{item.desc}</p>
-                        <p className="text-[10.5px] text-slate-400 font-medium">{item.date}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span className="w-2 h-2 rounded-full bg-[#F59E0B]" />
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* ── 5. QUICK ACTIONS TOOLBAR ─────────────────────────────────────── */}
-          <div className="w-full rounded-[18px] bg-[#EEF4FF] border border-[#D0E2FF] p-3 grid grid-cols-4 divide-x divide-[#D0E2FF]/80 text-center">
-            {[
-              { label: "Add Customer", icon: UserPlus, color: "text-[#0052CC]" },
-              { label: "Templates", icon: ClipboardList, color: "text-[#059669]" },
-              { label: "Scan & Verify", icon: ScanLine, color: "text-[#0052CC]" },
-              { label: "Reports", icon: BarChart3, color: "text-[#059669]" },
-            ].map((action) => {
-              const Icon = action.icon
-              return (
-                <div
-                  key={action.label}
-                  onClick={handleCreateNew}
-                  className="flex flex-col items-center justify-center gap-1.5 px-1 py-1 hover:bg-white/50 transition-colors cursor-pointer rounded-lg"
-                >
-                  <div className={`w-9 h-9 rounded-xl bg-white ${action.color} shadow-xs flex items-center justify-center mx-auto`}>
-                    <Icon className="w-4.5 h-4.5" />
-                  </div>
-                  <span className="text-[11.5px] font-bold text-[#0F172A] leading-tight">{action.label}</span>
-                </div>
-              )
-            })}
-          </div>
-
-      </div>
-
+    <>
+      <C2CDashboardScreen />
       <DeveloperSettingsModal />
-    </MobileAppShell>
+    </>
   )
 }
 
 export default function DashboardPage() {
   return (
-    <React.Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <span className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    }>
+    <React.Suspense
+      fallback={
+        <div className="mobile-app-shell flex items-center justify-center bg-[#F8FAFC]">
+          <span className="h-8 w-8 animate-spin rounded-full border-4 border-[#2563EB] border-t-transparent" />
+        </div>
+      }
+    >
       <DashboardContent />
     </React.Suspense>
   )

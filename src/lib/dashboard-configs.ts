@@ -10,6 +10,7 @@ export interface RentalCategory {
   label: string
   description: string
   icon: "pg" | "vehicle" | "electronics" | "other"
+  categoryId: string
 }
 
 export type VerificationServiceIcon =
@@ -40,7 +41,7 @@ export interface DashboardConfig {
   templatesTitle?: string
   templates?: DashboardTemplate[]
   templateLayout?: "grid" | "scroll"
-  templateGridCols?: 4 | 5
+  templateGridCols?: 3 | 4
   rentalCategories?: RentalCategory[]
   rentalCategoriesTitle?: string
   verificationServices?: VerificationService[]
@@ -87,7 +88,7 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     highlightColor: "#2563EB",
     heroGradient: "from-[#EFF6FF] to-[#F8FAFC]",
     templateLayout: "grid",
-    templateGridCols: 5,
+    templateGridCols: 3,
     templatesTitle: "Mobile & Electronics Agreement Templates",
     templates: [
       { label: "Mobile Phone Sale", icon: "phone" },
@@ -161,10 +162,10 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     rentalCategoriesTitle: "Rental Service Categories",
     verificationServices: RENTAL_VERIFICATION_SERVICES,
     rentalCategories: [
-      { label: "PG Rental", description: "Create agreements for PG rentals", icon: "pg" },
-      { label: "Vehicle Rental", description: "Create agreements for vehicle rentals", icon: "vehicle" },
-      { label: "Electronics Rental", description: "Create agreements for electronics rentals", icon: "electronics" },
-      { label: "Other Rentals", description: "Create agreements for other rentals", icon: "other" },
+      { label: "PG Rental", description: "Create agreements for PG rentals", icon: "pg", categoryId: "pg-rental" },
+      { label: "Vehicle Rental", description: "Create agreements for vehicle rentals", icon: "vehicle", categoryId: "vehicle-rental" },
+      { label: "Electronics Rental", description: "Create agreements for electronics rentals", icon: "electronics", categoryId: "electronics-rental" },
+      { label: "Other Rentals", description: "Create agreements for other rentals", icon: "other", categoryId: "other-rental" },
     ],
   },
   service: {

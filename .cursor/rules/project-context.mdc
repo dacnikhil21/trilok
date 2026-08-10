@@ -10,7 +10,11 @@ alwaysApply: true
 
 ## Flow (client-approved, do not redesign)
 
-Registration (`/register`) → Business Category (`/business-category`) → category dashboard
+**B2C (merchant):** Registration (`/register?module=b2c`) → Business Category (`/business-category`) → category dashboard
+
+**C2C (personal):** Registration (`/register?module=c2c`) → C2C dashboard (`/dashboard?module=c2c`) → create-agreement flow (Sale/Rental/Service → category → intro → wizard)
+
+C2C create flow routes: `/create-agreement?module=c2c&type=sale|rental|service&category=<id>`
 
 | Category | Route |
 |---|---|

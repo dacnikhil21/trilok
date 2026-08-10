@@ -31,7 +31,7 @@ export function PageHeader({ title, subtitle, showLogo = false, showBackButton =
 
         {showLogo && (
           <div className="flex items-center justify-center mx-auto">
-            <BrandLogo size="sm" />
+            <BrandLogo variant="headerCompact" />
           </div>
         )}
 

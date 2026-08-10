@@ -4,31 +4,25 @@ import * as React from "react"
 import { ChevronRight, Check, Info } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { MobileScreen } from "@/components/layout/MobileScreen"
-import { StatusBar } from "@/components/layout/StatusBar"
+import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
 import {
   BUSINESS_CATEGORIES,
   type BusinessCategoryId,
 } from "@/lib/categories"
+import { Icon3D } from "@/components/icons/Icon3D"
 import {
-  MobileElectronicsIcon,
-  BikesCarsIcon,
-  FurnitureSaleIcon,
-  RentalServicesIcon,
-  ServiceAgreementIcon,
-  OthersIcon,
   StoreHeroIllustration,
   WhyCategoryIllustration,
 } from "@/components/icons/CategoryIcons"
 
-const CATEGORY_ICONS: Record<BusinessCategoryId, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  "mobile-electronics": MobileElectronicsIcon,
-  "bikes-cars": BikesCarsIcon,
-  "furniture-sale": FurnitureSaleIcon,
-  "rental-services": RentalServicesIcon,
-  "service-agreement": ServiceAgreementIcon,
-  others: OthersIcon,
+const CATEGORY_ICON_KEYS: Record<BusinessCategoryId, string> = {
+  "mobile-electronics": "mobile-electronics",
+  "bikes-cars": "bikes-cars",
+  "furniture-sale": "furniture-sale",
+  "rental-services": "rental-services",
+  "service-agreement": "service-agreement",
+  others: "others",
 }
 
 export function BusinessCategoryScreen() {
@@ -43,12 +37,23 @@ export function BusinessCategoryScreen() {
   }
 
   return (
-    <MobileScreen>
-      <StatusBar />
-      <AppHeader showBack onBack={() => router.push("/register")} />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
+    <AppShell
+      header={<AppHeader showBack onBack={() => router.push("/register?module=b2c")} />}
+      footer={
+        <div className="px-5 pt-4">
+          <button
+            type="button"
+            onClick={handleContinue}
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[12px] bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_8px_20px_rgba(37,99,235,0.28)] transition-transform active:scale-[0.98]"
+          >
+            Continue to Dashboard
+            <span aria-hidden="true" className="text-[18px] leading-none">
+              →
+            </span>
+          </button>
+        </div>
+      }
+    >
         <section className="mx-5 mt-1 overflow-hidden rounded-[16px] bg-[#F0F7FF]">
           <div className="px-4 pb-4 pt-4">
             <p className="text-[14px] font-medium text-[#64748B]">Hello, Business Owner 👋</p>
@@ -79,7 +84,6 @@ export function BusinessCategoryScreen() {
 
         <section className="mt-3 grid grid-cols-2 gap-3 px-5">
           {BUSINESS_CATEGORIES.map((category) => {
-            const Icon = CATEGORY_ICONS[category.id]
             const isSelected = selectedId === category.id
 
             return (
@@ -100,7 +104,9 @@ export function BusinessCategoryScreen() {
                   </span>
                 )}
 
-                <Icon className="mb-2.5 h-12 w-12" aria-hidden="true" />
+                <div className="mb-3">
+                  <Icon3D name={CATEGORY_ICON_KEYS[category.id]} size="hero" alt={category.title} />
+                </div>
 
                 <div className="flex flex-1 flex-col">
                   <div className="flex items-start justify-between gap-1">
@@ -142,21 +148,6 @@ export function BusinessCategoryScreen() {
           </div>
           <WhyCategoryIllustration className="h-[72px] w-[88px] shrink-0" aria-hidden="true" />
         </section>
-        </div>
-
-        <div className="shrink-0 border-t border-[#F1F5F9] bg-white px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-4">
-          <button
-            type="button"
-            onClick={handleContinue}
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[12px] bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_8px_20px_rgba(37,99,235,0.28)] transition-transform active:scale-[0.98]"
-          >
-            Continue to Dashboard
-            <span aria-hidden="true" className="text-[18px] leading-none">
-              →
-            </span>
-          </button>
-        </div>
-      </div>
-    </MobileScreen>
+    </AppShell>
   )
 }

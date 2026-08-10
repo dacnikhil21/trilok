@@ -2,13 +2,9 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { User, Briefcase, Store, Check } from "lucide-react"
+import { User, Store, Check } from "lucide-react"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
-import { AppContainer } from "@/components/ui/AppContainer"
 import { cn } from "@/lib/utils"
-
-import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
 
 const SERVICES = [
   {
@@ -88,8 +84,7 @@ export default function SelectServicePage() {
   )
 
   return (
-    <AppContainer centered>
-      <OnboardingLayout
+    <OnboardingLayout
         title="Account Configuration"
         subtitle="Select your identity to personalize your digital agreement workspace."
         cardContent={cardContent}
@@ -98,7 +93,6 @@ export default function SelectServicePage() {
         isButtonDisabled={!selectedId}
         showBackButton
         onBackClick={() => router.push("/login")}
-      />
-    </AppContainer>
+    />
   )
 }

@@ -1,0 +1,115 @@
+/** Maps app icon keys → 3D PNG assets in /public/icons/3d/ */
+export type Icon3DKey =
+  | "phone"
+  | "laptop"
+  | "tablet"
+  | "watch"
+  | "camera"
+  | "tv"
+  | "appliance"
+  | "console"
+  | "accessories"
+  | "more"
+  | "bike"
+  | "car"
+  | "scooter"
+  | "commercial"
+  | "bike-loan"
+  | "car-loan"
+  | "used-vehicle"
+  | "furniture"
+  | "office-furniture"
+  | "custom-furniture"
+  | "used-furniture"
+  | "bulk-furniture"
+  | "warranty"
+  | "delivery"
+  | "freelance"
+  | "it-services"
+  | "cleaning"
+  | "maintenance"
+  | "installation"
+  | "pg"
+  | "vehicle"
+  | "electronics"
+  | "other"
+  | "aadhaar"
+  | "pan"
+  | "gstin"
+  | "driving-licence"
+  | "udyam"
+  | "rc"
+  | "utilities"
+  | "mobile-electronics"
+  | "bikes-cars"
+  | "furniture-sale"
+  | "rental-services"
+  | "service-agreement"
+  | "others"
+  | "sale"
+  | "rental"
+  | "service"
+  | "maid"
+  | "repair"
+  | "electronics-rental"
+
+/** Each key maps to a PNG file (without path). Keys can share assets. */
+export const ICON3D_ASSETS: Record<Icon3DKey, string> = {
+  phone: "phone.png",
+  laptop: "laptop.png",
+  tablet: "tablet.png",
+  watch: "watch.png",
+  camera: "camera.png",
+  tv: "tv.png",
+  appliance: "appliance.png",
+  console: "console.png",
+  accessories: "accessories.png",
+  more: "more.png",
+  bike: "bike.png",
+  car: "car.png",
+  scooter: "bike.png",
+  commercial: "commercial-vehicle.png",
+  "bike-loan": "bike.png",
+  "car-loan": "car.png",
+  "used-vehicle": "car.png",
+  furniture: "furniture.png",
+  "office-furniture": "office-furniture.png",
+  "custom-furniture": "furniture.png",
+  "used-furniture": "furniture.png",
+  "bulk-furniture": "furniture.png",
+  warranty: "warranty.png",
+  delivery: "delivery.png",
+  freelance: "freelance.png",
+  "it-services": "laptop.png",
+  cleaning: "cleaning.png",
+  maintenance: "repair.png",
+  installation: "repair.png",
+  pg: "pg-rental.png",
+  vehicle: "car.png",
+  electronics: "electronics.png",
+  other: "more.png",
+  aadhaar: "aadhaar.png",
+  pan: "pan.png",
+  gstin: "gstin.png",
+  "driving-licence": "driving-licence.png",
+  udyam: "udyam.png",
+  rc: "rc.png",
+  utilities: "utilities.png",
+  "mobile-electronics": "mobile-electronics.png",
+  "bikes-cars": "bike.png",
+  "furniture-sale": "furniture.png",
+  "rental-services": "rental-services.png",
+  "service-agreement": "service-agreement.png",
+  others: "more.png",
+  sale: "sale.png",
+  rental: "rental.png",
+  service: "service.png",
+  maid: "maid.png",
+  repair: "repair.png",
+  "electronics-rental": "electronics.png",
+}
+
+export function getIcon3DPath(key: string): string {
+  const asset = ICON3D_ASSETS[key as Icon3DKey] ?? "more.png"
+  return `/icons/3d/${asset}`
+}

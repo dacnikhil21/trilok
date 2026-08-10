@@ -111,6 +111,15 @@ function DeveloperSettingsContent({
 
                     <button
                       type="button"
+                      onClick={() => { router.push("/otp"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <Smartphone className="w-4 h-4 text-[#0052CC]" />
+                      <span>OTP Screen</span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => { router.push("/select-service"); setIsOpen(false) }}
                       className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
                     >
@@ -120,11 +129,65 @@ function DeveloperSettingsContent({
 
                     <button
                       type="button"
+                      onClick={() => { router.push("/register?module=b2c"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <IdCard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Register</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/register?module=c2c"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <IdCard className="w-4 h-4 text-[#0052CC]" />
+                      <span>C2C Register</span>
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => { router.push("/business-category"); setIsOpen(false) }}
                       className="p-2.5 rounded-[12px] bg-blue-50 hover:bg-blue-100 text-[#0052CC] font-bold text-left flex items-center gap-2 transition-colors col-span-2"
                     >
                       <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
-                      <span>Business Category Selection</span>
+                      <span>B2C Business Category</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard?module=c2c"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-violet-50 hover:bg-violet-100 text-violet-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-violet-600" />
+                      <span>C2C Dashboard (/dashboard?module=c2c)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/create-agreement?module=c2c&type=sale"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <FilePlus className="w-4 h-4 text-blue-600" />
+                      <span>C2C Sale Flow</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/mobile"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Mobile Dashboard</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dev/shell-preview"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+                      <span>AppShell Preview (Phase 0)</span>
                     </button>
 
                     <button

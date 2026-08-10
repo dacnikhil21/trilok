@@ -4,6 +4,8 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { ShieldCheck, Lock, Award, Download } from "lucide-react"
+import { AppShell } from "@/components/layout/AppShell"
+import { BrandLogo } from "@/components/ui/BrandLogo"
 
 export default function Home() {
   const router = useRouter()
@@ -11,30 +13,38 @@ export default function Home() {
 
   React.useEffect(() => {
     setIsMounted(true)
-    // Splash screen timer set to 3 seconds
     const timer = setTimeout(() => {
       router.push("/login")
     }, 3000)
     return () => clearTimeout(timer)
-  }, [])
+  }, [router])
 
   if (!isMounted) return null
 
   return (
-    <div className="mobile-app-shell flex flex-col bg-[#fcfcfc] px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-[max(12px,env(safe-area-inset-top))]">
+    <AppShell
+      backgroundClassName="bg-[#fcfcfc]"
+      contentClassName="flex min-h-full flex-col px-5 py-2"
+      footer={
+        <div className="px-5">
+          <button
+            type="button"
+            onClick={() => router.push("/login")}
+            className="flex h-[52px] w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#0033A0] text-white shadow-lg transition-transform active:scale-[0.98]"
+          >
+            <Download className="h-5 w-5" strokeWidth={2.5} />
+            <span className="text-[17px] font-bold tracking-wide">Get Started</span>
+          </button>
+        </div>
+      }
+    >
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="mt-2 flex w-full shrink-0 flex-col items-center"
       >
-        <div className="w-[320px] h-[105px] overflow-hidden relative flex justify-center">
-          <img 
-            src="/logo.png" 
-            alt="eSaleAgreement Logo" 
-            className="absolute top-0 w-full max-w-none h-auto object-contain"
-          />
-        </div>
+        <BrandLogo variant="splash" priority className="w-[320px]" />
       </motion.div>
 
       <motion.div
@@ -91,15 +101,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Call to Action Button */}
-        <button
-          onClick={() => router.push("/login")}
-          className="w-full h-[52px] bg-[#0033A0] text-white rounded-[14px] flex items-center justify-center gap-2.5 shadow-lg active:scale-[0.98] transition-transform"
-        >
-          <Download className="w-5 h-5" strokeWidth={2.5} />
-          <span className="text-[17px] font-bold tracking-wide">Get Started</span>
-        </button>
+        {/* Call to Action moved to AppShell footer */}
       </motion.div>
-    </div>
+    </AppShell>
   )
 }

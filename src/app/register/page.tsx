@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { AppContainer } from "@/components/ui/AppContainer"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { TermsModal, LegalDocTab } from "@/components/ui/TermsModal"
 import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
@@ -243,7 +242,7 @@ export function RegisterFormContent() {
         setCurrentStep(5)
         return
       } else {
-        router.push("/business-category")
+        router.push("/dashboard?module=c2c")
         return
       }
     }
@@ -751,7 +750,7 @@ export function RegisterFormContent() {
   }
 
   return (
-    <AppContainer centered>
+    <>
       <OnboardingLayout
         title={currentConfig.title}
         subtitle={currentConfig.subtitle}
@@ -803,7 +802,7 @@ export function RegisterFormContent() {
         }}
         onJumpStep={(step) => setCurrentStep(step)}
       />
-    </AppContainer>
+    </>
   )
 }
 

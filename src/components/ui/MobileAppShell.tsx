@@ -2,18 +2,14 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { AppShell, type AppShellProps } from "@/components/layout/AppShell"
 
-interface MobileAppShellProps {
-  children: React.ReactNode
-  header?: React.ReactNode
-  footer?: React.ReactNode
-  bottomBar?: React.ReactNode
-  className?: string
-  contentClassName?: string
+interface MobileAppShellProps extends AppShellProps {
   /** @deprecated Prefer bottomBar prop */
   hasFloatingNav?: boolean
 }
 
+/** Onboarding shell — delegates to AppShell with horizontal padding on scroll content. */
 export function MobileAppShell({
   children,
   header,
@@ -21,35 +17,19 @@ export function MobileAppShell({
   bottomBar,
   className = "",
   contentClassName = "",
-  hasFloatingNav = false,
+  hasFloatingNav: _hasFloatingNav = false,
+  backgroundClassName = "bg-white",
 }: MobileAppShellProps) {
   return (
-    <div className={cn("mobile-app-shell", className)}>
-      {header && (
-        <header className="w-full shrink-0 border-b border-slate-100 bg-white/95 px-4 pt-[max(8px,env(safe-area-inset-top))] backdrop-blur-md">
-          {header}
-        </header>
-      )}
-
-      <main
-        className={cn(
-          "w-full flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 no-scrollbar",
-          !bottomBar && !footer && "safe-bottom-padding",
-          contentClassName
-        )}
-      >
-        {children}
-      </main>
-
-      {footer && (
-        <footer className="w-full shrink-0 border-t border-slate-100 bg-white/95 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
-          {footer}
-        </footer>
-      )}
-
-      {bottomBar && (
-        <div className="w-full shrink-0 bg-white">{bottomBar}</div>
-      )}
-    </div>
+    <AppShell
+      header={header}
+      footer={footer ? <div className="px-4 pt-3">{footer}</div> : undefined}
+      bottomBar={bottomBar}
+      className={className}
+      backgroundClassName={backgroundClassName}
+      contentClassName={cn("px-4 py-3", contentClassName)}
+    >
+      {children}
+    </AppShell>
   )
 }
