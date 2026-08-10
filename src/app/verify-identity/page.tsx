@@ -4,7 +4,6 @@ import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
 import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
@@ -577,7 +576,6 @@ function VerifyIdentityContent() {
           else router.back()
         }}
       />
-      <DeveloperSettingsModal />
     </>
   )
 }

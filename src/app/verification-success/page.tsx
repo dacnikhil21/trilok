@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 import { CheckCircle2 } from "lucide-react"
 
 function VerificationSuccessForm() {
@@ -33,16 +32,13 @@ function VerificationSuccessForm() {
   )
 
   return (
-    <>
-      <OnboardingLayout
-        title="Identity Verified"
-        subtitle="Verification Success"
-        cardContent={cardContent}
-        buttonText="Continue to Dashboard"
-        onButtonClick={handleContinue}
-      />
-      <DeveloperSettingsModal />
-    </>
+    <OnboardingLayout
+      title="Identity Verified"
+      subtitle="Verification Success"
+      cardContent={cardContent}
+      buttonText="Continue to Dashboard"
+      onButtonClick={handleContinue}
+    />
   )
 }
 

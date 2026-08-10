@@ -46,7 +46,7 @@ export const BUSINESS_CATEGORIES: BusinessCategory[] = [
   },
   {
     id: "others",
-    title: "Other's",
+    title: "Others",
     description: "Other products and miscellaneous items.",
     dashboardRoute: "/dashboard/others",
   },

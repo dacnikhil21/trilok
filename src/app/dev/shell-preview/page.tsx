@@ -38,8 +38,6 @@ export default function ShellPreviewPage() {
         <DashboardSectionHeader title="Template grid (3 columns max)" />
         <DashboardTemplateGrid
           items={PREVIEW_TEMPLATES}
-          columns={3}
-          layout="grid"
           renderIcon={() => (
             <div className="h-7 w-7 rounded-lg bg-[#2563EB]/15" aria-hidden="true" />
           )}
@@ -47,13 +45,7 @@ export default function ShellPreviewPage() {
       </section>
 
       <section>
-        <DashboardSectionHeader title="Stats grid (2×2)" />
-        <DashboardStatGrid
-          stats={AGREEMENT_STATS}
-          renderIcon={(_, color) => (
-            <div className="h-6 w-6 rounded-full" style={{ backgroundColor: `${color}33` }} />
-          )}
-        />
+        <DashboardStatGrid stats={AGREEMENT_STATS} showHeader={false} />
       </section>
 
       <section>

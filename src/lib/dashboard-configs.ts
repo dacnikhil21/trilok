@@ -4,6 +4,7 @@ export interface DashboardTemplate {
   | "bike" | "car" | "scooter" | "commercial" | "bike-loan" | "car-loan" | "used-vehicle"
   | "furniture" | "office-furniture" | "custom-furniture" | "used-furniture" | "bulk-furniture" | "warranty" | "delivery"
   | "freelance" | "it-services" | "cleaning" | "maintenance" | "installation"
+  | "pg" | "vehicle" | "electronics" | "other"
 }
 
 export interface RentalCategory {
@@ -25,6 +26,8 @@ export type VerificationServiceIcon =
 
 export interface VerificationService {
   label: string
+  shortLabel?: string
+  description?: string
   color: string
   icon: VerificationServiceIcon
 }
@@ -38,6 +41,8 @@ export interface DashboardConfig {
   subtext: string
   highlightColor: string
   heroGradient: string
+  /** PNG hero illustration in /public — overrides SVG fallback */
+  heroImage?: string
   templatesTitle?: string
   templates?: DashboardTemplate[]
   templateLayout?: "grid" | "scroll"
@@ -48,34 +53,41 @@ export interface DashboardConfig {
 }
 
 export const DEFAULT_VERIFICATION_SERVICES: VerificationService[] = [
-  { icon: "aadhaar", label: "Aadhaar Verification", color: "#2563EB" },
-  { icon: "pan", label: "PAN Verification", color: "#22C55E" },
-  { icon: "gstin", label: "GSTIN Verification", color: "#A855F7" },
-  { icon: "driving-licence", label: "Driving Licence Verification", color: "#2563EB" },
-  { icon: "udyam", label: "Udyam Verification", color: "#F97316" },
-  { icon: "rc", label: "RC Verification", color: "#14B8A6" },
-  { icon: "more", label: "More", color: "#2563EB" },
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#2563EB" },
+  { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
+  { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
+  { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },
+  { icon: "udyam", label: "Udyam Verification", shortLabel: "Udyam", description: "Verify Udyam", color: "#F97316" },
+  { icon: "rc", label: "RC Verification", shortLabel: "RC", description: "Verify RC", color: "#14B8A6" },
+  { icon: "more", label: "More", shortLabel: "More", description: "Other services", color: "#2563EB" },
 ]
 
 export const FURNITURE_VERIFICATION_SERVICES: VerificationService[] = [
-  { icon: "aadhaar", label: "Aadhaar Verification", color: "#2563EB" },
-  { icon: "pan", label: "PAN Verification", color: "#22C55E" },
-  { icon: "gstin", label: "GSTIN Verification", color: "#A855F7" },
-  { icon: "driving-licence", label: "Driving Licence Verification", color: "#2563EB" },
-  { icon: "utilities", label: "Utilities Verification", color: "#F97316" },
-  { icon: "more", label: "More", color: "#2563EB" },
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#2563EB" },
+  { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
+  { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
+  { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },
+  { icon: "utilities", label: "Utilities Verification", shortLabel: "Utilities", description: "Verify utilities", color: "#F97316" },
+  { icon: "more", label: "More", shortLabel: "More", description: "Other services", color: "#2563EB" },
 ]
 
-export const RENTAL_VERIFICATION_SERVICES = FURNITURE_VERIFICATION_SERVICES
+export const RENTAL_VERIFICATION_SERVICES = DEFAULT_VERIFICATION_SERVICES
 
 export const SERVICE_VERIFICATION_SERVICES: VerificationService[] = [
-  { icon: "aadhaar", label: "Aadhaar Verification", color: "#2563EB" },
-  { icon: "pan", label: "PAN Verification", color: "#22C55E" },
-  { icon: "gstin", label: "GSTIN Verification", color: "#A855F7" },
-  { icon: "driving-licence", label: "Driving Licence Verification", color: "#2563EB" },
-  { icon: "udyam", label: "Udyam Verification", color: "#F97316" },
-  { icon: "more", label: "More", color: "#2563EB" },
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#2563EB" },
+  { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
+  { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
+  { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },
+  { icon: "udyam", label: "Udyam Verification", shortLabel: "Udyam", description: "Verify Udyam", color: "#F97316" },
+  { icon: "more", label: "More", shortLabel: "More", description: "Other services", color: "#2563EB" },
 ]
+
+const MOBILE_GRADIENT = "from-[#DFEAFF] via-[#EBF2FF] to-white"
+const VEHICLE_GRADIENT = "from-[#DFEAFF] via-[#E8F0FF] to-white"
+const FURNITURE_GRADIENT = "from-[#D9F5E4] via-[#ECFDF5] to-white"
+const RENTAL_GRADIENT = "from-[#DCE8FF] via-[#EDF3FF] to-white"
+const SERVICE_GRADIENT = "from-[#E9E0FF] via-[#F3EEFF] to-white"
+const OTHERS_GRADIENT = "from-[#FFE8CC] via-[#FFF4E8] to-white"
 
 export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
   mobile: {
@@ -86,10 +98,12 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "agreements easily",
     subtext: "Create, eSign and manage your Mobile & Electronics agreements securely.",
     highlightColor: "#2563EB",
-    heroGradient: "from-[#EFF6FF] to-[#F8FAFC]",
+    heroGradient: MOBILE_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/mobile-hero.png",
     templateLayout: "grid",
-    templateGridCols: 3,
+    templateGridCols: 4,
     templatesTitle: "Mobile & Electronics Agreement Templates",
+    verificationServices: DEFAULT_VERIFICATION_SERVICES,
     templates: [
       { label: "Mobile Phone Sale", icon: "phone" },
       { label: "Laptop/Desktop Sale", icon: "laptop" },
@@ -111,10 +125,12 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "agreements easily",
     subtext: "Create, eSign and manage your Bikes & Cars sale agreements securely.",
     highlightColor: "#2563EB",
-    heroGradient: "from-[#EFF6FF] to-[#F8FAFC]",
+    heroGradient: VEHICLE_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/vehicle-hero.png",
     templateLayout: "grid",
     templateGridCols: 4,
     templatesTitle: "Bikes & Cars Agreement Templates",
+    verificationServices: DEFAULT_VERIFICATION_SERVICES,
     templates: [
       { label: "Bike Sale Agreement", icon: "bike" },
       { label: "Car Sale Agreement", icon: "car" },
@@ -134,7 +150,8 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "agreements easily",
     subtext: "Create, eSign and manage your furniture sale agreements securely.",
     highlightColor: "#16A34A",
-    heroGradient: "from-[#ECFDF5] to-[#F8FAFC]",
+    heroGradient: FURNITURE_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/furniture-hero.png",
     templateLayout: "grid",
     templateGridCols: 4,
     templatesTitle: "Furniture Sale Agreement Templates",
@@ -158,7 +175,8 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "agreements easily",
     subtext: "Create, eSign and manage your rental service agreements securely.",
     highlightColor: "#2563EB",
-    heroGradient: "from-[#EFF6FF] to-[#F8FAFC]",
+    heroGradient: RENTAL_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/rental-hero.png",
     rentalCategoriesTitle: "Rental Service Categories",
     verificationServices: RENTAL_VERIFICATION_SERVICES,
     rentalCategories: [
@@ -176,8 +194,10 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "easily",
     subtext: "Create, eSign and manage your service agreements securely.",
     highlightColor: "#2563EB",
-    heroGradient: "from-[#EFF6FF] to-[#F8FAFC]",
-    templateLayout: "scroll",
+    heroGradient: SERVICE_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/service-hero.png",
+    templateLayout: "grid",
+    templateGridCols: 4,
     templatesTitle: "Service Agreement Templates",
     verificationServices: SERVICE_VERIFICATION_SERVICES,
     templates: [
@@ -197,7 +217,19 @@ export const DASHBOARD_CONFIGS: Record<string, DashboardConfig> = {
     headlineSuffix: "easily",
     subtext: "Create, eSign and manage your agreements securely.",
     highlightColor: "#F97316",
-    heroGradient: "from-[#FFF7ED] to-[#F8FAFC]",
+    heroGradient: OTHERS_GRADIENT,
+    heroImage: "/assets/dashboards/heroes/others-hero.png",
+    templateLayout: "grid",
+    templateGridCols: 4,
+    templatesTitle: "Other Agreement Templates",
+    verificationServices: DEFAULT_VERIFICATION_SERVICES,
+    templates: [
+      { label: "General Items Sale", icon: "accessories" },
+      { label: "Equipment Sale", icon: "appliance" },
+      { label: "Miscellaneous Sale", icon: "furniture" },
+      { label: "Custom Agreement", icon: "console" },
+      { label: "Others", icon: "more" },
+    ],
   },
 }
 
@@ -207,6 +239,43 @@ export const AGREEMENT_STATS = [
   { label: "Completed", value: "92", subtext: "All time", color: "#22C55E", icon: "completed" as const },
   { label: "Draft", value: "18", subtext: "Not submitted", color: "#A855F7", icon: "draft" as const },
 ]
+
+/** Strip redundant suffixes from category display labels */
+export function formatTemplateLabel(label: string): string {
+  return label
+    .replace(/\s+Sale(?:\s+Agreement)?$/i, "")
+    .replace(/\s+Agreement$/i, "")
+    .replace(/\s+Rental$/i, " Rental")
+    .trim()
+}
+
+/** Show up to 8 templates in 4×2 grid; More/Others always last when truncating */
+export function getTemplateGridItems(templates: DashboardTemplate[]): DashboardTemplate[] {
+  const moreIndex = templates.findIndex(
+    (t) => t.icon === "more" || /^others?$/i.test(t.label.trim())
+  )
+  const more: DashboardTemplate =
+    moreIndex >= 0 ? templates[moreIndex] : { label: "More", icon: "more" }
+  const rest = templates.filter((_, i) => i !== moreIndex)
+
+  let items: DashboardTemplate[]
+  if (templates.length <= 8) {
+    items = moreIndex >= 0 ? [...rest, more] : templates.slice(0, 8)
+  } else {
+    items = [...rest.slice(0, 7), { label: "More", icon: "more" }]
+  }
+
+  return normalizeMoreLabel(items).map((t) => ({
+    ...t,
+    label: t.icon === "more" ? t.label : formatTemplateLabel(t.label),
+  }))
+}
+
+function normalizeMoreLabel(items: DashboardTemplate[]): DashboardTemplate[] {
+  return items.map((t, i) =>
+    i === items.length - 1 && t.icon === "more" ? { ...t, label: "More" } : t
+  )
+}
 
 /** @deprecated Use DEFAULT_VERIFICATION_SERVICES */
 export const VERIFICATION_SERVICES = DEFAULT_VERIFICATION_SERVICES

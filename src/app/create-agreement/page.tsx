@@ -8,6 +8,7 @@ import {
   AgreementCategoryIntro,
   AgreementCategoryPicker,
   AgreementFlowHeader,
+  AgreementIntroFooter,
   AgreementTypePicker,
 } from "@/components/agreement/AgreementFlowScreens"
 import {
@@ -16,6 +17,13 @@ import {
   getCategoriesForType,
   getTypeTitle,
 } from "@/lib/c2c-config"
+import {
+  B2C_CATEGORY_TO_DASHBOARD,
+  B2C_DASHBOARD_DEFAULTS,
+  B2C_TEMPLATE_PRODUCT,
+  getB2CProductLabel,
+  getB2CReturnPath,
+} from "@/lib/b2c-dashboard-routes"
 import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
 import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
 import { PaymentDeliveryStep } from "@/components/agreement/PaymentDeliveryStep"
@@ -26,7 +34,6 @@ import { AcceptanceSuccessStep } from "@/components/agreement/AcceptanceSuccessS
 import { ReviewSignStep } from "@/components/agreement/ReviewSignStep"
 import { PaymentStep } from "@/components/agreement/PaymentStep"
 import { FinalAgreementNote } from "@/components/agreement/FinalAgreementNote"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 export type AgreementData = {
   role: "buyer" | "seller" | null
@@ -118,10 +125,18 @@ function CreateAgreementContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const moduleType = searchParams.get("module") || "c2c"
-  const typeParam = searchParams.get("type") as AgreementType | null
+  const isB2C = moduleType === "b2c"
+  const dashboardParam = searchParams.get("dashboard")
+  const typeParam =
+    (searchParams.get("type") as AgreementType | null) ??
+    (isB2C && dashboardParam ? (B2C_DASHBOARD_DEFAULTS[dashboardParam]?.type ?? "sale") : null)
   const categoryParam = searchParams.get("category")
+  const templateParam = searchParams.get("template")
+
+  const b2cReturnPath = getB2CReturnPath(dashboardParam, categoryParam)
 
   const [phase, setPhase] = React.useState<FlowPhase>(() => {
+    if (isB2C && categoryParam && typeParam) return "intro"
     if (categoryParam && typeParam) return "intro"
     if (typeParam) return "category"
     return "type"
@@ -129,7 +144,63 @@ function CreateAgreementContent() {
   const [agreementType, setAgreementType] = React.useState<AgreementType | null>(typeParam)
   const [categoryId, setCategoryId] = React.useState<string | null>(categoryParam)
   const [currentStep, setCurrentStep] = React.useState(1)
-  const [formData, setFormData] = React.useState<AgreementData>(INITIAL_FORM)
+  const [formData, setFormData] = React.useState<AgreementData>(() => {
+    const label = getB2CProductLabel(templateParam, dashboardParam)
+    if (label) {
+      return { ...INITIAL_FORM, productName: label }
+    }
+    if (templateParam && B2C_TEMPLATE_PRODUCT[templateParam]) {
+      return { ...INITIAL_FORM, productName: B2C_TEMPLATE_PRODUCT[templateParam] }
+    }
+    return INITIAL_FORM
+  })
+
+  // B2C: lock to merchant dashboard — never show C2C type/category pickers
+  React.useEffect(() => {
+    if (!isB2C || !dashboardParam) return
+    const defaults = B2C_DASHBOARD_DEFAULTS[dashboardParam]
+    if (!defaults) return
+
+    const params = new URLSearchParams(searchParams.toString())
+    let needsReplace = false
+
+    if (params.get("type") !== defaults.type) {
+      params.set("type", defaults.type)
+      needsReplace = true
+    }
+
+    const currentCategory = params.get("category")
+    const currentType = params.get("type") as AgreementType | null
+
+    if (
+      currentCategory &&
+      currentType &&
+      B2C_CATEGORY_TO_DASHBOARD[currentCategory] === dashboardParam
+    ) {
+      if (phase !== "intro" && phase !== "wizard") {
+        setPhase("intro")
+        setAgreementType(currentType)
+        setCategoryId(currentCategory)
+      }
+      return
+    }
+
+    if (defaults.category && currentCategory !== defaults.category) {
+      params.set("category", defaults.category)
+      needsReplace = true
+    }
+
+    if (needsReplace) {
+      router.replace(`/create-agreement?${params.toString()}`)
+      return
+    }
+
+    if (currentCategory && currentType && phase !== "intro" && phase !== "wizard") {
+      setPhase("intro")
+      setAgreementType(currentType)
+      setCategoryId(currentCategory)
+    }
+  }, [isB2C, dashboardParam, categoryParam, phase, router, searchParams])
 
   const updateData = (updates: Partial<AgreementData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))
@@ -141,6 +212,8 @@ function CreateAgreementContent() {
   const selectedCategory =
     agreementType && categoryId ? findCategory(agreementType, categoryId) : undefined
 
+  const productLabel = getB2CProductLabel(templateParam, dashboardParam)
+
   const handleBack = () => {
     if (phase === "wizard") {
       if (currentStep === 1) {
@@ -150,22 +223,31 @@ function CreateAgreementContent() {
       }
       return
     }
+
     if (phase === "intro") {
-      setPhase("category")
-      return
-    }
-    if (phase === "category") {
-      if (agreementType) {
-        setAgreementType(null)
-        setCategoryId(null)
-        setPhase("type")
-        router.replace(`/create-agreement?module=${moduleType}`)
-      } else {
-        router.push(`/dashboard?module=${moduleType}`)
+      if (isB2C) {
+        router.push(b2cReturnPath)
+        return
       }
+      setPhase("category")
+      setCategoryId(null)
+      router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}`)
       return
     }
-    router.push(`/dashboard?module=${moduleType}`)
+
+    if (phase === "category") {
+      if (isB2C) {
+        router.push(b2cReturnPath)
+        return
+      }
+      setAgreementType(null)
+      setCategoryId(null)
+      setPhase("type")
+      router.replace(`/create-agreement?module=${moduleType}`)
+      return
+    }
+
+    router.push(isB2C ? b2cReturnPath : `/dashboard?module=${moduleType}`)
   }
 
   const startWizard = () => {
@@ -186,7 +268,16 @@ function CreateAgreementContent() {
     { id: 7, title: "Acceptance Success", component: <AcceptanceSuccessStep data={formData} onNext={nextStep} /> },
     { id: 8, title: "Final Review", component: <ReviewSignStep data={formData} updateData={updateData} onNext={nextStep} /> },
     { id: 9, title: "Agreement Fee", component: <PaymentStep data={formData} onNext={nextStep} /> },
-    { id: 10, title: "", component: <FinalAgreementNote data={formData} onHome={() => router.push(`/dashboard?module=${moduleType}`)} /> },
+    {
+      id: 10,
+      title: "",
+      component: (
+        <FinalAgreementNote
+          data={formData}
+          onHome={() => router.push(isB2C ? b2cReturnPath : `/dashboard?module=${moduleType}`)}
+        />
+      ),
+    },
   ]
 
   const currentStepData = wizardSteps.find((s) => s.id === currentStep)
@@ -195,7 +286,7 @@ function CreateAgreementContent() {
     phase === "category" && agreementType
       ? getTypeTitle(agreementType)
       : phase === "intro" && selectedCategory
-        ? selectedCategory.title
+        ? productLabel ?? selectedCategory.title
         : phase === "wizard" && currentStep < 10
           ? currentStepData?.title ?? "Create Agreement"
           : "Create Agreement"
@@ -203,66 +294,80 @@ function CreateAgreementContent() {
   const showColoredHeader = phase !== "wizard" || currentStep < 10
   const headerType = agreementType ?? "sale"
 
+  const showIntroFooter = phase === "intro" && agreementType && selectedCategory
+
   return (
-    <>
-      <AppShell
-        backgroundClassName="bg-white"
-        header={
-          showColoredHeader ? (
-            phase === "wizard" ? (
-              <div className="border-b border-[#E2E8F0] bg-white px-4">
-                <div className="flex h-[52px] items-center gap-2">
-                  <button type="button" onClick={handleBack} className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                  </button>
-                  <h1 className="truncate text-[16px] font-extrabold text-[#0F172A]">{headerTitle}</h1>
-                </div>
+    <AppShell
+      backgroundClassName="bg-white"
+      header={
+        showColoredHeader ? (
+          phase === "wizard" ? (
+            <div className="border-b border-[#E2E8F0] bg-white px-4">
+              <div className="flex h-[52px] items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h1 className="truncate text-[16px] font-extrabold text-[#0F172A]">{headerTitle}</h1>
               </div>
-            ) : (
-              <AgreementFlowHeader type={headerType} title={headerTitle} onBack={handleBack} />
-            )
-          ) : undefined
-        }
-        contentClassName={phase === "wizard" ? "px-4 py-3" : "p-0"}
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${phase}-${currentStep}-${categoryId}`}
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.2 }}
-            className="w-full"
-          >
-            {phase === "type" && (
-              <AgreementTypePicker
-                onSelect={(type) => {
-                  setAgreementType(type)
-                  setPhase("category")
-                  router.replace(`/create-agreement?module=${moduleType}&type=${type}`)
-                }}
-              />
-            )}
-            {phase === "category" && agreementType && (
-              <AgreementCategoryPicker
-                type={agreementType}
-                categories={getCategoriesForType(agreementType)}
-                onSelect={(id) => {
-                  setCategoryId(id)
-                  setPhase("intro")
-                  router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}&category=${id}`)
-                }}
-              />
-            )}
-            {phase === "intro" && agreementType && selectedCategory && (
-              <AgreementCategoryIntro type={agreementType} category={selectedCategory} onCreate={startWizard} />
-            )}
-            {phase === "wizard" && currentStepData?.component}
-          </motion.div>
-        </AnimatePresence>
-      </AppShell>
-      <DeveloperSettingsModal />
-    </>
+            </div>
+          ) : (
+            <AgreementFlowHeader type={headerType} title={headerTitle} onBack={handleBack} />
+          )
+        ) : undefined
+      }
+      footer={
+        showIntroFooter ? (
+          <AgreementIntroFooter type={headerType} onCreate={startWizard} />
+        ) : undefined
+      }
+      contentClassName={phase === "wizard" ? "px-4 py-3" : "p-0"}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${phase}-${currentStep}-${categoryId}`}
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -12 }}
+          transition={{ duration: 0.2 }}
+          className="w-full"
+        >
+          {!isB2C && phase === "type" && (
+            <AgreementTypePicker
+              onSelect={(type) => {
+                setAgreementType(type)
+                setPhase("category")
+                router.replace(`/create-agreement?module=${moduleType}&type=${type}`)
+              }}
+            />
+          )}
+          {!isB2C && phase === "category" && agreementType && (
+            <AgreementCategoryPicker
+              type={agreementType}
+              categories={getCategoriesForType(agreementType)}
+              onSelect={(id) => {
+                setCategoryId(id)
+                setPhase("intro")
+                router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}&category=${id}`)
+              }}
+            />
+          )}
+          {phase === "intro" && agreementType && selectedCategory && (
+            <AgreementCategoryIntro
+              type={agreementType}
+              category={selectedCategory}
+              productLabel={productLabel}
+            />
+          )}
+          {phase === "wizard" && currentStepData?.component}
+        </motion.div>
+      </AnimatePresence>
+    </AppShell>
   )
 }
 

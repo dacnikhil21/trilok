@@ -48,7 +48,7 @@ export function AppShell({
         </footer>
       ) : null}
 
-      {bottomBar ? <div className="w-full shrink-0 bg-white">{bottomBar}</div> : null}
+      {bottomBar ? <div className="relative z-20 w-full shrink-0 bg-white">{bottomBar}</div> : null}
     </div>
   )
 }

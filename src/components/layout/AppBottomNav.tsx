@@ -13,89 +13,101 @@ interface AppBottomNavProps {
   className?: string
 }
 
+type NavItem = {
+  id: AppBottomNavTab | "create"
+  label: string
+  Icon?: typeof Home
+  isFab?: boolean
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "home", label: "Home", Icon: Home },
+  { id: "agreements", label: "Agreements", Icon: FileText },
+  { id: "create", label: "Create", isFab: true },
+  { id: "verification", label: "Verify", Icon: Shield },
+  { id: "profile", label: "Profile", Icon: User },
+]
+
+function NavSlot({
+  item,
+  isActive,
+  onPress,
+}: {
+  item: NavItem
+  isActive: boolean
+  onPress: () => void
+}) {
+  if (item.isFab) {
+    return (
+      <div className="relative flex min-w-0 flex-col items-center">
+        <button
+          type="button"
+          aria-label="Create Agreement"
+          onClick={onPress}
+          className="absolute left-1/2 top-0 z-10 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#2563EB] shadow-[0_4px_14px_rgba(37,99,235,0.35)] active:scale-95"
+        >
+          <Plus className="h-[22px] w-[22px] text-white" strokeWidth={2.5} />
+        </button>
+        <span className="mt-6 w-full min-h-[18px] px-0.5 text-center text-[9px] font-semibold leading-[1.15] text-[#64748B]">
+          {item.label}
+        </span>
+      </div>
+    )
+  }
+
+  const Icon = item.Icon!
+  return (
+    <button
+      type="button"
+      onClick={onPress}
+      className="flex min-w-0 w-full flex-col items-center justify-end pb-0.5 active:opacity-80"
+    >
+      <Icon
+        className={cn("h-[21px] w-[21px] shrink-0", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}
+        strokeWidth={isActive ? 2.2 : 2}
+      />
+      <span
+        className={cn(
+          "mt-1 w-full min-h-[18px] px-0.5 text-center text-[9px] leading-[1.15]",
+          isActive ? "font-semibold text-[#2563EB]" : "font-medium text-[#94A3B8]"
+        )}
+      >
+        {item.label}
+      </span>
+    </button>
+  )
+}
+
 export function AppBottomNav({
   activeTab = "home",
   onCreateAgreement,
   onTabChange,
   className,
 }: AppBottomNavProps) {
-  const tabs: { id: AppBottomNavTab; label: string; Icon: typeof Home }[] = [
-    { id: "home", label: "Home", Icon: Home },
-    { id: "agreements", label: "My Agreements", Icon: FileText },
-    { id: "verification", label: "Verification", Icon: Shield },
-    { id: "profile", label: "Profile", Icon: User },
-  ]
-
   return (
     <nav
       className={cn(
-        "grid h-[68px] w-full grid-cols-5 items-end border-t border-[#E2E8F0] bg-white px-1 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5",
+        "relative w-full border-t border-[#E2E8F0] bg-white",
+        "pb-[max(6px,env(safe-area-inset-bottom,0px))] pt-5",
         className
       )}
     >
-      {tabs.slice(0, 2).map(({ id, label, Icon }) => {
-        const isActive = activeTab === id
-        return (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onTabChange?.(id)}
-            className="flex flex-col items-center justify-end gap-0.5 py-1"
-          >
-            <Icon
-              className={cn("h-[22px] w-[22px]", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}
-              strokeWidth={isActive ? 2.2 : 2}
-            />
-            <span
-              className={cn(
-                "max-w-[72px] truncate text-[9px] leading-tight",
-                isActive ? "font-semibold text-[#2563EB]" : "font-medium text-[#94A3B8]"
-              )}
-            >
-              {label}
-            </span>
-          </button>
-        )
-      })}
-
-      <div className="flex flex-col items-center justify-end gap-0.5 py-0.5">
-        <button
-          type="button"
-          aria-label="Create Agreement"
-          onClick={onCreateAgreement}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2563EB] shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
-        >
-          <Plus className="h-6 w-6 text-white" strokeWidth={2.5} />
-        </button>
-        <span className="max-w-[72px] truncate text-[9px] font-medium leading-tight text-[#64748B]">
-          Create Agreement
-        </span>
+      <div className="grid h-[44px] w-full grid-cols-5 items-end px-1">
+        {NAV_ITEMS.map((item) => (
+          <NavSlot
+            key={item.id}
+            item={item}
+            isActive={item.id === activeTab}
+            onPress={() => {
+              if (item.isFab) {
+                onCreateAgreement?.()
+                return
+              }
+              onTabChange?.(item.id as AppBottomNavTab)
+            }}
+          />
+        ))}
       </div>
-
-      {tabs.slice(2).map(({ id, label, Icon }) => {
-        const isActive = activeTab === id
-        return (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onTabChange?.(id)}
-            className="flex flex-col items-center justify-end gap-0.5 py-1"
-          >
-            <Icon
-              className={cn("h-[22px] w-[22px]", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}
-              strokeWidth={isActive ? 2.2 : 2}
-            />
-            <span
-              className={cn(
-                "max-w-[72px] truncate text-[9px] leading-tight",
-                isActive ? "font-semibold text-[#2563EB]" : "font-medium text-[#94A3B8]"
-              )}
-            >
-              {label}
-            </span>
-          </button>
-        )
-      })}
     </nav>
   )
 }

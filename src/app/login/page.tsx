@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
 import { OnboardingHeader } from "@/components/layout/OnboardingHeader"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
+import { useDevSettingsHandlers } from "@/components/ui/DevSettingsProvider"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,6 +19,10 @@ export default function LoginPage() {
   const [error, setError] = React.useState("")
   const [activeTab, setActiveTab] = React.useState<"login" | "register">("login")
   const [isTermsOpen, setIsTermsOpen] = React.useState(false)
+
+  useDevSettingsHandlers({
+    onAutoFillAadhaar: () => setMobile("9876543210"),
+  })
 
   const handleMobileChange = (val: string) => {
     const clean = val.replace(/\D/g, "").slice(0, 10)
@@ -253,9 +257,6 @@ export default function LoginPage() {
       </div>
 
       <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
-      <DeveloperSettingsModal
-        onAutoFillAadhaar={() => setMobile("9876543210")}
-      />
     </MobileAppShell>
   )
 }

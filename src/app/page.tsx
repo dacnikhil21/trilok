@@ -44,7 +44,7 @@ export default function Home() {
         transition={{ duration: 0.6 }}
         className="mt-2 flex w-full shrink-0 flex-col items-center"
       >
-        <BrandLogo variant="splash" priority className="w-[320px]" />
+        <BrandLogo variant="splash" priority className="w-full max-w-[300px]" />
       </motion.div>
 
       <motion.div

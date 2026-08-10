@@ -5,8 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { TermsModal, LegalDocTab } from "@/components/ui/TermsModal"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
-import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
+import { useDevSettingsHandlers } from "@/components/ui/DevSettingsProvider"
 import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
 import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
 import { C2CVerificationStep } from "@/components/agreement/C2CVerificationStep"
@@ -80,6 +79,36 @@ export function RegisterFormContent() {
     const stored = typeof window !== "undefined" ? sessionStorage.getItem("user_mobile") : ""
     if (stored) setMobile(stored)
   }, [])
+
+  useDevSettingsHandlers({
+    onAutoFillAadhaar: (valid) => {
+      if (valid) {
+        setAadhaarNumber("234567890123")
+        setAadhaarOtpSent(true)
+        setAadhaarOtp("123456")
+        setAadhaarDetails({
+          name: "Nikhil Sharma",
+          address: "Shop 14, Commercial Complex, MG Road, Vijayawada - 520001",
+          extra: "UIDAI Verified • Owner Identity Authenticated",
+        })
+        setStep2ConsentChecked(true)
+      } else {
+        setAadhaarNumber("000000000000")
+        setError(
+          "UIDAI Verification Failed: The entered 12-digit Aadhaar number is not registered in the UIDAI database."
+        )
+      }
+    },
+    onAutoFillBusiness: () => {
+      setBusinessIdNumber("37AAAAA0000A1Z5")
+      setBusinessDetails({
+        name: "SHARMA ELECTRONICS & RETAIL STORE",
+        address: "GST Registered Premises, Main Road, Vijayawada AP 520001",
+        extra: "Active GSTIN Verified • Tax Department Database Matched",
+      })
+    },
+    onJumpStep: (step) => setCurrentStep(step),
+  })
 
   React.useEffect(() => {
     if (timer > 0) {
@@ -774,33 +803,6 @@ export function RegisterFormContent() {
         isOpen={isLegalModalOpen}
         onClose={() => setIsLegalModalOpen(false)}
         initialTab={legalModalTab}
-      />
-      <DeveloperSettingsModal
-        onAutoFillAadhaar={(valid) => {
-          if (valid) {
-            setAadhaarNumber("234567890123")
-            setAadhaarOtpSent(true)
-            setAadhaarOtp("123456")
-            setAadhaarDetails({
-              name: "Nikhil Sharma",
-              address: "Shop 14, Commercial Complex, MG Road, Vijayawada - 520001",
-              extra: "UIDAI Verified • Owner Identity Authenticated"
-            })
-            setStep2ConsentChecked(true)
-          } else {
-            setAadhaarNumber("000000000000")
-            setError("UIDAI Verification Failed: The entered 12-digit Aadhaar number is not registered in the UIDAI database.")
-          }
-        }}
-        onAutoFillBusiness={() => {
-          setBusinessIdNumber("37AAAAA0000A1Z5")
-          setBusinessDetails({
-            name: "SHARMA ELECTRONICS & RETAIL STORE",
-            address: "GST Registered Premises, Main Road, Vijayawada AP 520001",
-            extra: "Active GSTIN Verified • Tax Department Database Matched"
-          })
-        }}
-        onJumpStep={(step) => setCurrentStep(step)}
       />
     </>
   )

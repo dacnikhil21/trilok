@@ -2,16 +2,47 @@ import * as React from "react"
 
 type HeroProps = React.SVGProps<SVGSVGElement>
 
+/** PNG hero — true-alpha asset, floats on gradient (no box) */
+export function DashboardHeroArt({
+  src,
+  alt,
+  className,
+}: {
+  src: string
+  alt: string
+  className?: string
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      width={150}
+      height={136}
+      className={
+        className ??
+        "relative z-[1] h-[136px] w-[158px] shrink-0 object-contain object-bottom drop-shadow-[0_14px_28px_rgba(37,99,235,0.14)]"
+      }
+      loading="eager"
+      decoding="async"
+    />
+  )
+}
+
 export function MobileHeroIllustration(props: HeroProps) {
   return (
-    <svg width="96" height="88" viewBox="0 0 96 88" fill="none" {...props}>
+    <svg width="120" height="110" viewBox="0 0 96 88" fill="none" {...props}>
       <rect x="8" y="12" width="28" height="52" rx="4" fill="#2563EB" />
       <rect x="12" y="18" width="20" height="34" rx="2" fill="#EFF6FF" />
       <rect x="40" y="24" width="44" height="28" rx="3" fill="#3B82F6" />
       <path d="M44 52H80" stroke="#1D4ED8" strokeWidth="3" strokeLinecap="round" />
       <rect x="52" y="58" width="24" height="16" rx="8" fill="#BFDBFE" />
+      <rect x="62" y="8" width="22" height="38" rx="4" fill="#2563EB" />
+      <rect x="66" y="14" width="14" height="24" rx="2" fill="#EFF6FF" />
       <circle cx="72" cy="68" r="12" fill="#22C55E" />
       <path d="M68 68L71 71L77 65" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <rect x="78" y="52" width="14" height="18" rx="2" fill="white" stroke="#E2E8F0" strokeWidth="1" />
+      <path d="M82 58H88M82 62H86" stroke="#94A3B8" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
   )
 }
@@ -94,3 +125,22 @@ export const DASHBOARD_HEROES = {
   service: ServiceHeroIllustration,
   others: OthersHeroIllustration,
 } as const
+
+/** Prefer config.heroImage PNG; fall back to SVG illustration component */
+export function resolveDashboardHeroVisual(
+  config: { id: string; heroImage?: string; headlineHighlight: string },
+): React.ReactNode {
+  if (config.heroImage) {
+    return (
+      <DashboardHeroArt
+        src={config.heroImage}
+        alt={`${config.headlineHighlight} agreements`}
+      />
+    )
+  }
+
+  const HeroIllustration =
+    DASHBOARD_HEROES[config.id as keyof typeof DASHBOARD_HEROES] ?? DASHBOARD_HEROES.mobile
+
+  return <HeroIllustration className="h-[124px] w-[136px] shrink-0 drop-shadow-[0_12px_28px_rgba(37,99,235,0.15)]" />
+}

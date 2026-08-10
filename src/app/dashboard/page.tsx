@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { C2CDashboardScreen } from "@/components/dashboard/C2CDashboardScreen"
-import { DeveloperSettingsModal } from "@/components/ui/DeveloperSettingsModal"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
@@ -24,12 +23,7 @@ function DashboardContent() {
     )
   }
 
-  return (
-    <>
-      <C2CDashboardScreen />
-      <DeveloperSettingsModal />
-    </>
-  )
+  return <C2CDashboardScreen />
 }
 
 export default function DashboardPage() {

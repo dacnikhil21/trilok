@@ -22,7 +22,7 @@ export const AGREEMENT_TYPES: AgreementTypeConfig[] = [
   {
     id: "sale",
     title: "Sale Agreement",
-    description: "Create agreement for buying & selling items",
+    description: "Buy & sell items",
     color: "#2563EB",
     colorLight: "#EFF6FF",
     buttonClass: "bg-[#2563EB] hover:bg-[#1D4ED8]",
@@ -30,7 +30,7 @@ export const AGREEMENT_TYPES: AgreementTypeConfig[] = [
   {
     id: "rental",
     title: "Rental Agreement",
-    description: "Create agreement for renting property or items",
+    description: "Rent property or items",
     color: "#10B981",
     colorLight: "#ECFDF5",
     buttonClass: "bg-[#10B981] hover:bg-[#059669]",
@@ -38,7 +38,7 @@ export const AGREEMENT_TYPES: AgreementTypeConfig[] = [
   {
     id: "service",
     title: "Service Agreement",
-    description: "Create agreement for services & contracts",
+    description: "Services & contracts",
     color: "#9333EA",
     colorLight: "#F5F3FF",
     buttonClass: "bg-[#9333EA] hover:bg-[#7E22CE]",
@@ -170,12 +170,12 @@ export function findCategory(type: AgreementType, categoryId: string): Agreement
 }
 
 export const C2C_VERIFICATION_SERVICES = [
-  { label: "Aadhaar Verification", description: "Verify Aadhaar instantly", color: "#2563EB", icon: "aadhaar" as const },
-  { label: "PAN Verification", description: "Check PAN details", color: "#10B981", icon: "pan" as const },
-  { label: "GSTIN Verification", description: "Verify GSTIN", color: "#9333EA", icon: "gstin" as const },
-  { label: "Driving Licence Verification", description: "Verify DL", color: "#2563EB", icon: "driving-licence" as const },
-  { label: "Udyam Verification", description: "Verify Udyam", color: "#F97316", icon: "udyam" as const },
-  { label: "RC Verification", description: "Verify RC", color: "#14B8A6", icon: "rc" as const },
+  { label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#2563EB", icon: "aadhaar" as const },
+  { label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#10B981", icon: "pan" as const },
+  { label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#9333EA", icon: "gstin" as const },
+  { label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB", icon: "driving-licence" as const },
+  { label: "Udyam Verification", shortLabel: "Udyam", description: "Verify Udyam", color: "#F97316", icon: "udyam" as const },
+  { label: "RC Verification", shortLabel: "RC", description: "Verify RC", color: "#14B8A6", icon: "rc" as const },
 ]
 
 export function getTypeTitle(type: AgreementType): string {

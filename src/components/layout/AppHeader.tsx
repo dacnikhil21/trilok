@@ -29,8 +29,8 @@ export function AppHeader({
 
   return (
     <AppHeaderBar>
-      <div className="flex h-[56px] items-center justify-between px-4">
-        <div className="flex w-10 items-center justify-start">
+      <div className="relative flex h-[58px] w-full items-center justify-between px-1.5">
+        <div className="z-10 flex w-11 shrink-0 items-center justify-start">
           {showBack ? (
             <button
               type="button"
@@ -55,9 +55,11 @@ export function AppHeader({
           )}
         </div>
 
-        <BrandLogo variant="headerCompact" />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-10 sm:px-11">
+          <BrandLogo variant="headerCompact" priority />
+        </div>
 
-        <div className="flex w-10 items-center justify-end">
+        <div className="z-10 flex w-11 shrink-0 items-center justify-end">
           <button
             type="button"
             aria-label={`Notifications, ${notificationCount} unread`}

@@ -22,6 +22,8 @@ function DeveloperSettingsContent({
   const [isOpen, setIsOpen] = React.useState(false)
   const [isBypassMode, setIsBypassMode] = React.useState(true)
   const currentModule = searchParams.get("module") || "b2c"
+  const hasBottomNav =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/create-agreement")
 
   // Only render on localhost or development environment
   const isDevEnv = process.env.NODE_ENV === "development" || (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
@@ -31,7 +33,13 @@ function DeveloperSettingsContent({
   return (
     <>
       {/* ── Floating Developer Settings Trigger Pill (Bottom Right Corner) ── */}
-      <div className="fixed bottom-4 right-4 z-50 select-none">
+      <div
+        className={
+          hasBottomNav
+            ? "fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-50 select-none"
+            : "fixed bottom-[calc(16px+env(safe-area-inset-bottom,0px))] right-4 z-50 select-none"
+        }
+      >
         <button
           type="button"
           onClick={() => setIsOpen(true)}
@@ -100,6 +108,15 @@ function DeveloperSettingsContent({
                     Quick Route Jumper
                   </span>
                   <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/splash"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#0052CC]" />
+                      <span>Splash</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => { router.push("/login"); setIsOpen(false) }}
@@ -178,7 +195,70 @@ function DeveloperSettingsContent({
                       className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
                     >
                       <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
-                      <span>B2C Mobile Dashboard</span>
+                      <span>B2C Mobile</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/vehicle"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Vehicle</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/furniture"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Furniture</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/rental"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Rental</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/service"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Service</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/dashboard/others"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-[#0052CC]" />
+                      <span>B2C Others</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/verify-identity?module=b2c"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <IdCard className="w-4 h-4 text-[#0052CC]" />
+                      <span>Verify Identity (B2C)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { router.push("/verification-success"); setIsOpen(false) }}
+                      className="p-2.5 rounded-[12px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-left flex items-center gap-2 transition-colors col-span-2"
+                    >
+                      <Check className="w-4 h-4 text-[#0052CC]" />
+                      <span>Verification Success</span>
                     </button>
 
                     <button

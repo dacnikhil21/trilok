@@ -1,20 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { ChevronRight, Check, Info } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { Check, ChevronRight, Info, Shield } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
+import { Icon3D } from "@/components/icons/Icon3D"
+import { cn } from "@/lib/utils"
 import {
   BUSINESS_CATEGORIES,
+  type BusinessCategory,
   type BusinessCategoryId,
 } from "@/lib/categories"
-import { Icon3D } from "@/components/icons/Icon3D"
-import {
-  StoreHeroIllustration,
-  WhyCategoryIllustration,
-} from "@/components/icons/CategoryIcons"
 
 const CATEGORY_ICON_KEYS: Record<BusinessCategoryId, string> = {
   "mobile-electronics": "mobile-electronics",
@@ -23,6 +20,65 @@ const CATEGORY_ICON_KEYS: Record<BusinessCategoryId, string> = {
   "rental-services": "rental-services",
   "service-agreement": "service-agreement",
   others: "others",
+}
+
+const CATEGORY_ACCENT: Record<BusinessCategoryId, string> = {
+  "mobile-electronics": "#2563EB",
+  "bikes-cars": "#64748B",
+  "furniture-sale": "#16A34A",
+  "rental-services": "#2563EB",
+  "service-agreement": "#9333EA",
+  others: "#F97316",
+}
+
+function BusinessCategoryCard({
+  category,
+  selected,
+  onSelect,
+}: {
+  category: BusinessCategory
+  selected: boolean
+  onSelect: () => void
+}) {
+  const accent = CATEGORY_ACCENT[category.id]
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "relative flex flex-col rounded-[14px] bg-white p-3 text-left shadow-[0_2px_10px_rgba(15,23,42,0.06)] active:scale-[0.98]",
+        selected ? "border-2 border-[#2563EB] shadow-[0_2px_12px_rgba(37,99,235,0.12)]" : "border border-[#E8EDF3]"
+      )}
+    >
+      {selected ? (
+        <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#2563EB] shadow-sm">
+          <Check className="h-3 w-3 text-white" strokeWidth={3} />
+        </span>
+      ) : null}
+
+      <Icon3D
+        name={CATEGORY_ICON_KEYS[category.id]}
+        size="sm"
+        alt={category.title}
+        bare
+        className="rounded-[14px]"
+      />
+
+      <p className="mt-2 pr-4 text-[13px] font-bold leading-[1.2] tracking-[-0.01em] text-[#0F172A]">
+        {category.title}
+      </p>
+      <p className="mt-0.5 line-clamp-2 flex-1 text-[10px] leading-[1.35] text-[#64748B]">
+        {category.description}
+      </p>
+
+      <ChevronRight
+        className="absolute bottom-2.5 right-2.5 h-4 w-4"
+        strokeWidth={2.5}
+        style={{ color: accent }}
+      />
+    </button>
+  )
 }
 
 export function BusinessCategoryScreen() {
@@ -38,116 +94,73 @@ export function BusinessCategoryScreen() {
 
   return (
     <AppShell
+      backgroundClassName="bg-[#F8FAFC]"
       header={<AppHeader showBack onBack={() => router.push("/register?module=b2c")} />}
       footer={
-        <div className="px-5 pt-4">
+        <div className="border-t border-[#E2E8F0] bg-white px-4 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
           <button
             type="button"
             onClick={handleContinue}
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[12px] bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_8px_20px_rgba(37,99,235,0.28)] transition-transform active:scale-[0.98]"
+            className="flex h-[48px] w-full items-center justify-center gap-2 rounded-[12px] bg-[#2563EB] text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] active:scale-[0.98]"
           >
             Continue to Dashboard
-            <span aria-hidden="true" className="text-[18px] leading-none">
+            <span aria-hidden="true" className="text-[17px] leading-none">
               →
             </span>
           </button>
         </div>
       }
+      contentClassName="pb-1"
     >
-        <section className="mx-5 mt-1 overflow-hidden rounded-[16px] bg-[#F0F7FF]">
-          <div className="px-4 pb-4 pt-4">
-            <p className="text-[14px] font-medium text-[#64748B]">Hello, Business Owner 👋</p>
-            <div className="mt-2 flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-[24px] font-bold leading-[1.2] tracking-[-0.02em] text-[#0F172A]">
-                  Select your Business Category
-                </h1>
-                <p className="mt-2 text-[13px] leading-[1.5] text-[#64748B]">
-                  Choose the category that best matches your business to get started.
-                </p>
-              </div>
-              <div className="shrink-0">
-                <StoreHeroIllustration className="h-[84px] w-[96px]" aria-hidden="true" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2.5 bg-[#DBEAFE]/70 px-4 py-3">
-            <Info className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#2563EB]" strokeWidth={2.5} />
-            <p className="text-[12px] leading-[1.45] text-[#334155]">
-              You can change or update your business category later from Settings.
+      <section className="bg-gradient-to-br from-[#EFF6FF] via-[#F8FAFC] to-white px-4 pb-3.5 pt-2.5">
+        <div className="flex items-end gap-2">
+          <div className="min-w-0 flex-1 pb-1">
+            <p className="text-[12px] font-medium text-[#64748B]">Hello, Business Owner 👋</p>
+            <h1 className="mt-1 text-[19px] font-bold leading-[1.22] tracking-[-0.02em] text-[#0F172A]">
+              Select Business Category
+            </h1>
+            <p className="mt-1 text-[11px] leading-[1.35] text-[#64748B]">
+              Choose one to continue.
             </p>
           </div>
-        </section>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/business-category/hero.png?v=2"
+            alt=""
+            width={118}
+            height={108}
+            className="h-[108px] w-[118px] shrink-0 object-contain object-bottom drop-shadow-[0_10px_24px_rgba(37,99,235,0.14)]"
+          />
+        </div>
 
-        <h2 className="mt-5 px-5 text-[16px] font-bold text-[#0F172A]">Select Business Category</h2>
+        <p className="mt-2.5 flex items-start gap-1.5 rounded-[10px] bg-[#EFF6FF] px-2.5 py-2 text-[10px] leading-[1.35] text-[#475569]">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2563EB]" strokeWidth={2.2} />
+          <span>You can change your category later from Settings.</span>
+        </p>
+      </section>
 
-        <section className="mt-3 grid grid-cols-2 gap-3 px-5">
-          {BUSINESS_CATEGORIES.map((category) => {
-            const isSelected = selectedId === category.id
+      <div className="grid grid-cols-2 gap-2.5 px-4 pt-3">
+        {BUSINESS_CATEGORIES.map((category) => (
+          <BusinessCategoryCard
+            key={category.id}
+            category={category}
+            selected={selectedId === category.id}
+            onSelect={() => setSelectedId(category.id)}
+          />
+        ))}
+      </div>
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => setSelectedId(category.id)}
-                className={cn(
-                  "relative flex min-h-[148px] flex-col rounded-[12px] border bg-white p-3.5 text-left transition-colors",
-                  isSelected
-                    ? "border-[#2563EB] shadow-[0_0_0_1px_#2563EB]"
-                    : "border-[#E2E8F0] hover:border-[#CBD5E1]"
-                )}
-              >
-                {isSelected && (
-                  <span className="absolute right-2.5 top-2.5 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#2563EB]">
-                    <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
-                  </span>
-                )}
-
-                <div className="mb-3">
-                  <Icon3D name={CATEGORY_ICON_KEYS[category.id]} size="hero" alt={category.title} />
-                </div>
-
-                <div className="flex flex-1 flex-col">
-                  <div className="flex items-start justify-between gap-1">
-                    <h2 className="text-[14px] font-bold leading-tight text-[#0F172A]">
-                      {category.title}
-                    </h2>
-                    <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-[#94A3B8]" strokeWidth={2.5} />
-                  </div>
-                  <p className="mt-1.5 text-[11px] leading-[1.4] text-[#64748B]">
-                    {category.description}
-                  </p>
-                </div>
-              </button>
-            )
-          })}
-        </section>
-
-        <section className="mx-5 mt-6 flex items-center gap-3 rounded-[12px] bg-[#F0F7FF] px-4 py-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF]">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-              <path
-                d="M11 2L19 5.5V10.5C19 15.1 15.6 19.2 11 20.5C6.4 19.2 3 15.1 3 10.5V5.5L11 2Z"
-                fill="#2563EB"
-              />
-              <path
-                d="M8 11L10 13L14 9"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-[14px] font-bold text-[#2563EB]">Why Select a Business Category?</h3>
-            <p className="mt-1 text-[12px] leading-[1.45] text-[#64748B]">
-              We will show you only relevant agreement templates and make your experience faster and easier.
-            </p>
-          </div>
-          <WhyCategoryIllustration className="h-[72px] w-[88px] shrink-0" aria-hidden="true" />
-        </section>
+      <div className="mx-4 mt-3 flex items-center gap-3 rounded-[14px] border border-[#E8EDF3] bg-white px-3 py-3 shadow-[0_1px_6px_rgba(15,23,42,0.04)]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EFF6FF]">
+          <Shield className="h-[18px] w-[18px] text-[#2563EB]" strokeWidth={2.2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[12px] font-bold text-[#0F172A]">Why Select a Business Category?</p>
+          <p className="mt-0.5 text-[10px] leading-[1.4] text-[#64748B]">
+            We show only relevant agreement templates and make your experience faster and easier.
+          </p>
+        </div>
+      </div>
     </AppShell>
   )
 }

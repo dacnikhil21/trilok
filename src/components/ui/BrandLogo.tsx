@@ -1,49 +1,65 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { brandAssets } from "@/lib/brand-assets"
+import { brandAssets, brandColors } from "@/lib/brand-assets"
 
-export type BrandLogoVariant = "header" | "headerCompact" | "splash" | "full"
+export type BrandLogoVariant = "header" | "headerCompact" | "splash" | "full" | "icon"
 
 interface BrandLogoProps {
   variant?: BrandLogoVariant
   /** @deprecated Use variant="header" */
   size?: "sm" | "md" | "lg"
-  /** @deprecated Tagline is baked into logo-full.png */
-  showSubtitle?: boolean
   className?: string
   priority?: boolean
 }
 
-const variantStyles: Record<
+type LogoLayout = "horizontal" | "vertical"
+
+const VARIANTS: Record<
   BrandLogoVariant,
-  { src: string; width: number; height: number; className: string }
+  {
+    layout: LogoLayout
+    iconSize: number
+    nameClass: string
+    taglineClass: string
+    gapClass: string
+  }
 > = {
-  header: {
-    src: brandAssets.logoFull,
-    width: 220,
-    height: 44,
-    className: "h-[44px] w-auto max-w-[min(220px,calc(100vw-120px))]",
-  },
   headerCompact: {
-    src: brandAssets.logoFull,
-    width: 196,
-    height: 38,
-    className: "h-[38px] w-auto max-w-[min(196px,calc(100vw-120px))]",
+    layout: "horizontal",
+    iconSize: 46,
+    nameClass: "text-[16px] font-bold tracking-[-0.02em] leading-none",
+    taglineClass: "mt-[4px] text-[8.5px] font-bold tracking-[0.11em] text-[#334155]",
+    gapClass: "gap-2.5",
+  },
+  header: {
+    layout: "horizontal",
+    iconSize: 48,
+    nameClass: "text-[17px] font-bold tracking-[-0.02em] leading-none",
+    taglineClass: "mt-[4px] text-[9px] font-bold tracking-[0.12em] text-[#334155]",
+    gapClass: "gap-2.5",
   },
   full: {
-    src: brandAssets.logoFullHd,
-    width: 280,
-    height: 56,
-    className: "h-[56px] w-auto max-w-[280px]",
+    layout: "horizontal",
+    iconSize: 50,
+    nameClass: "text-[18px] font-bold tracking-[-0.02em] leading-none",
+    taglineClass: "mt-[5px] text-[9px] font-bold tracking-[0.13em] text-[#334155]",
+    gapClass: "gap-3",
   },
   splash: {
-    src: brandAssets.logoSplash,
-    width: 320,
-    height: 105,
-    className: "h-[105px] w-auto max-w-[320px]",
+    layout: "vertical",
+    iconSize: 92,
+    nameClass: "text-[22px] font-bold tracking-[-0.02em] leading-none",
+    taglineClass: "mt-2 text-[11px] font-bold tracking-[0.16em] text-[#334155]",
+    gapClass: "gap-3",
+  },
+  icon: {
+    layout: "horizontal",
+    iconSize: 40,
+    nameClass: "text-[15px] font-bold tracking-[-0.02em] leading-none",
+    taglineClass: "mt-[4px] text-[8px] font-bold tracking-[0.12em] text-[#334155]",
+    gapClass: "gap-2.5",
   },
 }
 
@@ -59,28 +75,72 @@ function resolveVariant(variant?: BrandLogoVariant, size?: BrandLogoProps["size"
   }
 }
 
-/** Official eSaleAgreement logo — PNG asset, not CSS recreation. */
+function LogoIcon({ size, priority }: { size: number; priority?: boolean }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={brandAssets.logoIcon}
+      alt=""
+      width={size}
+      height={size}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      className="shrink-0 object-contain"
+      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+    />
+  )
+}
+
+function BrandWordmark({ nameClass, taglineClass }: { nameClass: string; taglineClass: string }) {
+  return (
+    <div className="min-w-0 leading-none">
+      <p className={nameClass}>
+        <span style={{ color: brandColors.nameBlue }}>eSale</span>
+        <span style={{ color: brandColors.nameGreen }}>Agreement</span>
+      </p>
+      <p className={taglineClass}>SECURE. SIMPLE. TRUSTED.</p>
+    </div>
+  )
+}
+
+/** Official eSaleAgreement logo — client eS handshake icon + wordmark */
 export function BrandLogo({
   variant,
   size,
-  showSubtitle: _showSubtitle,
   className = "",
   priority = false,
 }: BrandLogoProps) {
   const resolved = resolveVariant(variant, size)
-  const config = variantStyles[resolved]
+  const config = VARIANTS[resolved]
+
+  if (resolved === "icon") {
+    return (
+      <div className={cn("flex shrink-0 select-none items-center justify-center", className)}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={brandAssets.logoIcon}
+          alt="eSaleAgreement"
+          width={config.iconSize}
+          height={config.iconSize}
+          loading={priority ? "eager" : "lazy"}
+          className="shrink-0 object-contain"
+          style={{ width: config.iconSize, height: config.iconSize }}
+        />
+      </div>
+    )
+  }
 
   return (
-    <div className={cn("flex shrink-0 select-none items-center justify-center", className)}>
-      <Image
-        src={config.src}
-        alt="eSaleAgreement — Secure. Simple. Trusted."
-        width={config.width}
-        height={config.height}
-        priority={priority}
-        className={cn("object-contain object-center", config.className)}
-        sizes="(max-width: 390px) 220px, 280px"
-      />
+    <div
+      className={cn(
+        "flex shrink-0 select-none items-center justify-center",
+        config.layout === "vertical" ? "flex-col text-center" : "flex-row",
+        config.gapClass,
+        className
+      )}
+    >
+      <LogoIcon size={config.iconSize} priority={priority} />
+      <BrandWordmark nameClass={config.nameClass} taglineClass={config.taglineClass} />
     </div>
   )
 }
