@@ -28,16 +28,18 @@ const VARIANTS: Record<
 > = {
   headerCompact: {
     layout: "horizontal",
-    iconSize: 46,
+    iconSize: 66,
     nameClass: "text-[16px] font-bold tracking-[-0.02em] leading-none",
-    taglineClass: "mt-[4px] text-[8.5px] font-bold tracking-[0.11em] text-[#334155]",
+    taglineClass:
+      "mt-1 whitespace-nowrap text-[9px] font-bold tracking-[0.22em] text-[#334155]",
     gapClass: "gap-2.5",
   },
   header: {
     layout: "horizontal",
-    iconSize: 48,
+    iconSize: 68,
     nameClass: "text-[17px] font-bold tracking-[-0.02em] leading-none",
-    taglineClass: "mt-[4px] text-[9px] font-bold tracking-[0.12em] text-[#334155]",
+    taglineClass:
+      "mt-1 whitespace-nowrap text-[9.5px] font-bold tracking-[0.22em] text-[#334155]",
     gapClass: "gap-2.5",
   },
   full: {
@@ -85,15 +87,15 @@ function LogoIcon({ size, priority }: { size: number; priority?: boolean }) {
       height={size}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
-      className="shrink-0 object-contain"
-      style={{ width: size, height: size, minWidth: size, minHeight: size }}
+      className="shrink-0 object-contain object-center"
+      style={{ width: size, height: size, minWidth: size, minHeight: size, flexShrink: 0 }}
     />
   )
 }
 
 function BrandWordmark({ nameClass, taglineClass }: { nameClass: string; taglineClass: string }) {
   return (
-    <div className="min-w-0 leading-none">
+    <div className="flex min-w-0 flex-col justify-center leading-none">
       <p className={nameClass}>
         <span style={{ color: brandColors.nameBlue }}>eSale</span>
         <span style={{ color: brandColors.nameGreen }}>Agreement</span>
@@ -133,8 +135,10 @@ export function BrandLogo({
   return (
     <div
       className={cn(
-        "flex shrink-0 select-none items-center justify-center",
-        config.layout === "vertical" ? "flex-col text-center" : "flex-row",
+        "flex shrink-0 select-none",
+        config.layout === "vertical"
+          ? "flex-col items-center justify-center text-center"
+          : "flex-row items-center justify-center",
         config.gapClass,
         className
       )}

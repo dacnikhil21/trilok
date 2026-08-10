@@ -16,7 +16,7 @@ interface OnboardingHeaderProps {
 export function OnboardingHeader({ onBack, title, className }: OnboardingHeaderProps) {
   return (
     <AppHeaderBar>
-      <div className={cn("relative flex h-[58px] w-full items-center justify-between px-1", className)}>
+      <div className={cn("relative flex h-[68px] w-full items-center justify-between px-0.5", className)}>
         {onBack ? (
           <button
             type="button"
@@ -30,7 +30,7 @@ export function OnboardingHeader({ onBack, title, className }: OnboardingHeaderP
           <div className="h-10 w-10 shrink-0" aria-hidden="true" />
         )}
 
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-10 sm:px-11">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8 sm:px-9">
           {title ? (
             <span className="truncate text-[17px] font-bold tracking-tight text-[#0F172A]">{title}</span>
           ) : (

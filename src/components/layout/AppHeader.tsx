@@ -29,7 +29,7 @@ export function AppHeader({
 
   return (
     <AppHeaderBar>
-      <div className="relative flex h-[58px] w-full items-center justify-between px-1.5">
+      <div className="relative flex h-[68px] w-full items-center justify-between px-0.5">
         <div className="z-10 flex w-11 shrink-0 items-center justify-start">
           {showBack ? (
             <button
@@ -55,7 +55,7 @@ export function AppHeader({
           )}
         </div>
 
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-10 sm:px-11">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8 sm:px-9">
           <BrandLogo variant="headerCompact" priority />
         </div>
 
