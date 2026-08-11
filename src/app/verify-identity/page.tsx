@@ -14,6 +14,13 @@ import {
 } from "@/components/verification/VerificationServicePicker"
 import { C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
 import { DEFAULT_VERIFICATION_SERVICES } from "@/lib/dashboard-configs"
+import {
+  getVerificationServiceConfig,
+  getServiceFlowSteps,
+  getNextFlowStep,
+  getPrevFlowStep,
+  type VerificationFlowStep,
+} from "@/lib/verification-service-config"
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
@@ -24,7 +31,7 @@ import { C2CVerifiedSuccessStep } from "@/components/agreement/C2CVerifiedSucces
 import { Input } from "@/components/ui/input"
 import { ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, FileText, CreditCard, QrCode, Sparkles } from "lucide-react"
 
-type OnboardingStep = "aadhaar" | "otp" | "upload-ekyc" | "consent" | "permissions" | "liveness" | "location" | "payment" | "success"
+type OnboardingStep = VerificationFlowStep
 
 function VerifyIdentityContent() {
   const searchParams = useSearchParams()
@@ -46,14 +53,23 @@ function VerifyIdentityContent() {
 
   const selectedService = verificationServices.find((s) => s.icon === serviceParam)
   const serviceLabel = selectedService?.shortLabel ?? selectedService?.label ?? "Identity"
+  const serviceConfig = React.useMemo(
+    () => getVerificationServiceConfig(serviceParam),
+    [serviceParam]
+  )
+  const flowSteps = React.useMemo(
+    () => getServiceFlowSteps(serviceConfig, isB2C),
+    [serviceConfig, isB2C]
+  )
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
   // B2C Payment State
   const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<"upi" | "card" | "qr">("upi")
 
-  // Aadhaar manual state
-  const [aadhaarNumber, setAadhaarNumber] = React.useState("")
+  // Service document input state
+  const [documentValue, setDocumentValue] = React.useState("")
+  const [secondaryValue, setSecondaryValue] = React.useState("")
   const [otp, setOtp] = React.useState("")
   const [timer, setTimer] = React.useState(0)
 
@@ -83,100 +99,125 @@ function VerifyIdentityContent() {
   const [livenessCaptured, setLivenessCaptured] = React.useState(false)
   const [scanning, setScanning] = React.useState(false)
 
+  React.useEffect(() => {
+    setStep("aadhaar")
+    setDocumentValue("")
+    setSecondaryValue("")
+    setOtp("")
+    setTimer(0)
+    setError("")
+    setDpdpChecked(false)
+    setGpsAllowed(false)
+    setCameraAllowed(false)
+    setNotifAllowed(false)
+    setLivenessCaptured(false)
+    setUploads({ front: false, back: false, selfie: false })
+    setActiveTab("aadhaar")
+  }, [serviceParam])
+
   // Mock values
   const deviceId = "ESALEAGREEMENT-MBL-88D4"
   const timestamp = React.useMemo(() => new Date().toLocaleString("en-IN"), [step])
 
   const stepNumber = React.useMemo(() => {
-    switch (step) {
-      case "aadhaar":
-      case "otp":
-      case "upload-ekyc":
-        return 1
-      case "consent":
-        return 2
-      case "permissions":
-        return 3
-      case "liveness":
-      case "location":
-      case "success":
-        return 4
-      default:
-        return 1
-    }
-  }, [step])
+    const idx = flowSteps.indexOf(step)
+    if (idx < 0) return 1
+    const total = flowSteps.filter((s) => s !== "success").length
+    return Math.min(5, Math.max(1, Math.ceil(((idx + 1) / total) * 4)))
+  }, [step, flowSteps])
+
+  const advanceStep = () => {
+    const next = getNextFlowStep(step, flowSteps)
+    if (next) setStep(next)
+  }
 
   const handlePrimaryAction = () => {
     setError("")
 
     if (step === "aadhaar") {
       setTimer(60)
-      setStep("otp")
+      advanceStep()
     } else if (step === "otp") {
-      setStep("upload-ekyc")
+      advanceStep()
     } else if (step === "upload-ekyc") {
-      setStep("consent")
+      advanceStep()
     } else if (step === "consent") {
-      setStep("permissions")
+      advanceStep()
     } else if (step === "permissions") {
-      setStep("liveness")
+      advanceStep()
     } else if (step === "liveness") {
-      setStep("location")
+      advanceStep()
     } else if (step === "location") {
-      if (isB2C) {
-        setStep("payment")
-      } else {
-        setStep("success")
-      }
+      advanceStep()
     } else if (step === "payment") {
-      setStep("success")
+      advanceStep()
     } else if (step === "success") {
       router.push(isB2C ? b2cHomePath : `/dashboard?module=${moduleType}`)
     }
   }
 
-  // 1. Aadhaar manual screen content
-  const renderAadhaarContent = () => (
+  const formatDocumentDisplay = (value: string) => {
+    if (serviceConfig.id !== "aadhaar") return value
+    const d = value.replace(/\D/g, "")
+    if (d.length <= 4) return d
+    if (d.length <= 8) return `${d.slice(0, 4)} - ${d.slice(4)}`
+    return `${d.slice(0, 4)} - ${d.slice(4, 8)} - ${d.slice(8)}`
+  }
+
+  // 1. Service-specific input screen
+  const renderServiceInputContent = () => (
     <div className="space-y-4 text-center">
       <div className="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-2 border border-blue-100 shadow-sm">
         <ShieldCheck className="w-8 h-8" strokeWidth={2.5} />
       </div>
       <p className="text-[13px] text-secondary-text font-medium leading-relaxed max-w-[280px] mx-auto">
-        Your Aadhaar number is securely transmitted directly to UIDAI.
+        {serviceConfig.helperText}
       </p>
-      
-      <div className="pt-2">
+
+      <div className="pt-2 space-y-3">
         <Input
-          label="Aadhaar Number"
-          type="tel"
-          placeholder="XXXX - XXXX - XXXX"
-          value={aadhaarNumber}
+          label={serviceConfig.fieldLabel}
+          type={serviceConfig.inputMode === "numeric" ? "tel" : "text"}
+          placeholder={serviceConfig.placeholder}
+          value={serviceConfig.id === "aadhaar" ? formatDocumentDisplay(documentValue) : documentValue}
           onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 12)
-            setAadhaarNumber(val)
+            const val = serviceConfig.formatValue(e.target.value)
+            setDocumentValue(val)
             setError("")
           }}
           error={error}
         />
+        {serviceConfig.secondaryField ? (
+          <Input
+            label={serviceConfig.secondaryField.label}
+            type={serviceConfig.secondaryField.inputMode === "numeric" ? "tel" : "text"}
+            placeholder={serviceConfig.secondaryField.placeholder}
+            value={secondaryValue}
+            onChange={(e) => {
+              setSecondaryValue(serviceConfig.secondaryField!.formatValue(e.target.value))
+              setError("")
+            }}
+          />
+        ) : null}
       </div>
 
       <div className="p-3 bg-surface border border-border/50 rounded-[12px] flex items-start gap-3 mt-4">
         <Lock className="w-4.5 h-4.5 text-success shrink-0 mt-0.5" />
         <p className="text-left text-[11px] text-secondary-text font-medium leading-relaxed">
-          Secured with AES-256 bit encryption. eSaleAgreement does not store your Aadhaar number.
+          {serviceConfig.securityNote}
         </p>
       </div>
     </div>
   )
 
   // 2. OTP screen content
-  const renderAadhaarOtpContent = () => (
+  const renderOtpContent = () => (
     <div className="space-y-4 text-center">
       <div className="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-2 border border-blue-100 shadow-sm">
         <Smartphone className="w-8 h-8" strokeWidth={2.5} />
       </div>
       <p className="text-[13.5px] text-secondary-text font-medium leading-relaxed">
-        Enter the 6-digit OTP sent to your Aadhaar-linked mobile number.
+        {serviceConfig.otpHint}
       </p>
       
       <div className="pt-2 flex flex-col items-center">
@@ -205,9 +246,14 @@ function VerifyIdentityContent() {
     </div>
   )
 
-  const renderUploadEkycContent = () => (
+  const renderUploadEkycContent = () => {
+    const isAadhaar = serviceConfig.id === "aadhaar"
+    const frontLabel = serviceConfig.uploadFrontLabel ?? "Upload Front"
+    const backLabel = serviceConfig.uploadBackLabel ?? "Upload Back"
+
+    return (
     <div className="flex flex-col space-y-6 animate-in fade-in zoom-in-95 duration-300 pb-4">
-      {/* Tabs */}
+      {isAadhaar ? (
       <div className="flex w-full bg-[#F7F9FB] rounded-[12px] p-1">
         <button 
           onClick={() => setActiveTab("aadhaar")}
@@ -230,12 +276,17 @@ function VerifyIdentityContent() {
           Virtual ID
         </button>
       </div>
+      ) : (
+        <p className="text-[13px] font-semibold text-[#64748B] text-center">
+          Upload clear photos of your {serviceConfig.label} document
+        </p>
+      )}
 
       {error && <p className="text-[12.5px] text-error font-bold text-center mt-[-10px]">{error}</p>}
 
       {/* Row 1: Upload Front */}
       <div className="space-y-2">
-        <span className="text-[15px] font-bold text-[#041B4A]">Upload Front</span>
+        <span className="text-[15px] font-bold text-[#041B4A]">{frontLabel}</span>
         <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
           {/* Mockup */}
           <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] relative flex flex-col justify-between p-1.5 overflow-hidden">
@@ -287,7 +338,7 @@ function VerifyIdentityContent() {
 
       {/* Row 2: Upload Back */}
       <div className="space-y-2">
-        <span className="text-[15px] font-bold text-[#041B4A]">Upload Back</span>
+        <span className="text-[15px] font-bold text-[#041B4A]">{backLabel}</span>
         <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
           {/* Mockup */}
           <div className="w-full h-full bg-white rounded-[10px] border border-gray-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] relative flex flex-col justify-between p-1.5 overflow-hidden">
@@ -332,6 +383,7 @@ function VerifyIdentityContent() {
       </div>
 
       {/* Row 3: Live Selfie */}
+      {serviceConfig.showSelfieUpload !== false ? (
       <div className="space-y-2">
         <span className="text-[15px] font-bold text-[#041B4A]">Live Selfie</span>
         <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-3 h-[94px]">
@@ -365,16 +417,18 @@ function VerifyIdentityContent() {
           </div>
         </div>
       </div>
+      ) : null}
     </div>
-  )
+    )
+  }
 
   // 4. DPDP Consent screen content
   const renderConsentContent = () => (
     <div className="space-y-4 text-left">
       <div className="max-h-[140px] overflow-y-auto border border-border rounded-[12px] p-3 text-[11px] text-secondary-text font-medium leading-relaxed space-y-2 bg-[#FBFBFA]">
         <h4 className="font-bold text-foreground">Consent Notice (DPDP Act, 2023)</h4>
-        <p>1. <strong>Purpose of Collection:</strong> eSaleAgreement shall process the Aadhaar identity parameters and GPS coordinates solely for verification, timestamp audit tracking, and digital agreement signature execution.</p>
-        <p>2. <strong>Identity Matching:</strong> Your live selfie will be parsed locally to confirm compliance match with Aadhaar image registers.</p>
+        <p>1. <strong>Purpose of Collection:</strong> eSaleAgreement shall process your {serviceConfig.label} verification details and GPS coordinates solely for identity verification, timestamp audit tracking, and digital agreement signature execution.</p>
+        <p>2. <strong>Identity Matching:</strong> Your submitted {serviceConfig.label} details will be verified against authorized government databases.</p>
         <p>3. <strong>Storage & Encryption:</strong> Consent records, agreement tokens, and encryption metadata are logged immutably under standard cryptographic hashes.</p>
       </div>
 
@@ -530,28 +584,47 @@ function VerifyIdentityContent() {
     </div>
   )
 
+  const isInputValid = React.useMemo(() => {
+    if (!serviceConfig.isValid(documentValue)) return false
+    if (serviceConfig.secondaryField && !serviceConfig.secondaryField.isValid(secondaryValue)) return false
+    return true
+  }, [serviceConfig, documentValue, secondaryValue])
+
+  const isAadhaarService = serviceConfig.id === "aadhaar"
+
   const pageConfig = React.useMemo<{ title: React.ReactNode; subtitle: React.ReactNode }>(() => {
     switch (step) {
       case "aadhaar":
         return {
-          title: isB2C ? "Udyam / GST Verification" : `${serviceLabel} Verification`,
-          subtitle: isB2C ? "Verify business credentials" : `Verify your ${serviceLabel} securely`,
+          title: `${serviceLabel} Verification`,
+          subtitle: `Verify your ${serviceLabel} securely`,
         }
-      case "otp": return { title: "Aadhaar OTP", subtitle: "Verify OTP" }
-      case "upload-ekyc": return { title: "Upload Verification Documents", subtitle: "Provide front, back and selfie" }
+      case "otp":
+        return { title: `${serviceLabel} OTP`, subtitle: `Verify your ${serviceLabel}` }
+      case "upload-ekyc":
+        return {
+          title: `Upload ${serviceLabel} Documents`,
+          subtitle: isAadhaarService
+            ? "Provide front, back and selfie"
+            : `Provide front and back of your ${serviceLabel}`,
+        }
       case "consent": return { title: "Data Privacy & Consent", subtitle: "DPDP Consent" }
       case "permissions": return { title: "Permissions Required", subtitle: "Consent Access" }
       case "liveness": return { title: "Face Verification", subtitle: "Liveness Audit" }
       case "location": return { title: "Location Permission", subtitle: "Allow location access" }
       case "payment": return { title: isB2C ? "Business Verification" : "Person Verification", subtitle: isB2C ? <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹99</span> for lifetime verification & access</span> : <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹0</span> for lifetime verification & access</span> }
-      case "success": return { title: isB2C ? <span><span className="text-[#10B981]">Business</span> Verified!</span> : <span><span className="text-[#10B981]">Person</span> Verified!</span>, subtitle: isB2C ? "Your business is successfully verified and ready to create agreements." : "Your profile is successfully verified and ready to create agreements." }
+      case "success":
+        return {
+          title: <span><span className="text-[#10B981]">{serviceLabel}</span> Verified!</span>,
+          subtitle: `Your ${serviceLabel} is successfully verified and ready for agreements.`,
+        }
     }
-  }, [step, isB2C, serviceLabel])
+  }, [step, isB2C, serviceLabel, isAadhaarService])
 
   const buttonTextConfig = React.useMemo(() => {
     switch (step) {
-      case "aadhaar": return "Request Secure OTP"
-      case "otp": return "Verify Identity"
+      case "aadhaar": return serviceConfig.primaryButtonText
+      case "otp": return `Verify ${serviceLabel}`
       case "upload-ekyc": return "Verify Documents"
       case "consent": return "Confirm DPDP Consent"
       case "permissions": return "Grant Permissions"
@@ -560,19 +633,19 @@ function VerifyIdentityContent() {
       case "payment": return "Complete ₹99 Payment & Activate"
       case "success": return "Continue to Dashboard"
     }
-  }, [step, livenessCaptured, isB2C])
+  }, [step, livenessCaptured, isB2C, serviceConfig.primaryButtonText, serviceLabel])
 
   const isButtonDisabled = React.useMemo(() => {
-    if (step === "aadhaar") return aadhaarNumber.length < 12
+    if (step === "aadhaar") return !isInputValid
     if (step === "otp") return otp.length < 6
     if (step === "consent") return !dpdpChecked
     return false
-  }, [step, aadhaarNumber, otp, dpdpChecked])
+  }, [step, isInputValid, otp, dpdpChecked])
 
   const renderStepContent = () => {
     switch (step) {
-      case "aadhaar": return renderAadhaarContent()
-      case "otp": return renderAadhaarOtpContent()
+      case "aadhaar": return renderServiceInputContent()
+      case "otp": return renderOtpContent()
       case "upload-ekyc": return renderUploadEkycContent()
       case "consent": return renderConsentContent()
       case "permissions": return renderPermissionsContent()
@@ -666,12 +739,8 @@ function VerifyIdentityContent() {
             router.back()
             return
           }
-          if (step === "otp") setStep("aadhaar")
-          else if (step === "upload-ekyc") setStep("otp")
-          else if (step === "consent") setStep("upload-ekyc")
-          else if (step === "permissions") setStep("consent")
-          else if (step === "liveness") setStep("permissions")
-          else if (step === "location") setStep("liveness")
+          const prev = getPrevFlowStep(step, flowSteps)
+          if (prev) setStep(prev)
           else router.back()
         }}
       />
