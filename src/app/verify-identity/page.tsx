@@ -4,7 +4,15 @@ import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
+import { AppShell } from "@/components/layout/AppShell"
+import { AppHeader } from "@/components/layout/AppHeader"
 import { AppBottomNav } from "@/components/layout/AppBottomNav"
+import {
+  VerificationServiceGrid,
+  VerificationServicePickerIntro,
+  VerificationTrustBanner,
+} from "@/components/verification/VerificationServicePicker"
+import { C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
@@ -30,6 +38,12 @@ function VerifyIdentityContent() {
 
   const b2cHomePath = `/dashboard/${b2cDashboard}`
   const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
+  const c2cHomePath = `/dashboard?module=${moduleType}`
+  const serviceParam = searchParams.get("service")
+  const showServicePicker = !isB2C && !serviceParam
+
+  const selectedService = C2C_VERIFICATION_SERVICES.find((s) => s.icon === serviceParam)
+  const serviceLabel = selectedService?.shortLabel ?? selectedService?.label ?? "Identity"
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
@@ -516,7 +530,11 @@ function VerifyIdentityContent() {
 
   const pageConfig = React.useMemo<{ title: React.ReactNode; subtitle: React.ReactNode }>(() => {
     switch (step) {
-      case "aadhaar": return { title: isB2C ? "Udyam / GST Verification" : "Aadhaar eKYC Verification", subtitle: isB2C ? "Verify business credentials" : "Enter your Aadhaar number manually" }
+      case "aadhaar":
+        return {
+          title: isB2C ? "Udyam / GST Verification" : `${serviceLabel} Verification`,
+          subtitle: isB2C ? "Verify business credentials" : `Verify your ${serviceLabel} securely`,
+        }
       case "otp": return { title: "Aadhaar OTP", subtitle: "Verify OTP" }
       case "upload-ekyc": return { title: "Upload Verification Documents", subtitle: "Provide front, back and selfie" }
       case "consent": return { title: "Data Privacy & Consent", subtitle: "DPDP Consent" }
@@ -526,7 +544,7 @@ function VerifyIdentityContent() {
       case "payment": return { title: isB2C ? "Business Verification" : "Person Verification", subtitle: isB2C ? <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹99</span> for lifetime verification & access</span> : <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹0</span> for lifetime verification & access</span> }
       case "success": return { title: isB2C ? <span><span className="text-[#10B981]">Business</span> Verified!</span> : <span><span className="text-[#10B981]">Person</span> Verified!</span>, subtitle: isB2C ? "Your business is successfully verified and ready to create agreements." : "Your profile is successfully verified and ready to create agreements." }
     }
-  }, [step, isB2C])
+  }, [step, isB2C, serviceLabel])
 
   const buttonTextConfig = React.useMemo(() => {
     switch (step) {
@@ -563,6 +581,40 @@ function VerifyIdentityContent() {
     }
   }
 
+  if (showServicePicker) {
+    return (
+      <AppShell
+        backgroundClassName="bg-white"
+        header={<AppHeader />}
+        bottomBar={
+          <AppBottomNav
+            activeTab="verification"
+            onCreateAgreement={() => router.push("/create-agreement?module=c2c")}
+            onTabChange={(tab) => {
+              if (tab === "home") router.push(c2cHomePath)
+              if (tab === "agreements") router.push(`/agreements?module=${moduleType}`)
+              if (tab === "profile") router.push(`/profile?module=${moduleType}`)
+            }}
+          />
+        }
+        contentClassName="pb-4"
+      >
+        <VerificationServicePickerIntro />
+        <div className="px-4">
+          <VerificationServiceGrid
+            services={C2C_VERIFICATION_SERVICES}
+            onSelect={(service) =>
+              router.push(`/verify-identity?module=c2c&service=${service.icon}`)
+            }
+          />
+        </div>
+        <div className="mt-5 px-4">
+          <VerificationTrustBanner />
+        </div>
+      </AppShell>
+    )
+  }
+
   return (
     <>
       <OnboardingLayout
@@ -589,9 +641,27 @@ function VerifyIdentityContent() {
                 if (tab === "profile") router.push(`/profile?module=${moduleType}`)
               }}
             />
-          ) : undefined
+          ) : (
+            <AppBottomNav
+              activeTab="verification"
+              onCreateAgreement={() => router.push("/create-agreement?module=c2c")}
+              onTabChange={(tab) => {
+                if (tab === "home") router.push(c2cHomePath)
+                if (tab === "agreements") router.push(`/agreements?module=${moduleType}`)
+                if (tab === "profile") router.push(`/profile?module=${moduleType}`)
+              }}
+            />
+          )
         }
         onBackClick={() => {
+          if (step === "aadhaar") {
+            if (!isB2C && serviceParam) {
+              router.replace(`/verify-identity?module=${moduleType}`)
+              return
+            }
+            router.back()
+            return
+          }
           if (step === "otp") setStep("aadhaar")
           else if (step === "upload-ekyc") setStep("otp")
           else if (step === "consent") setStep("upload-ekyc")

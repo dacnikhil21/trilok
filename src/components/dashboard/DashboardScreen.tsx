@@ -134,7 +134,9 @@ export function DashboardScreen({ config }: DashboardScreenProps) {
         <DashboardVerificationGrid
           services={verificationServices}
           viewAllHref={`/verify-identity?${moduleQuery}`}
-          onSelect={() => router.push(`/verify-identity?${moduleQuery}`)}
+          onSelect={(service) =>
+            router.push(`/verify-identity?${moduleQuery}&service=${service.icon}`)
+          }
         />
       </div>
 

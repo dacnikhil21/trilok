@@ -237,7 +237,7 @@ export const AGREEMENT_STATS = [
   { label: "Total Agreements", value: "128", subtext: "All time", color: "#2563EB", icon: "total" as const },
   { label: "Pending", value: "18", subtext: "Action required", color: "#F59E0B", icon: "pending" as const },
   { label: "Completed", value: "92", subtext: "All time", color: "#22C55E", icon: "completed" as const },
-  { label: "Draft", value: "18", subtext: "Not submitted", color: "#A855F7", icon: "draft" as const },
+  { label: "Draft", value: "18", subtext: "Continue editing", color: "#A855F7", icon: "draft" as const },
 ]
 
 /** Strip redundant suffixes from category display labels */

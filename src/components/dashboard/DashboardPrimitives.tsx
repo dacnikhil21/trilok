@@ -2,55 +2,60 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { ChevronRight, FileText, ShieldCheck } from 'lucide-react'
+import { ChevronRight, Check, FileText, Hourglass, Pencil, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Icon3D } from '@/components/icons/Icon3D'
+import {
+  VerificationServiceGrid,
+} from '@/components/verification/VerificationServicePicker'
 import type { AgreementTypeConfig } from '@/lib/c2c-config'
 import type { VerificationService } from '@/lib/dashboard-configs'
 
-const STAT_ACCENT: Record<string, string> = {
-  blue: '#2563EB',
-  orange: '#F97316',
-  green: '#22C55E',
-  purple: '#A855F7',
+const STAT_THEME = {
+  blue: {
+    accent: '#2563EB',
+    gradient: 'from-[#EFF6FF] via-[#F5F9FF] to-[#FAFCFF]',
+    pillBg: 'bg-[#DBEAFE]',
+    pillText: 'text-[#1D4ED8]',
+    watermark: 'bg-[#BFDBFE]/35',
+  },
+  orange: {
+    accent: '#F97316',
+    gradient: 'from-[#FFF7ED] via-[#FFFBF5] to-[#FFFCF8]',
+    pillBg: 'bg-[#FFEDD5]',
+    pillText: 'text-[#C2410C]',
+    watermark: 'bg-[#FDBA74]/30',
+  },
+  green: {
+    accent: '#22C55E',
+    gradient: 'from-[#F0FDF4] via-[#F5FDF8] to-[#FAFEFB]',
+    pillBg: 'bg-[#DCFCE7]',
+    pillText: 'text-[#15803D]',
+    watermark: 'bg-[#86EFAC]/30',
+  },
+  purple: {
+    accent: '#A855F7',
+    gradient: 'from-[#FAF5FF] via-[#FCF8FF] to-[#FEFCFF]',
+    pillBg: 'bg-[#F3E8FF]',
+    pillText: 'text-[#7E22CE]',
+    watermark: 'bg-[#D8B4FE]/30',
+  },
+} as const
+
+function statColorKey(hex: string): keyof typeof STAT_THEME {
+  if (hex.includes('2563EB') || hex.includes('3B82F6')) return 'blue'
+  if (hex.includes('F59E0B') || hex.includes('F97316')) return 'orange'
+  if (hex.includes('22C55E') || hex.includes('10B981')) return 'green'
+  return 'purple'
 }
 
-const STAT_ICON_BG: Record<string, string> = {
-  blue: 'bg-[#EFF6FF]',
-  orange: 'bg-[#FFF7ED]',
-  green: 'bg-[#F0FDF4]',
-  purple: 'bg-[#FAF5FF]',
-}
+function StatWatermarkIcon({ type, color }: { type: string; color: string }) {
+  const props = { className: 'h-[22px] w-[22px]', style: { color }, strokeWidth: 2, 'aria-hidden': true as const }
 
-function StatIcon({ type, color }: { type: string; color: string }) {
-  if (type === 'pending') {
-    return (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M7 3H17V7L12 12L17 17V21H7V17L12 12L7 7V3Z"
-          stroke={color}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-      </svg>
-    )
-  }
-  if (type === 'completed') {
-    return (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="8" stroke={color} strokeWidth="2" />
-        <path d="M9 12L11 14L15 10" stroke={color} strokeWidth="2" strokeLinecap="round" />
-      </svg>
-    )
-  }
-  if (type === 'draft') {
-    return (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6 18L16 8L18 10L8 20H6V18Z" fill={color} />
-      </svg>
-    )
-  }
-  return <FileText className="h-5 w-5" style={{ color }} strokeWidth={2} />
+  if (type === 'pending') return <Hourglass {...props} />
+  if (type === 'completed') return <Check {...props} />
+  if (type === 'draft') return <Pencil {...props} />
+  return <FileText {...props} />
 }
 
 export function DashboardSectionHeader({
@@ -86,7 +91,7 @@ export function DashboardSectionHeader({
   )
 }
 
-/** 2×2 stat cards — icon left, text right, colored bottom border */
+/** 2×2 compact stat cards — number-first, tinted bg, watermark icon, pill tag */
 export function DashboardStatGrid({
   stats,
   showHeader = true,
@@ -102,45 +107,49 @@ export function DashboardStatGrid({
   showHeader?: boolean
   viewAllHref?: string
 }) {
-  const colorKey = (hex: string) => {
-    if (hex.includes('2563EB') || hex.includes('3B82F6')) return 'blue'
-    if (hex.includes('F59E0B') || hex.includes('F97316')) return 'orange'
-    if (hex.includes('22C55E') || hex.includes('10B981')) return 'green'
-    return 'purple'
-  }
-
   return (
     <section>
       {showHeader ? (
         <DashboardSectionHeader title="My Agreements Overview" viewAllHref={viewAllHref} />
       ) : null}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         {stats.map((stat) => {
-          const key = colorKey(stat.color)
+          const key = statColorKey(stat.color)
+          const theme = STAT_THEME[key]
+
           return (
             <div
               key={stat.label}
-              className="relative overflow-hidden rounded-[16px] bg-white px-3 py-3.5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]"
+              className={cn(
+                'relative overflow-hidden rounded-[16px] bg-gradient-to-br px-3 pb-3 pt-3 shadow-[0_2px_10px_rgba(15,23,42,0.05)]',
+                theme.gradient
+              )}
             >
-              <div className="flex items-center gap-3">
-                <div
+              <div
+                className="pointer-events-none absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-[10px]"
+                style={{ backgroundColor: `${theme.accent}14` }}
+                aria-hidden="true"
+              >
+                <StatWatermarkIcon type={stat.icon} color={theme.accent} />
+              </div>
+
+              <div className="relative z-[1] max-w-[78%]">
+                <p className="text-[24px] font-bold leading-none tracking-[-0.02em] text-[#0F172A]">
+                  {stat.value}
+                </p>
+                <p className="mt-1 line-clamp-1 text-[11px] font-semibold leading-tight text-[#334155]">
+                  {stat.label}
+                </p>
+                <span
                   className={cn(
-                    'flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
-                    STAT_ICON_BG[key] ?? 'bg-[#F1F5F9]'
+                    'mt-2.5 inline-flex max-w-full items-center rounded-full px-2 py-0.5 text-[9px] font-semibold',
+                    theme.pillBg,
+                    theme.pillText
                   )}
                 >
-                  <StatIcon type={stat.icon} color={STAT_ACCENT[key] ?? stat.color} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium text-[#64748B]">{stat.label}</p>
-                  <p className="text-[22px] font-bold leading-tight text-[#0F172A]">{stat.value}</p>
-                  <p className="text-[10px] text-[#94A3B8]">{stat.subtext}</p>
-                </div>
+                  <span className="truncate">{stat.subtext}</span>
+                </span>
               </div>
-              <div
-                className="absolute bottom-0 left-0 right-0 h-[3px]"
-                style={{ backgroundColor: STAT_ACCENT[key] ?? stat.color }}
-              />
             </div>
           )
         })}
@@ -149,7 +158,7 @@ export function DashboardStatGrid({
   )
 }
 
-/** 2-column verification grid with accent strip */
+/** 2-column verification grid — app-level picker cards */
 export function DashboardVerificationGrid({
   services,
   onSelect,
@@ -157,7 +166,7 @@ export function DashboardVerificationGrid({
   viewAllHref,
 }: {
   services: VerificationService[]
-  onSelect?: () => void
+  onSelect?: (service: VerificationService) => void
   showHeader?: boolean
   viewAllHref?: string
 }) {
@@ -166,37 +175,10 @@ export function DashboardVerificationGrid({
       {showHeader ? (
         <DashboardSectionHeader title="Our Verification Services" viewAllHref={viewAllHref} />
       ) : null}
-      <div className="grid grid-cols-2 gap-3">
-        {services.map((service) => {
-          const title = service.shortLabel ?? service.label
-          const subtitle =
-            service.description ??
-            (service.shortLabel ? `Verify ${service.shortLabel}` : 'Verification service')
-
-          return (
-            <button
-              key={service.label}
-              type="button"
-              onClick={onSelect}
-              className="relative flex flex-col overflow-hidden rounded-[16px] bg-white px-3 py-3.5 text-left shadow-[0_2px_12px_rgba(15,23,42,0.06)] transition-transform active:scale-[0.98]"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-                  <Icon3D name={service.icon} size="sm" alt={title} bare />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-bold leading-tight text-[#0F172A]">{title}</p>
-                  <p className="mt-0.5 text-[10px] leading-snug text-[#64748B]">{subtitle}</p>
-                </div>
-              </div>
-              <div
-                className="absolute bottom-0 left-0 right-0 h-[3px]"
-                style={{ backgroundColor: service.color }}
-              />
-            </button>
-          )
-        })}
-      </div>
+      <VerificationServiceGrid
+        services={services}
+        onSelect={(service) => onSelect?.(service)}
+      />
     </section>
   )
 }

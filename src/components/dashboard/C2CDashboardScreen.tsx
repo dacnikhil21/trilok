@@ -96,7 +96,9 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
         <div className="mt-2.5">
           <DashboardVerificationGrid
             services={C2C_VERIFICATION_SERVICES}
-            onSelect={() => router.push("/verify-identity?module=c2c")}
+            onSelect={(service) =>
+              router.push(`/verify-identity?module=c2c&service=${service.icon}`)
+            }
           />
         </div>
       </section>
