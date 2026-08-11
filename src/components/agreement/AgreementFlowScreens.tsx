@@ -10,8 +10,9 @@ import {
   getTypeTitle,
 } from "@/lib/c2c-config"
 import { Icon3D } from "@/components/icons/Icon3D"
+import { DashboardHeroArt } from "@/components/icons/DashboardHeroes"
 import { iconFieldToKey } from "@/lib/category-hero-images"
-import { MobileNavList, MobileScreenIntro } from "@/components/layout/MobileListPrimitives"
+import { getC2CCategoryHero } from "@/lib/c2c-session"
 
 interface AgreementFlowHeaderProps {
   type: AgreementType
@@ -46,6 +47,7 @@ interface AgreementCategoryPickerProps {
 }
 
 export function AgreementCategoryPicker({ type, categories, onSelect }: AgreementCategoryPickerProps) {
+  const config = getTypeConfig(type)
   const items = categories.map((c) => ({
     id: c.id,
     title: c.title,
@@ -53,20 +55,40 @@ export function AgreementCategoryPicker({ type, categories, onSelect }: Agreemen
   }))
 
   return (
-    <>
-      <MobileScreenIntro
-        title={`Select ${type} category`}
-        subtitle={`Choose the type of ${type} agreement to continue.`}
-      />
-      <MobileNavList
-        items={items}
-        onSelect={onSelect}
-        renderIcon={(item) => {
+    <div className="flex flex-col bg-white">
+      <section
+        className="px-4 pb-4 pt-3"
+        style={{ background: `linear-gradient(180deg, ${config.colorLight} 0%, #ffffff 100%)` }}
+      >
+        <h2 className="text-[20px] font-bold leading-[1.25] tracking-[-0.02em] text-[#0F172A]">
+          Select {type} category
+        </h2>
+        <p className="mt-1 text-[13px] leading-[1.4] text-[#64748B]">
+          Choose the type of {type} agreement to continue.
+        </p>
+      </section>
+
+      <div className="space-y-2.5 px-4 pb-4">
+        {items.map((item) => {
           const category = categories.find((c) => c.id === item.id)!
-          return <Icon3D name={iconFieldToKey(category.icon)} size="md" alt={item.title} />
-        }}
-      />
-    </>
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className="flex w-full min-h-[72px] items-center gap-3 rounded-[16px] border border-[#E8EDF3] bg-white px-3.5 py-3 text-left shadow-[0_2px_10px_rgba(15,23,42,0.05)] active:scale-[0.99] active:bg-[#F8FAFC]"
+            >
+              <Icon3D name={iconFieldToKey(category.icon)} size="md" alt={item.title} bare />
+              <div className="min-w-0 flex-1">
+                <p className="text-[14px] font-bold leading-tight text-[#0F172A]">{item.title}</p>
+                <p className="mt-0.5 line-clamp-2 text-[12px] leading-snug text-[#64748B]">{item.subtitle}</p>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-[#CBD5E1]" strokeWidth={2.5} />
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -86,43 +108,47 @@ export function AgreementCategoryIntro({
   const introTitle = productLabel
     ? `Create Agreement for ${productLabel}`
     : category.introTitle
+  const heroSrc = getC2CCategoryHero(category.id)
 
   return (
-    <div className="flex flex-col bg-white">
-      <div className="flex flex-col items-center px-5 pt-6 pb-2">
-        <div
-          className="flex items-center justify-center rounded-[28px] p-5"
-          style={{ backgroundColor: config.colorLight }}
-        >
-          <Icon3D name={iconFieldToKey(category.icon)} size="jumbo" alt={category.title} bare />
+    <div className="flex flex-col bg-white pb-2">
+      <section
+        className="relative overflow-hidden px-4 pb-2 pt-2"
+        style={{ background: `linear-gradient(180deg, ${config.colorLight} 0%, #ffffff 92%)` }}
+      >
+        <div className="flex justify-center">
+          <DashboardHeroArt
+            src={heroSrc}
+            alt={category.title}
+            className="relative z-[1] h-[120px] w-[140px] shrink-0 object-contain object-bottom drop-shadow-[0_12px_24px_rgba(37,99,235,0.16)]"
+          />
         </div>
-      </div>
+      </section>
 
-      <div className="px-5 pt-3 pb-6">
+      <div className="px-5 pt-2">
         <h2
-          className="text-center text-[20px] font-extrabold leading-[1.28] tracking-[-0.02em]"
-          style={{ color: config.color }}
+          className="text-center text-[19px] font-extrabold leading-[1.3] tracking-[-0.02em] text-[#0F172A]"
         >
           {introTitle}
         </h2>
+        <p className="mt-2 text-center text-[13px] leading-[1.45] text-[#64748B]">
+          {category.description}
+        </p>
 
-        <p className="mt-4 text-[13px] font-semibold text-[#64748B]">This agreement is suitable for:</p>
-
-        <ul className="mt-4 space-y-3.5">
+        <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8]">
+          Covers
+        </p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
           {category.introItems.map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <span
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white shadow-md"
-                style={{ backgroundColor: config.color }}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2.5 6L5 8.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </span>
-              <span className="text-[15px] font-medium text-[#1E293B]">{item}</span>
-            </li>
+            <span
+              key={item}
+              className="inline-flex rounded-full px-3 py-1.5 text-[13px] font-medium text-[#334155]"
+              style={{ backgroundColor: `${config.color}14` }}
+            >
+              {item}
+            </span>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   )
@@ -157,20 +183,35 @@ export function AgreementIntroFooter({
 export function AgreementTypePicker({ onSelect }: { onSelect: (type: AgreementType) => void }) {
   const items = (["sale", "rental", "service"] as AgreementType[]).map((type) => {
     const config = getTypeConfig(type)
-    return { id: type, title: getTypeTitle(type), subtitle: config.description }
+    return { id: type, title: getTypeTitle(type), subtitle: config.description, config }
   })
 
   return (
-    <>
-      <MobileScreenIntro
-        title="Create Agreement"
-        subtitle="Choose agreement type to continue."
-      />
-      <MobileNavList
-        items={items}
-        onSelect={(id) => onSelect(id as AgreementType)}
-        renderIcon={(item) => <Icon3D name={item.id} size="md" alt={item.title} />}
-      />
-    </>
+    <div className="flex flex-col bg-white">
+      <section className="bg-gradient-to-b from-[#EFF6FF] to-white px-4 pb-4 pt-3">
+        <h2 className="text-[20px] font-bold leading-[1.25] tracking-[-0.02em] text-[#0F172A]">
+          Create Agreement
+        </h2>
+        <p className="mt-1 text-[13px] leading-[1.4] text-[#64748B]">Choose agreement type to continue.</p>
+      </section>
+
+      <div className="space-y-2.5 px-4 pb-4">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onSelect(item.id as AgreementType)}
+            className="flex w-full min-h-[72px] items-center gap-3 rounded-[16px] border border-[#E8EDF3] bg-white px-3.5 py-3 text-left shadow-[0_2px_10px_rgba(15,23,42,0.05)] active:scale-[0.99] active:bg-[#F8FAFC]"
+          >
+            <Icon3D name={item.id} size="md" alt={item.title} bare />
+            <div className="min-w-0 flex-1">
+              <p className="text-[14px] font-bold leading-tight text-[#0F172A]">{item.title}</p>
+              <p className="mt-0.5 text-[12px] leading-snug text-[#64748B]">{item.subtitle}</p>
+            </div>
+            <ChevronRight className="h-4 w-4 shrink-0 text-[#CBD5E1]" strokeWidth={2.5} />
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }

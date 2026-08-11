@@ -14,6 +14,7 @@ import {
   DashboardVerificationGrid,
 } from "@/components/dashboard/DashboardPrimitives"
 import { AGREEMENT_TYPES, C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
+import { setC2CFromDashboard, clearC2CFromDashboard } from "@/lib/c2c-session"
 
 const C2C_HERO_IMAGE = "/assets/dashboards/heroes/c2c-hero.png"
 
@@ -37,7 +38,10 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
       bottomBar={
         <AppBottomNav
           activeTab="home"
-          onCreateAgreement={() => router.push("/create-agreement?module=c2c")}
+          onCreateAgreement={() => {
+            clearC2CFromDashboard()
+            router.push("/create-agreement?module=c2c")
+          }}
           onTabChange={(tab) => {
             if (tab === "verification") router.push("/verify-identity?module=c2c")
             if (tab === "home") router.push("/dashboard?module=c2c")
@@ -75,7 +79,10 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
         <div className="mt-3">
           <DashboardAgreementTypeCards
             types={AGREEMENT_TYPES}
-            onSelect={(typeId) => router.push(`/create-agreement?module=c2c&type=${typeId}`)}
+            onSelect={(typeId) => {
+              setC2CFromDashboard()
+              router.push(`/create-agreement?module=c2c&type=${typeId}&from=dashboard`)
+            }}
           />
         </div>
       </section>

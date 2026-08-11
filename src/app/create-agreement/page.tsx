@@ -18,6 +18,11 @@ import {
   getTypeTitle,
 } from "@/lib/c2c-config"
 import {
+  clearC2CFromDashboard,
+  isC2CFromDashboard,
+  setC2CFromDashboard,
+} from "@/lib/c2c-session"
+import {
   B2C_CATEGORY_TO_DASHBOARD,
   B2C_DASHBOARD_DEFAULTS,
   B2C_TEMPLATE_PRODUCT,
@@ -136,6 +141,41 @@ function CreateAgreementContent() {
   const templateParam = searchParams.get("template")
 
   const b2cReturnPath = getB2CReturnPath(dashboardParam, categoryParam)
+  const c2cHomePath = `/dashboard?module=${moduleType}`
+  const fromDashboardRef = React.useRef(
+    searchParams.get("from") === "dashboard" || isC2CFromDashboard()
+  )
+
+  const isFromDashboard = () =>
+    fromDashboardRef.current ||
+    searchParams.get("from") === "dashboard" ||
+    isC2CFromDashboard()
+
+  const buildFlowUrl = React.useCallback(
+    (params: { type?: AgreementType | null; category?: string | null }) => {
+      const qs = new URLSearchParams({ module: moduleType })
+      if (params.type) qs.set("type", params.type)
+      if (params.category) qs.set("category", params.category)
+      if (fromDashboardRef.current) qs.set("from", "dashboard")
+      return `/create-agreement?${qs.toString()}`
+    },
+    [moduleType]
+  )
+
+  // Keep from-dashboard flag in sync with URL + sessionStorage
+  React.useEffect(() => {
+    if (isB2C) return
+    const fromUrl = searchParams.get("from") === "dashboard"
+    const fromSession = isC2CFromDashboard()
+    if (fromUrl || fromSession) {
+      fromDashboardRef.current = true
+      if (!fromSession) setC2CFromDashboard()
+    }
+    if (!typeParam && !categoryParam && searchParams.get("from") !== "dashboard") {
+      clearC2CFromDashboard()
+      fromDashboardRef.current = false
+    }
+  }, [isB2C, searchParams, typeParam, categoryParam])
 
   const b2cInitialCategory =
     isB2C && categoryParam && typeParam ? findCategory(typeParam, categoryParam) : undefined
@@ -149,6 +189,7 @@ function CreateAgreementContent() {
   const [agreementType, setAgreementType] = React.useState<AgreementType | null>(typeParam)
   const [categoryId, setCategoryId] = React.useState<string | null>(categoryParam)
   const [currentStep, setCurrentStep] = React.useState(1)
+  const inWizardRef = React.useRef(false)
   const savedAgreementRef = React.useRef(false)
   const [formData, setFormData] = React.useState<AgreementData>(() => {
     const next: AgreementData = { ...INITIAL_FORM }
@@ -163,6 +204,27 @@ function CreateAgreementContent() {
     }
     return next
   })
+
+  // Sync flow phase when URL changes (browser back/forward) — never override wizard
+  React.useEffect(() => {
+    if (isB2C || inWizardRef.current) return
+    const type = searchParams.get("type") as AgreementType | null
+    const category = searchParams.get("category")
+
+    if (category && type) {
+      setPhase("intro")
+      setAgreementType(type)
+      setCategoryId(category)
+    } else if (type) {
+      setPhase("category")
+      setAgreementType(type)
+      setCategoryId(null)
+    } else if (!isFromDashboard()) {
+      setPhase("type")
+      setAgreementType(null)
+      setCategoryId(null)
+    }
+  }, [isB2C, searchParams])
 
   // B2C: lock to merchant dashboard — never show C2C type/category pickers
   React.useEffect(() => {
@@ -262,6 +324,7 @@ function CreateAgreementContent() {
           router.push(b2cReturnPath)
           return
         }
+        inWizardRef.current = false
         setPhase("intro")
       } else if (currentStep < 10) {
         prevStep()
@@ -276,13 +339,18 @@ function CreateAgreementContent() {
       }
       setPhase("category")
       setCategoryId(null)
-      router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}`)
+      router.replace(buildFlowUrl({ type: agreementType }))
       return
     }
 
     if (phase === "category") {
       if (isB2C) {
         router.push(b2cReturnPath)
+        return
+      }
+      if (isFromDashboard()) {
+        clearC2CFromDashboard()
+        router.push(c2cHomePath)
         return
       }
       setAgreementType(null)
@@ -292,13 +360,14 @@ function CreateAgreementContent() {
       return
     }
 
-    router.push(isB2C ? b2cReturnPath : `/dashboard?module=${moduleType}`)
+    router.push(isB2C ? b2cReturnPath : c2cHomePath)
   }
 
   const startWizard = () => {
     if (selectedCategory) {
       updateData({ category: selectedCategory.title })
     }
+    inWizardRef.current = true
     setCurrentStep(1)
     setPhase("wizard")
   }
@@ -393,12 +462,12 @@ function CreateAgreementContent() {
           transition={{ duration: 0.2 }}
           className="w-full"
         >
-          {!isB2C && phase === "type" && (
+          {!isB2C && phase === "type" && !isFromDashboard() && (
             <AgreementTypePicker
               onSelect={(type) => {
                 setAgreementType(type)
                 setPhase("category")
-                router.replace(`/create-agreement?module=${moduleType}&type=${type}`)
+                router.replace(buildFlowUrl({ type }))
               }}
             />
           )}
@@ -409,7 +478,7 @@ function CreateAgreementContent() {
               onSelect={(id) => {
                 setCategoryId(id)
                 setPhase("intro")
-                router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}&category=${id}`)
+                router.replace(buildFlowUrl({ type: agreementType, category: id }))
               }}
             />
           )}
