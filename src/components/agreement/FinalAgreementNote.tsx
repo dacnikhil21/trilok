@@ -1,6 +1,7 @@
 import * as React from "react"
 import { ShieldCheck, MapPin, Calendar, Clock, FileText, CheckCircle2, Lock, Smartphone, User, CreditCard } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
+import { formatAgreementDate, generateReferenceNo } from "@/lib/b2c-agreements"
 
 type Props = {
   data: AgreementData
@@ -16,9 +17,18 @@ export function FinalAgreementNote({ data, onHome }: Props) {
   const buyerMobile = data.role === "buyer" ? data.customerMobile || "9123456789" : data.buyerMobile || "9123456789"
   const buyerAadhaar = data.role === "buyer" ? data.aadhaarNumber || "987654321098" : data.buyerAadhaar || "987654321098"
 
-  const mockDate = "25 May 2025"
-  const mockTimestamp = "25 May 2025, 10:45:32 AM (IST)"
-  const mockRef = "ESA-2025-05-25-0018"
+  const agreementDate = formatAgreementDate()
+  const agreementTimestamp = new Date().toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+    timeZoneName: "short",
+  })
+  const agreementRef = generateReferenceNo()
   
   const maskAadhaar = (num: string) => `XXXX XXXX ${num.slice(-4) || "1234"}`
 
@@ -70,21 +80,21 @@ export function FinalAgreementNote({ data, onHome }: Props) {
               <Calendar className="w-6 h-6 text-[#0033A0]" />
               <div>
                 <p className="text-[11px] font-bold text-[#0033A0]">Date</p>
-                <p className="text-[13px] font-semibold">{mockDate}</p>
+                <p className="text-[13px] font-semibold">{agreementDate}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <FileText className="w-6 h-6 text-[#1E9E40]" />
               <div>
                 <p className="text-[11px] font-bold text-[#1E9E40]">Agreement Reference No.</p>
-                <p className="text-[13px] font-semibold">{mockRef}</p>
+                <p className="text-[13px] font-semibold">{agreementRef}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Clock className="w-6 h-6 text-[#0033A0]" />
               <div>
                 <p className="text-[11px] font-bold text-[#0033A0]">Timestamp</p>
-                <p className="text-[13px] font-semibold">{mockTimestamp}</p>
+                <p className="text-[13px] font-semibold">{agreementTimestamp}</p>
               </div>
             </div>
           </div>
@@ -178,7 +188,7 @@ export function FinalAgreementNote({ data, onHome }: Props) {
                 [Image Mock]
               </div>
               <div className="bg-green-50 p-2 text-[9px] text-[#166534] font-medium leading-tight flex justify-between items-center">
-                <span>Captured: {mockDate}<br/>GPS Verified</span>
+                <span>Captured: {agreementDate}<br/>GPS Verified</span>
                 <CheckCircle2 className="w-4 h-4 text-[#1E9E40]" />
               </div>
             </div>
@@ -209,7 +219,7 @@ export function FinalAgreementNote({ data, onHome }: Props) {
                   <CheckCircle2 className="w-4 h-4 text-[#1E9E40] ml-auto mt-1" />
                 </div>
               </div>
-              <p className="text-[10px] text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3"/> Signed on: {mockTimestamp}</p>
+              <p className="text-[10px] text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3"/> Signed on: {agreementTimestamp}</p>
             </div>
             <div className="flex-1 border border-gray-300 rounded-xl p-4 flex flex-col justify-between">
               <p className="text-[11px] font-bold text-[#1E9E40] mb-4">Buyer's e-Signature</p>
@@ -223,12 +233,12 @@ export function FinalAgreementNote({ data, onHome }: Props) {
                   <CheckCircle2 className="w-4 h-4 text-[#1E9E40] ml-auto mt-1" />
                 </div>
               </div>
-              <p className="text-[10px] text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3"/> Signed on: {mockTimestamp}</p>
+              <p className="text-[10px] text-gray-500 flex items-center gap-1"><Clock className="w-3 h-3"/> Signed on: {agreementTimestamp}</p>
             </div>
             <div className="w-[120px] shrink-0 border border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center text-center">
                <p className="text-[9px] font-bold text-[#0033A0] mb-2 uppercase">Scan to Verify</p>
                <div className="w-[70px] h-[70px] bg-gray-200 mb-2 flex items-center justify-center text-gray-400 text-[10px]">[QR]</div>
-               <p className="text-[7px] text-gray-500 break-all">{mockRef}</p>
+               <p className="text-[7px] text-gray-500 break-all">{agreementRef}</p>
             </div>
           </div>
 
@@ -264,7 +274,7 @@ export function FinalAgreementNote({ data, onHome }: Props) {
       <div className="mt-8 text-center pb-8 flex justify-center">
         <button 
           onClick={onHome}
-          className="h-[52px] px-8 bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="h-[52px] px-8 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Return to Dashboard
         </button>

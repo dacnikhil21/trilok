@@ -6,15 +6,11 @@ import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { AppBottomNav } from "@/components/layout/AppBottomNav"
 import { cn } from "@/lib/utils"
+import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
+import { getB2CDashboard } from "@/lib/b2c-session"
+import { getAgreements, type AgreementRecord } from "@/lib/b2c-agreements"
 
 const FILTERS = ["All", "Pending", "Completed", "Draft"] as const
-
-const MOCK_AGREEMENTS = [
-  { id: "1", title: "iPhone 14 Pro Sale", party: "Rahul Sharma", status: "Pending", date: "10 Aug 2026", amount: "₹72,000" },
-  { id: "2", title: "MacBook Air M2 Sale", party: "Priya Nair", status: "Completed", date: "8 Aug 2026", amount: "₹85,000" },
-  { id: "3", title: "Samsung TV 55\"", party: "Amit Patel", status: "Draft", date: "7 Aug 2026", amount: "₹42,000" },
-  { id: "4", title: "iPad Air Sale", party: "Sneha Reddy", status: "Completed", date: "5 Aug 2026", amount: "₹38,000" },
-]
 
 const STATUS_STYLE: Record<string, string> = {
   Pending: "bg-[#FFF7ED] text-[#EA580C]",
@@ -26,12 +22,21 @@ function AgreementsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const moduleType = searchParams.get("module") || "b2c"
+  const isB2C = moduleType === "b2c"
   const [filter, setFilter] = React.useState<(typeof FILTERS)[number]>("All")
+  const [b2cDashboard, setB2cDashboard] = React.useState("mobile")
+  const [items, setItems] = React.useState<AgreementRecord[]>([])
 
-  const items =
-    filter === "All"
-      ? MOCK_AGREEMENTS
-      : MOCK_AGREEMENTS.filter((a) => a.status === filter)
+  React.useEffect(() => {
+    if (isB2C) setB2cDashboard(getB2CDashboard())
+    setItems(getAgreements())
+  }, [isB2C])
+
+  const b2cHomePath = `/dashboard/${b2cDashboard}`
+  const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
+
+  const filtered =
+    filter === "All" ? items : items.filter((a) => a.status === filter)
 
   return (
     <AppShell
@@ -40,9 +45,13 @@ function AgreementsContent() {
       bottomBar={
         <AppBottomNav
           activeTab="agreements"
-          onCreateAgreement={() => router.push(`/create-agreement?module=${moduleType}`)}
+          onCreateAgreement={() =>
+            router.push(isB2C ? b2cCreatePath : `/create-agreement?module=${moduleType}`)
+          }
           onTabChange={(tab) => {
-            if (tab === "home") router.push(moduleType === "c2c" ? "/dashboard?module=c2c" : "/dashboard/mobile")
+            if (tab === "home") {
+              router.push(isB2C ? b2cHomePath : "/dashboard?module=c2c")
+            }
             if (tab === "verification") router.push(`/verify-identity?module=${moduleType}`)
             if (tab === "profile") router.push(`/profile?module=${moduleType}`)
           }}
@@ -70,25 +79,33 @@ function AgreementsContent() {
       </div>
 
       <div className="mt-4 space-y-3">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className="flex w-full flex-col rounded-[16px] bg-white px-4 py-3.5 text-left shadow-[0_2px_12px_rgba(15,23,42,0.06)] active:scale-[0.99]"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-[14px] font-bold text-[#0F172A]">{item.title}</p>
-              <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold", STATUS_STYLE[item.status])}>
-                {item.status}
-              </span>
-            </div>
-            <p className="mt-1 text-[12px] text-[#64748B]">{item.party}</p>
-            <div className="mt-2 flex items-center justify-between text-[11px]">
-              <span className="text-[#94A3B8]">{item.date}</span>
-              <span className="font-bold text-[#0F172A]">{item.amount}</span>
-            </div>
-          </button>
-        ))}
+        {filtered.length === 0 ? (
+          <div className="rounded-[16px] bg-white px-4 py-8 text-center shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+            <p className="text-[14px] font-semibold text-[#0F172A]">No agreements yet</p>
+            <p className="mt-1 text-[12px] text-[#64748B]">Create your first agreement from the dashboard.</p>
+          </div>
+        ) : (
+          filtered.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => router.push(`/agreements/${item.id}?module=${moduleType}`)}
+              className="flex w-full flex-col rounded-[16px] bg-white px-4 py-3.5 text-left shadow-[0_2px_12px_rgba(15,23,42,0.06)] active:scale-[0.99]"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-[14px] font-bold text-[#0F172A]">{item.title}</p>
+                <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold", STATUS_STYLE[item.status])}>
+                  {item.status}
+                </span>
+              </div>
+              <p className="mt-1 text-[12px] text-[#64748B]">{item.party}</p>
+              <div className="mt-2 flex items-center justify-between text-[11px]">
+                <span className="text-[#94A3B8]">{item.date}</span>
+                <span className="font-bold text-[#0F172A]">{item.amount}</span>
+              </div>
+            </button>
+          ))
+        )}
       </div>
     </AppShell>
   )

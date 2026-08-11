@@ -4,6 +4,9 @@ import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
+import { AppBottomNav } from "@/components/layout/AppBottomNav"
+import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
+import { getB2CDashboard } from "@/lib/b2c-session"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
 import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
@@ -19,6 +22,14 @@ function VerifyIdentityContent() {
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
   const isB2C = moduleType === "b2c"
+  const [b2cDashboard, setB2cDashboard] = React.useState("mobile")
+
+  React.useEffect(() => {
+    if (isB2C) setB2cDashboard(getB2CDashboard())
+  }, [isB2C])
+
+  const b2cHomePath = `/dashboard/${b2cDashboard}`
+  const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
@@ -104,7 +115,7 @@ function VerifyIdentityContent() {
     } else if (step === "payment") {
       setStep("success")
     } else if (step === "success") {
-      router.push(`/dashboard?module=${moduleType}`)
+      router.push(isB2C ? b2cHomePath : `/dashboard?module=${moduleType}`)
     }
   }
 
@@ -566,6 +577,20 @@ function VerifyIdentityContent() {
         stepperStep={stepNumber}
         hideFooterButton={step === "payment" || step === "success"}
         noCardWrapper={step === "payment" || step === "success"}
+        moduleType={isB2C ? "b2c" : "c2c"}
+        bottomBar={
+          isB2C ? (
+            <AppBottomNav
+              activeTab="verification"
+              onCreateAgreement={() => router.push(b2cCreatePath)}
+              onTabChange={(tab) => {
+                if (tab === "home") router.push(b2cHomePath)
+                if (tab === "agreements") router.push(`/agreements?module=${moduleType}`)
+                if (tab === "profile") router.push(`/profile?module=${moduleType}`)
+              }}
+            />
+          ) : undefined
+        }
         onBackClick={() => {
           if (step === "otp") setStep("aadhaar")
           else if (step === "upload-ekyc") setStep("otp")

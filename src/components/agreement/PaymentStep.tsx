@@ -46,10 +46,10 @@ export function PaymentStep({ data, onNext }: Props) {
         <div className="w-full space-y-3">
           <p className="text-[13px] font-bold text-[#041B4A] mb-2 px-1">Select Payment Method</p>
           
-          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#0033A0] transition-colors focus:ring-2 focus:ring-[#0033A0]/20 outline-none">
+          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#2563EB] transition-colors focus:ring-2 focus:ring-[#2563EB]/20 outline-none">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-blue-50 rounded-[10px] flex items-center justify-center">
-                <SmartphoneIcon className="w-5 h-5 text-[#0033A0]" />
+                <SmartphoneIcon className="w-5 h-5 text-[#2563EB]" />
               </div>
               <div className="text-left">
                 <p className="text-[15px] font-bold text-[#041B4A]">UPI</p>
@@ -59,7 +59,7 @@ export function PaymentStep({ data, onNext }: Props) {
             <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
           </button>
 
-          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#0033A0] transition-colors focus:ring-2 focus:ring-[#0033A0]/20 outline-none">
+          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#2563EB] transition-colors focus:ring-2 focus:ring-[#2563EB]/20 outline-none">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-purple-50 rounded-[10px] flex items-center justify-center">
                 <CreditCard className="w-5 h-5 text-purple-600" />
@@ -72,7 +72,7 @@ export function PaymentStep({ data, onNext }: Props) {
             <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
           </button>
 
-          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#0033A0] transition-colors focus:ring-2 focus:ring-[#0033A0]/20 outline-none">
+          <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-[16px] hover:border-[#2563EB] transition-colors focus:ring-2 focus:ring-[#2563EB]/20 outline-none">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-orange-50 rounded-[10px] flex items-center justify-center">
                 <Landmark className="w-5 h-5 text-orange-600" />
@@ -93,7 +93,7 @@ export function PaymentStep({ data, onNext }: Props) {
         <Button 
           onClick={handlePay}
           disabled={loading}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Pay ₹49"}
         </Button>

@@ -22,6 +22,7 @@ import {
   type DashboardTemplate,
 } from "@/lib/dashboard-configs"
 import { getB2CTemplateCreateUrl, getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
+import { setB2CDashboard, setB2COnboarded, setB2CProfile, mapDashboardToCategoryId } from "@/lib/b2c-session"
 
 interface DashboardScreenProps {
   config: DashboardConfig
@@ -35,6 +36,13 @@ const HERO_FEATURES = [
 
 export function DashboardScreen({ config }: DashboardScreenProps) {
   const router = useRouter()
+
+  React.useEffect(() => {
+    setB2CDashboard(config.id)
+    setB2COnboarded()
+    setB2CProfile({ categoryId: mapDashboardToCategoryId(config.id) })
+  }, [config.id])
+
   const verificationServices = config.verificationServices ?? DEFAULT_VERIFICATION_SERVICES
   const heroVisual = resolveDashboardHeroVisual(config)
   const templateGridItems =

@@ -6,7 +6,8 @@ import { ShieldCheck, Lock, Clock } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { AppBottomNav } from "@/components/layout/AppBottomNav"
-import { Icon3D } from "@/components/icons/Icon3D"
+import { MobileDashboardHero } from "@/components/layout/MobileListPrimitives"
+import { DashboardHeroArt } from "@/components/icons/DashboardHeroes"
 import {
   DashboardAgreementTypeCards,
   DashboardTrustStrip,
@@ -14,10 +15,12 @@ import {
 } from "@/components/dashboard/DashboardPrimitives"
 import { AGREEMENT_TYPES, C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
 
+const C2C_HERO_IMAGE = "/assets/dashboards/heroes/c2c-hero.png"
+
 const HERO_FEATURES = [
-  { label: "Legally Recognised", color: "#22C55E", Icon: ShieldCheck },
-  { label: "eSign Secure", color: "#2563EB", Icon: Lock },
-  { label: "Time Stamped", color: "#A855F7", Icon: Clock },
+  { label: "Legally Recognised", sublabel: "Valid & Compliant", color: "#22C55E", Icon: ShieldCheck },
+  { label: "eSign Secure", sublabel: "Digital Signatures", color: "#2563EB", Icon: Lock },
+  { label: "Time Stamped", sublabel: "Accurate Records", color: "#A855F7", Icon: Clock },
 ] as const
 
 interface C2CDashboardScreenProps {
@@ -29,7 +32,7 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
 
   return (
     <AppShell
-      backgroundClassName="bg-[#F8FAFC]"
+      backgroundClassName="bg-white"
       header={<AppHeader showBack={false} />}
       bottomBar={
         <AppBottomNav
@@ -38,30 +41,33 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
           onTabChange={(tab) => {
             if (tab === "verification") router.push("/verify-identity?module=c2c")
             if (tab === "home") router.push("/dashboard?module=c2c")
+            if (tab === "agreements") router.push("/agreements?module=c2c")
+            if (tab === "profile") router.push("/profile?module=c2c")
           }}
         />
       }
       contentClassName="pb-4"
     >
-      <section className="mx-4 mt-1 overflow-hidden rounded-[16px] border border-[#E2E8F0]/50 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-        <div className="flex items-start gap-3 p-4 pb-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-[13px] font-medium text-[#64748B]">Hello, {userName} 👋</p>
-            <h1 className="mt-1 text-[18px] font-bold leading-[1.3] tracking-[-0.02em] text-[#0F172A]">
-              Create, eSign & manage your agreements securely
-            </h1>
-          </div>
-          <Icon3D name="service-agreement" size="xl" alt="Agreements" className="shrink-0" />
-        </div>
-        <div className="flex items-center justify-between border-t border-[#F1F5F9] bg-[#FAFBFC] px-3 py-2.5">
-          {HERO_FEATURES.map(({ label, color, Icon }) => (
-            <div key={label} className="flex flex-1 flex-col items-center gap-1 px-0.5">
-              <Icon className="h-4 w-4" style={{ color }} strokeWidth={2.2} />
-              <span className="text-center text-[10px] font-semibold leading-tight text-[#64748B]">{label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <MobileDashboardHero
+        greeting={`Hello, ${userName} 👋`}
+        headline="Create, eSign & manage your "
+        headlineHighlight="agreements"
+        headlineSuffix="securely"
+        highlightColor="#2563EB"
+        gradientClass="from-[#EFF6FF] via-[#F5F9FF] to-white"
+        icon={
+          <DashboardHeroArt
+            src={C2C_HERO_IMAGE}
+            alt="Secure digital agreements"
+          />
+        }
+        features={HERO_FEATURES.map(({ label, sublabel, color, Icon }) => ({
+          label,
+          sublabel,
+          color,
+          icon: <Icon className="h-[22px] w-[22px]" strokeWidth={2.2} />,
+        }))}
+      />
 
       <section className="mt-5 px-4">
         <h2 className="text-[15px] font-bold text-[#0F172A]">Create New Agreement</h2>

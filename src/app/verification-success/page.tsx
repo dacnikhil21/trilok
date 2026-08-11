@@ -4,14 +4,16 @@ import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { OnboardingLayout } from "@/components/ui/OnboardingLayout"
 import { CheckCircle2 } from "lucide-react"
+import { getB2CHomePath } from "@/lib/b2c-session"
 
 function VerificationSuccessForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const moduleType = (searchParams.get("module") || "c2c").toLowerCase()
+  const isB2C = moduleType === "b2c"
 
   const handleContinue = () => {
-    router.push(`/dashboard?module=${moduleType}`)
+    router.push(isB2C ? getB2CHomePath() : `/dashboard?module=${moduleType}`)
   }
 
   const cardContent = (

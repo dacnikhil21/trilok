@@ -30,7 +30,7 @@ export function BuyerReviewStep({ data, onNext }: Props) {
         {/* Initiator Info */}
         <div className="flex items-start gap-4 pb-5 border-b border-gray-100">
           <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
-            <User className="w-6 h-6 text-[#0033A0]" />
+            <User className="w-6 h-6 text-[#2563EB]" />
           </div>
           <div>
             <p className="text-[12px] font-bold text-gray-500 uppercase tracking-wide">Your Role: {roleDisplay}</p>
@@ -45,7 +45,7 @@ export function BuyerReviewStep({ data, onNext }: Props) {
         {/* Product Summary */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-2">
-             <FileText className="w-4 h-4 text-[#0033A0]" />
+             <FileText className="w-4 h-4 text-[#2563EB]" />
              <h3 className="text-[14px] font-bold text-[#041B4A]">Product & Terms</h3>
           </div>
           
@@ -99,7 +99,7 @@ export function BuyerReviewStep({ data, onNext }: Props) {
       <div className="mt-6 pt-4 bg-[#fcfcfc] space-y-3 pb-4">
         <Button 
           onClick={onNext}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Continue
         </Button>

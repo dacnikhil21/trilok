@@ -26,12 +26,18 @@ export function DevSettingsProvider({ children }: { children: React.ReactNode })
   }, [])
 
   const clearHandlers = React.useCallback(() => {
+    if (Object.keys(handlersRef.current).length === 0) return
     handlersRef.current = {}
     bump((n) => n + 1)
   }, [])
 
+  const value = React.useMemo(
+    () => ({ registerHandlers, clearHandlers }),
+    [registerHandlers, clearHandlers]
+  )
+
   return (
-    <DevSettingsContext.Provider value={{ registerHandlers, clearHandlers }}>
+    <DevSettingsContext.Provider value={value}>
       {children}
       <DeveloperSettingsModal
         onAutoFillAadhaar={handlersRef.current.onAutoFillAadhaar}
@@ -48,15 +54,18 @@ export function useDevSettingsHandlers(handlers: DevSettingsHandlers) {
   const handlersRef = React.useRef(handlers)
   handlersRef.current = handlers
 
-  React.useEffect(() => {
-    if (!ctx) return
+  const registerHandlers = ctx?.registerHandlers
+  const clearHandlers = ctx?.clearHandlers
 
-    ctx.registerHandlers({
+  React.useEffect(() => {
+    if (!registerHandlers || !clearHandlers) return
+
+    registerHandlers({
       onAutoFillAadhaar: (valid) => handlersRef.current.onAutoFillAadhaar?.(valid),
       onAutoFillBusiness: () => handlersRef.current.onAutoFillBusiness?.(),
       onJumpStep: (step) => handlersRef.current.onJumpStep?.(step),
     })
 
-    return () => ctx.clearHandlers()
-  }, [ctx])
+    return () => clearHandlers()
+  }, [registerHandlers, clearHandlers])
 }

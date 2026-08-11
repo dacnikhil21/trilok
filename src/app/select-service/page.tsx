@@ -24,10 +24,22 @@ const SERVICES = [
 export default function SelectServicePage() {
   const router = useRouter()
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const handleContinue = () => {
-    if (!selectedId) return
-    router.push(`/register?module=${selectedId}`)
+    if (!selectedId || isLoading) return
+
+    const path = `/register?module=${selectedId}`
+    setIsLoading(true)
+    router.push(path)
+
+    window.setTimeout(() => {
+      if (!window.location.pathname.startsWith("/register")) {
+        window.location.assign(path)
+        return
+      }
+      setIsLoading(false)
+    }, 1200)
   }
 
   const cardContent = (
@@ -88,9 +100,10 @@ export default function SelectServicePage() {
         title="Account Configuration"
         subtitle="Select your identity to personalize your digital agreement workspace."
         cardContent={cardContent}
-        buttonText="Continue Setup"
+        buttonText={isLoading ? "Proceeding..." : "Continue Setup"}
         onButtonClick={handleContinue}
-        isButtonDisabled={!selectedId}
+        isButtonDisabled={!selectedId || isLoading}
+        isButtonLoading={isLoading}
         showBackButton
         onBackClick={() => router.push("/login")}
     />

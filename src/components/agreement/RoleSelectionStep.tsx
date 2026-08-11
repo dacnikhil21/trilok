@@ -30,14 +30,12 @@ export function RoleSelectionStep({ data, updateData, onNext }: Props) {
           }}
           className={`w-full text-left p-5 rounded-[16px] border-[1.5px] transition-all flex items-center justify-between ${
             data.role === "seller" 
-              ? "border-[#0033A0] bg-[#0033A0]/[0.03] shadow-sm" 
-              : "border-gray-200 bg-white hover:border-[#0033A0]/30"
+              ? "border-[#2563EB] bg-[#2563EB]/[0.03] shadow-sm" 
+              : "border-gray-200 bg-white hover:border-[#2563EB]/30"
           }`}
         >
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-              data.role === "seller" ? "bg-[#0033A0] text-white" : "bg-[#0033A0] text-white"
-            }`}>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-[#2563EB] text-white`}>
               <Briefcase className="w-5 h-5" strokeWidth={2.5} />
             </div>
             <div>

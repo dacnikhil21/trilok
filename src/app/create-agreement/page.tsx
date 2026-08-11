@@ -24,6 +24,8 @@ import {
   getB2CProductLabel,
   getB2CReturnPath,
 } from "@/lib/b2c-dashboard-routes"
+import { setB2CDashboard } from "@/lib/b2c-session"
+import { saveAgreementFromWizard } from "@/lib/b2c-agreements"
 import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
 import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
 import { PaymentDeliveryStep } from "@/components/agreement/PaymentDeliveryStep"
@@ -135,8 +137,11 @@ function CreateAgreementContent() {
 
   const b2cReturnPath = getB2CReturnPath(dashboardParam, categoryParam)
 
+  const b2cInitialCategory =
+    isB2C && categoryParam && typeParam ? findCategory(typeParam, categoryParam) : undefined
+
   const [phase, setPhase] = React.useState<FlowPhase>(() => {
-    if (isB2C && categoryParam && typeParam) return "intro"
+    if (isB2C && categoryParam && typeParam) return "wizard"
     if (categoryParam && typeParam) return "intro"
     if (typeParam) return "category"
     return "type"
@@ -144,18 +149,28 @@ function CreateAgreementContent() {
   const [agreementType, setAgreementType] = React.useState<AgreementType | null>(typeParam)
   const [categoryId, setCategoryId] = React.useState<string | null>(categoryParam)
   const [currentStep, setCurrentStep] = React.useState(1)
+  const savedAgreementRef = React.useRef(false)
   const [formData, setFormData] = React.useState<AgreementData>(() => {
+    const next: AgreementData = { ...INITIAL_FORM }
     const label = getB2CProductLabel(templateParam, dashboardParam)
     if (label) {
-      return { ...INITIAL_FORM, productName: label }
+      next.productName = label
+    } else if (templateParam && B2C_TEMPLATE_PRODUCT[templateParam]) {
+      next.productName = B2C_TEMPLATE_PRODUCT[templateParam]
     }
-    if (templateParam && B2C_TEMPLATE_PRODUCT[templateParam]) {
-      return { ...INITIAL_FORM, productName: B2C_TEMPLATE_PRODUCT[templateParam] }
+    if (b2cInitialCategory) {
+      next.category = b2cInitialCategory.title
     }
-    return INITIAL_FORM
+    return next
   })
 
   // B2C: lock to merchant dashboard — never show C2C type/category pickers
+  React.useEffect(() => {
+    if (isB2C && dashboardParam) {
+      setB2CDashboard(dashboardParam)
+    }
+  }, [isB2C, dashboardParam])
+
   React.useEffect(() => {
     if (!isB2C || !dashboardParam) return
     const defaults = B2C_DASHBOARD_DEFAULTS[dashboardParam]
@@ -177,8 +192,8 @@ function CreateAgreementContent() {
       currentType &&
       B2C_CATEGORY_TO_DASHBOARD[currentCategory] === dashboardParam
     ) {
-      if (phase !== "intro" && phase !== "wizard") {
-        setPhase("intro")
+      if (phase !== "wizard") {
+        setPhase("wizard")
         setAgreementType(currentType)
         setCategoryId(currentCategory)
       }
@@ -195,8 +210,8 @@ function CreateAgreementContent() {
       return
     }
 
-    if (currentCategory && currentType && phase !== "intro" && phase !== "wizard") {
-      setPhase("intro")
+    if (currentCategory && currentType && phase !== "wizard") {
+      setPhase("wizard")
       setAgreementType(currentType)
       setCategoryId(currentCategory)
     }
@@ -214,9 +229,39 @@ function CreateAgreementContent() {
 
   const productLabel = getB2CProductLabel(templateParam, dashboardParam)
 
+  // B2C: keep category in sync when URL params are normalized
+  React.useEffect(() => {
+    if (!isB2C || phase !== "wizard" || !selectedCategory) return
+    setFormData((prev) =>
+      prev.category === selectedCategory.title ? prev : { ...prev, category: selectedCategory.title }
+    )
+  }, [isB2C, phase, selectedCategory])
+
+  React.useEffect(() => {
+    if (!isB2C || currentStep !== 10 || savedAgreementRef.current) return
+    savedAgreementRef.current = true
+    saveAgreementFromWizard({
+      productName: formData.productName || "Product",
+      category: formData.category || selectedCategory?.title || "General",
+      role: formData.role,
+      saleAmount: formData.saleAmount,
+      brand: formData.brand,
+      model: formData.model,
+      serialNumber: formData.serialNumber,
+      paymentTerms: formData.paymentTerms,
+      deliveryDate: formData.deliveryDate,
+      deliveryLocation: formData.deliveryLocation,
+      invitedPartyName: formData.invitedPartyName,
+    })
+  }, [isB2C, currentStep, formData, selectedCategory])
+
   const handleBack = () => {
     if (phase === "wizard") {
       if (currentStep === 1) {
+        if (isB2C) {
+          router.push(b2cReturnPath)
+          return
+        }
         setPhase("intro")
       } else if (currentStep < 10) {
         prevStep()
@@ -260,7 +305,18 @@ function CreateAgreementContent() {
 
   const wizardSteps = [
     { id: 1, title: "Select Your Role", component: <RoleSelectionStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 2, title: "Product Details", component: <ProductDetailsStep data={formData} updateData={updateData} onNext={() => {}} /> },
+    {
+      id: 2,
+      title: "Product Details",
+      component: (
+        <ProductDetailsStep
+          data={formData}
+          updateData={updateData}
+          onNext={nextStep}
+          isB2C={isB2C}
+        />
+      ),
+    },
     { id: 3, title: "Terms & Conditions", component: <PaymentDeliveryStep data={formData} updateData={updateData} onNext={nextStep} /> },
     { id: 4, title: "Agreement Review", component: <BuyerReviewStep data={formData} onNext={nextStep} /> },
     { id: 5, title: "Other Party Details", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },
@@ -357,7 +413,7 @@ function CreateAgreementContent() {
               }}
             />
           )}
-          {phase === "intro" && agreementType && selectedCategory && (
+          {phase === "intro" && !isB2C && agreementType && selectedCategory && (
             <AgreementCategoryIntro
               type={agreementType}
               category={selectedCategory}

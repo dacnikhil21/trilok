@@ -22,6 +22,7 @@ interface OnboardingLayoutProps {
   moduleType?: "c2c" | "b2c"
   hideFooterButton?: boolean
   noCardWrapper?: boolean
+  bottomBar?: React.ReactNode
 }
 
 export function OnboardingLayout({
@@ -39,10 +40,12 @@ export function OnboardingLayout({
   moduleType,
   hideFooterButton = false,
   noCardWrapper = false,
+  bottomBar,
 }: OnboardingLayoutProps) {
   return (
     <MobileAppShell
       header={<OnboardingHeader onBack={onBackClick} />}
+      bottomBar={bottomBar}
       footer={
         hideFooterButton ? undefined : (
           <OnboardingFooter

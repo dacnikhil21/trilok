@@ -34,7 +34,7 @@ export function PaymentDeliveryStep({ data, updateData, onNext }: Props) {
             <select
               value={data.paymentTerms}
               onChange={(e) => updateData({ paymentTerms: e.target.value })}
-              className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] transition-colors"
+              className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
             >
               <option value="" disabled>Select Payment Term</option>
               <option value="100% Advance">100% Advance</option>
@@ -86,7 +86,7 @@ export function PaymentDeliveryStep({ data, updateData, onNext }: Props) {
             <select
               value={data.returnPolicy}
               onChange={(e) => updateData({ returnPolicy: e.target.value })}
-              className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] transition-colors"
+              className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
             >
               <option value="" disabled>Select Return Policy</option>
               <option value="No Returns Allowed">No Returns Allowed</option>
@@ -107,7 +107,7 @@ export function PaymentDeliveryStep({ data, updateData, onNext }: Props) {
             value={data.warrantyTerms}
             onChange={(e) => updateData({ warrantyTerms: e.target.value })}
             placeholder="Specify any warranty conditions..."
-            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0]"
+            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
         </div>
 
@@ -118,7 +118,7 @@ export function PaymentDeliveryStep({ data, updateData, onNext }: Props) {
             value={data.additionalClauses}
             onChange={(e) => updateData({ additionalClauses: e.target.value })}
             placeholder="Any other terms or clauses..."
-            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0]"
+            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
         </div>
 
@@ -128,7 +128,7 @@ export function PaymentDeliveryStep({ data, updateData, onNext }: Props) {
       <div className="mt-8 pt-6">
         <Button 
           onClick={onNext}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Next
         </Button>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ShieldCheck } from "lucide-react"
 import { MobileAppShell } from "@/components/ui/MobileAppShell"
 import { OnboardingHeader } from "@/components/layout/OnboardingHeader"
+import { getB2CHomePath, isB2COnboarded } from "@/lib/b2c-session"
 
 export default function OtpPage() {
   const router = useRouter()
@@ -34,7 +35,11 @@ export default function OtpPage() {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      router.push("/select-service")
+      if (isB2COnboarded()) {
+        router.push(getB2CHomePath())
+      } else {
+        router.push("/select-service")
+      }
     }, 1200)
   }
 

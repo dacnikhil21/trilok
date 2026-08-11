@@ -8,9 +8,10 @@ type Props = {
   data: AgreementData
   updateData: (d: Partial<AgreementData>) => void
   onNext: () => void
+  isB2C?: boolean
 }
 
-export function ProductDetailsStep({ data, updateData, onNext }: Props) {
+export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: Props) {
   const [uploaded, setUploaded] = React.useState<Record<string, boolean>>({})
 
   const toggleUpload = (key: string) => {
@@ -46,26 +47,35 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
       {/* Form */}
       <div className="space-y-4">
         
-        <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">Category</label>
-          <div className="relative">
-            <select
-              value={data.category}
-              onChange={(e) => updateData({ category: e.target.value })}
-              className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] transition-colors"
-            >
-              <option value="" disabled>Select Category</option>
-              <option value="Industrial Plastic Parts">Industrial Plastic Parts</option>
-              <option value="Electronics & IT">Electronics & IT</option>
-              <option value="Automotive">Automotive</option>
-              <option value="Textiles">Textiles</option>
-              <option value="Other">Other</option>
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <ChevronDown className="w-5 h-5" />
+        {!isB2C ? (
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-bold text-[#041B4A]">Category</label>
+            <div className="relative">
+              <select
+                value={data.category}
+                onChange={(e) => updateData({ category: e.target.value })}
+                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
+              >
+                <option value="" disabled>Select Category</option>
+                <option value="Industrial Plastic Parts">Industrial Plastic Parts</option>
+                <option value="Electronics & IT">Electronics & IT</option>
+                <option value="Automotive">Automotive</option>
+                <option value="Textiles">Textiles</option>
+                <option value="Other">Other</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown className="w-5 h-5" />
+              </div>
             </div>
           </div>
-        </div>
+        ) : data.category ? (
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-bold text-[#041B4A]">Category</label>
+            <div className="flex h-14 items-center rounded-[12px] border border-gray-200 bg-[#F8FAFC] px-4 text-[15px] font-semibold text-[#041B4A]">
+              {data.category}
+            </div>
+          </div>
+        ) : null}
 
         <div className="space-y-1.5">
           <label className="text-[13px] font-bold text-[#041B4A]">Product Name</label>
@@ -142,7 +152,7 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
               <select
                 value={data.condition}
                 onChange={(e) => updateData({ condition: e.target.value })}
-                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] transition-colors"
+                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
               >
                 <option value="" disabled>Condition</option>
                 <option value="New">New</option>
@@ -158,7 +168,7 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
               <select
                 value={data.warranty}
                 onChange={(e) => updateData({ warranty: e.target.value })}
-                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] transition-colors"
+                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
               >
                 <option value="" disabled>Warranty</option>
                 <option value="None">None</option>
@@ -179,7 +189,7 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
             value={data.description}
             onChange={(e) => updateData({ description: e.target.value })}
             placeholder="Brief description of the product..."
-            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0]"
+            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
         </div>
 
@@ -214,12 +224,12 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
           <div className="relative w-full max-w-[320px] mx-auto">
             <Button 
               variant="ghost" 
-              className="w-full text-[#0033A0] font-bold text-[14px] border border-dashed border-[#0033A0]/30 hover:bg-[#0033A0]/5 h-[50px] rounded-[12px]"
+              className="w-full text-[#2563EB] font-bold text-[14px] border border-dashed border-[#2563EB]/30 hover:bg-[#2563EB]/5 h-[50px] rounded-[12px]"
             >
               <Plus className="w-4 h-4 mr-2" /> Add Another Product
             </Button>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-10 h-10 bg-[#E5EDFF] border-2 border-white rounded-full shadow-sm flex items-center justify-center pointer-events-none">
-               <Sparkles className="w-5 h-5 text-[#0033A0]" strokeWidth={2} />
+               <Sparkles className="w-5 h-5 text-[#2563EB]" strokeWidth={2} />
             </div>
           </div>
         </div>
@@ -230,7 +240,7 @@ export function ProductDetailsStep({ data, updateData, onNext }: Props) {
       <div className="mt-8 pt-6">
         <Button 
           onClick={onNext}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Next
         </Button>

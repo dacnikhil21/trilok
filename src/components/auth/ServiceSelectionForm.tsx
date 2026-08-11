@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation"
 import { User, Store, ArrowRight, Star, ShoppingBag, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import { B2CProcessGuide } from "@/components/ui/B2CProcessGuide"
-
 const SERVICES = [
   {
     id: "c2c",
@@ -38,14 +36,24 @@ const SERVICES = [
 export function ServiceSelectionForm() {
   const router = useRouter()
   const [selectedId, setSelectedId] = React.useState<string>("c2c")
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const handleContinue = () => {
-    if (!selectedId) return
+    if (!selectedId || isLoading) return
+
+    const path = `/register?module=${selectedId}`
     setIsLoading(true)
-    setTimeout(() => {
-      router.push(`/register?module=${selectedId}`)
-    }, 350)
+
+    router.push(path)
+
+    // Fallback: if App Router navigation stalls (common on some mobile/Vercel loads)
+    window.setTimeout(() => {
+      if (!window.location.pathname.startsWith("/register")) {
+        window.location.assign(path)
+        return
+      }
+      setIsLoading(false)
+    }, 1200)
   }
 
   return (

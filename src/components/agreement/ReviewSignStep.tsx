@@ -59,7 +59,7 @@ export function ReviewSignStep({ data, updateData, onNext }: Props) {
               type="checkbox"
               checked={data.dpdpConsent}
               onChange={(e) => updateData({ dpdpConsent: e.target.checked })}
-              className="peer w-5 h-5 appearance-none border-2 border-gray-300 rounded-[6px] checked:bg-[#0033A0] checked:border-[#0033A0] transition-colors"
+              className="peer w-5 h-5 appearance-none border-2 border-gray-300 rounded-[6px] checked:bg-[#2563EB] checked:border-[#2563EB] transition-colors"
             />
             <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
@@ -81,7 +81,7 @@ export function ReviewSignStep({ data, updateData, onNext }: Props) {
         <Button 
           disabled={!data.dpdpConsent}
           onClick={() => setShowSignModal(true)}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Execute Final eSign
         </Button>
@@ -105,8 +105,8 @@ export function ReviewSignStep({ data, updateData, onNext }: Props) {
               </button>
               
               <div className="text-center mt-2 mb-6">
-                <div className="w-16 h-16 bg-[#0033A0]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShieldCheck className="w-8 h-8 text-[#0033A0]" />
+                <div className="w-16 h-16 bg-[#2563EB]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck className="w-8 h-8 text-[#2563EB]" />
                 </div>
                 <h3 className="text-[20px] font-bold text-[#041B4A]">
                   Final Signature
@@ -123,7 +123,7 @@ export function ReviewSignStep({ data, updateData, onNext }: Props) {
 
               <Button 
                 onClick={handleSign}
-                className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+                className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
               >
                 Confirm eSign
               </Button>

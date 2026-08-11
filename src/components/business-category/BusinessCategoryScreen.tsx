@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Check, ChevronRight, Info, Shield } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
@@ -12,6 +12,12 @@ import {
   type BusinessCategory,
   type BusinessCategoryId,
 } from "@/lib/categories"
+import {
+  mapDashboardToCategoryId,
+  setB2CDashboardFromRoute,
+  setB2COnboarded,
+  setB2CProfile,
+} from "@/lib/b2c-session"
 
 const CATEGORY_ICON_KEYS: Record<BusinessCategoryId, string> = {
   "mobile-electronics": "mobile-electronics",
@@ -83,19 +89,35 @@ function BusinessCategoryCard({
 
 export function BusinessCategoryScreen() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromProfile = searchParams.get("from") === "profile"
   const [selectedId, setSelectedId] = React.useState<BusinessCategoryId>("mobile-electronics")
 
   const selectedCategory = BUSINESS_CATEGORIES.find((category) => category.id === selectedId)
 
   const handleContinue = () => {
     if (!selectedCategory) return
-    router.push(selectedCategory.dashboardRoute)
+    setB2CDashboardFromRoute(selectedCategory.dashboardRoute)
+    setB2CProfile({ categoryId: selectedId })
+    setB2COnboarded()
+    if (fromProfile) {
+      router.push("/profile?module=b2c")
+    } else {
+      router.push(selectedCategory.dashboardRoute)
+    }
   }
 
   return (
     <AppShell
       backgroundClassName="bg-[#F8FAFC]"
-      header={<AppHeader showBack onBack={() => router.push("/register?module=b2c")} />}
+      header={
+        <AppHeader
+          showBack
+          onBack={() =>
+            fromProfile ? router.push("/profile?module=b2c") : router.push("/register?module=b2c")
+          }
+        />
+      }
       footer={
         <div className="border-t border-[#E2E8F0] bg-white px-4 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))]">
           <button
@@ -103,7 +125,7 @@ export function BusinessCategoryScreen() {
             onClick={handleContinue}
             className="flex h-[48px] w-full items-center justify-center gap-2 rounded-[12px] bg-[#2563EB] text-[15px] font-semibold text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] active:scale-[0.98]"
           >
-            Continue to Dashboard
+            Continue {fromProfile ? " & Save" : "to Dashboard"}
             <span aria-hidden="true" className="text-[17px] leading-none">
               →
             </span>

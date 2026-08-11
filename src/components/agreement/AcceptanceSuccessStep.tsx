@@ -44,7 +44,7 @@ export function AcceptanceSuccessStep({ data, onNext }: Props) {
       <div className="mt-auto pt-6 space-y-4">
         <Button 
           onClick={onNext}
-          className="w-full h-[52px] bg-[#0033A0] hover:bg-[#002277] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
         >
           Continue to Verification
         </Button>
