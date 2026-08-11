@@ -153,6 +153,7 @@ export function MobileDashboardHero({
   icon,
   features,
   gradientClass = "from-[#EFF6FF] via-[#F5F9FF] to-white",
+  glowClassName = "bg-[#DBEAFE]/35",
 }: {
   greeting: string
   headline: string
@@ -162,12 +163,16 @@ export function MobileDashboardHero({
   icon: React.ReactNode
   features: Array<{ label: string; sublabel?: string; color: string; icon: React.ReactNode }>
   gradientClass?: string
+  glowClassName?: string
 }) {
   return (
     <section className="relative overflow-hidden">
       <div className={cn("relative bg-gradient-to-b px-4 pb-4 pt-4", gradientClass)}>
         <div
-          className="pointer-events-none absolute -right-6 top-2 h-40 w-40 rounded-full bg-[#DBEAFE]/35 blur-3xl"
+          className={cn(
+            "pointer-events-none absolute -right-6 top-2 h-40 w-40 rounded-full blur-3xl",
+            glowClassName
+          )}
           aria-hidden="true"
         />
         <div

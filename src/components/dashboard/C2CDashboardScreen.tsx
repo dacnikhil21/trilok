@@ -58,7 +58,8 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
         headlineHighlight="agreements"
         headlineSuffix="securely"
         highlightColor="#2563EB"
-        gradientClass="from-[#EFF6FF] via-[#F5F9FF] to-white"
+        gradientClass="from-[#BFDBFE]/90 via-[#DBEAFE]/55 to-white"
+        glowClassName="bg-[#60A5FA]/40"
         icon={
           <DashboardHeroArt
             src={C2C_HERO_IMAGE}
@@ -73,10 +74,10 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
         }))}
       />
 
-      <section className="mt-5 px-4">
-        <h2 className="text-[15px] font-bold text-[#0F172A]">Create New Agreement</h2>
-        <p className="mt-0.5 text-[11px] text-[#64748B]">Choose a category to get started</p>
-        <div className="mt-3">
+      <section className="mt-4 px-4">
+        <h2 className="text-[16px] font-bold tracking-[-0.01em] text-[#0F172A]">Create New Agreement</h2>
+        <p className="mt-0.5 text-[12px] text-[#64748B]">Choose a category to get started</p>
+        <div className="mt-2.5">
           <DashboardAgreementTypeCards
             types={AGREEMENT_TYPES}
             onSelect={(typeId) => {

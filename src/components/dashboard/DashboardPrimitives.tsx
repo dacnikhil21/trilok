@@ -201,7 +201,7 @@ export function DashboardVerificationGrid({
   )
 }
 
-/** C2C agreement type cards — 3 columns with circular CTA */
+/** C2C agreement types — compact 3-column tiles, icon-first, subtle chevron hint */
 export function DashboardAgreementTypeCards({
   types,
   onSelect,
@@ -216,31 +216,28 @@ export function DashboardAgreementTypeCards({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2.5">
+    <div className="grid grid-cols-3 gap-2">
       {types.map((type) => (
         <button
           key={type.id}
           type="button"
           onClick={() => onSelect(type.id)}
-          className="flex min-h-[172px] flex-col rounded-[14px] border border-[#E2E8F0] bg-white p-2.5 shadow-[0_2px_8px_rgba(15,23,42,0.06)] active:scale-[0.98]"
+          className="relative flex flex-col items-center rounded-[14px] border border-[#E8EDF3] bg-white px-1.5 pb-2.5 pt-2.5 text-center shadow-[0_2px_12px_rgba(15,23,42,0.04)] active:scale-[0.98] active:bg-[#FAFBFC]"
         >
-          <div className="flex flex-1 flex-col items-center text-center">
-            <Icon3D name={iconMap[type.id] ?? 'sale'} size="card" alt={type.title} bare />
-            <p className="mt-2 line-clamp-2 min-h-[28px] text-[11px] font-bold leading-tight text-[#0F172A]">
-              {type.title}
-            </p>
-            <p className="mt-1 line-clamp-2 min-h-[26px] text-[10px] leading-snug text-[#64748B]">
-              {type.description}
-            </p>
+          <div className="relative flex w-full items-center justify-center">
+            <Icon3D name={iconMap[type.id] ?? 'sale'} size="xl" alt={type.title} bare />
+            <ChevronRight
+              className="absolute right-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#CBD5E1]"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            />
           </div>
-          <div className="mt-2 flex justify-center">
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white"
-              style={{ backgroundColor: type.color }}
-            >
-              <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
-            </span>
-          </div>
+          <p className="mt-1.5 line-clamp-2 w-full text-[11px] font-bold leading-[1.2] text-[#0F172A]">
+            {type.title}
+          </p>
+          <p className="mt-0.5 line-clamp-1 w-full text-[9px] leading-snug text-[#64748B]">
+            {type.description}
+          </p>
         </button>
       ))}
     </div>
