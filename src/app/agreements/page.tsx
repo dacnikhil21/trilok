@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/AppShell"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { AppBottomNav } from "@/components/layout/AppBottomNav"
 import { cn } from "@/lib/utils"
+import { resolveAppModule, type AppModule } from "@/lib/app-module"
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { getAgreements, type AgreementRecord } from "@/lib/b2c-agreements"
@@ -21,7 +22,7 @@ const STATUS_STYLE: Record<string, string> = {
 function AgreementsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const moduleType = searchParams.get("module") || "b2c"
+  const moduleType: AppModule = resolveAppModule(searchParams.get("module"))
   const isB2C = moduleType === "b2c"
   const [filter, setFilter] = React.useState<(typeof FILTERS)[number]>("All")
   const [b2cDashboard, setB2cDashboard] = React.useState("mobile")
@@ -29,8 +30,8 @@ function AgreementsContent() {
 
   React.useEffect(() => {
     if (isB2C) setB2cDashboard(getB2CDashboard())
-    setItems(getAgreements())
-  }, [isB2C])
+    setItems(getAgreements(moduleType))
+  }, [isB2C, moduleType])
 
   const b2cHomePath = `/dashboard/${b2cDashboard}`
   const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
@@ -82,7 +83,11 @@ function AgreementsContent() {
         {filtered.length === 0 ? (
           <div className="rounded-[16px] bg-white px-4 py-8 text-center shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
             <p className="text-[14px] font-semibold text-[#0F172A]">No agreements yet</p>
-            <p className="mt-1 text-[12px] text-[#64748B]">Create your first agreement from the dashboard.</p>
+            <p className="mt-1 text-[12px] text-[#64748B]">
+              {isB2C
+                ? "Create your first agreement from your business dashboard."
+                : "Create your first agreement from the home screen."}
+            </p>
           </div>
         ) : (
           filtered.map((item) => (

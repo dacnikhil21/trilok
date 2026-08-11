@@ -14,7 +14,8 @@ import {
   DashboardVerificationGrid,
 } from "@/components/dashboard/DashboardPrimitives"
 import { AGREEMENT_TYPES, C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
-import { setC2CFromDashboard, clearC2CFromDashboard } from "@/lib/c2c-session"
+import { setAppModule } from "@/lib/app-module"
+import { getC2CProfile, setC2CFromDashboard, clearC2CFromDashboard } from "@/lib/c2c-session"
 
 const C2C_HERO_IMAGE = "/assets/dashboards/heroes/c2c-hero.png"
 
@@ -28,8 +29,14 @@ interface C2CDashboardScreenProps {
   userName?: string
 }
 
-export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScreenProps) {
+export function C2CDashboardScreen({ userName }: C2CDashboardScreenProps) {
   const router = useRouter()
+  const [displayName, setDisplayName] = React.useState(userName ?? "Ravi Kumar")
+
+  React.useEffect(() => {
+    setAppModule("c2c")
+    if (!userName) setDisplayName(getC2CProfile().fullName)
+  }, [userName])
 
   return (
     <AppShell
@@ -53,7 +60,7 @@ export function C2CDashboardScreen({ userName = "Ravi Kumar" }: C2CDashboardScre
       contentClassName="pb-4"
     >
       <MobileDashboardHero
-        greeting={`Hello, ${userName} 👋`}
+        greeting={`Hello, ${displayName} 👋`}
         headline="Create, eSign & manage your "
         headlineHighlight="agreements"
         headlineSuffix="securely"

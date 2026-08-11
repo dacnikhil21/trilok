@@ -19,9 +19,10 @@ export type AgreementRecord = {
   referenceNo: string
 }
 
-const STORAGE_KEY = "b2c-agreements"
+const B2C_STORAGE_KEY = "b2c-agreements"
+const C2C_STORAGE_KEY = "c2c-agreements"
 
-const SEED: AgreementRecord[] = [
+const B2C_SEED: AgreementRecord[] = [
   {
     id: "1",
     title: "iPhone 14 Pro Sale",
@@ -80,32 +81,47 @@ const SEED: AgreementRecord[] = [
   },
 ]
 
-function readAll(): AgreementRecord[] {
-  if (typeof window === "undefined") return SEED
-  const raw = localStorage.getItem(STORAGE_KEY)
+function storageKey(module: "b2c" | "c2c"): string {
+  return module === "c2c" ? C2C_STORAGE_KEY : B2C_STORAGE_KEY
+}
+
+function readAll(module: "b2c" | "c2c" = "b2c"): AgreementRecord[] {
+  if (typeof window === "undefined") {
+    return module === "b2c" ? B2C_SEED : []
+  }
+  const key = storageKey(module)
+  const raw = localStorage.getItem(key)
+  if (module === "c2c") {
+    if (!raw) return []
+    try {
+      return JSON.parse(raw) as AgreementRecord[]
+    } catch {
+      return []
+    }
+  }
   if (!raw) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED))
-    return SEED
+    localStorage.setItem(key, JSON.stringify(B2C_SEED))
+    return B2C_SEED
   }
   try {
     const parsed = JSON.parse(raw) as AgreementRecord[]
-    return parsed.length > 0 ? parsed : SEED
+    return parsed.length > 0 ? parsed : B2C_SEED
   } catch {
-    return SEED
+    return B2C_SEED
   }
 }
 
-function writeAll(records: AgreementRecord[]): void {
+function writeAll(records: AgreementRecord[], module: "b2c" | "c2c"): void {
   if (typeof window === "undefined") return
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records))
+  localStorage.setItem(storageKey(module), JSON.stringify(records))
 }
 
-export function getAgreements(): AgreementRecord[] {
-  return readAll()
+export function getAgreements(module: "b2c" | "c2c" = "b2c"): AgreementRecord[] {
+  return readAll(module)
 }
 
-export function getAgreementById(id: string): AgreementRecord | undefined {
-  return readAll().find((a) => a.id === id)
+export function getAgreementById(id: string, module: "b2c" | "c2c" = "b2c"): AgreementRecord | undefined {
+  return readAll(module).find((a) => a.id === id)
 }
 
 export function formatAgreementDate(d = new Date()): string {
@@ -121,20 +137,23 @@ export function generateReferenceNo(): string {
   return `ESA-${y}-${m}-${day}-${seq}`
 }
 
-export function saveAgreementFromWizard(input: {
-  productName: string
-  category: string
-  role: "buyer" | "seller" | null
-  saleAmount: string
-  brand?: string
-  model?: string
-  serialNumber?: string
-  paymentTerms?: string
-  deliveryDate?: string
-  deliveryLocation?: string
-  invitedPartyName?: string
-}): AgreementRecord {
-  const records = readAll()
+export function saveAgreementFromWizard(
+  input: {
+    productName: string
+    category: string
+    role: "buyer" | "seller" | null
+    saleAmount: string
+    brand?: string
+    model?: string
+    serialNumber?: string
+    paymentTerms?: string
+    deliveryDate?: string
+    deliveryLocation?: string
+    invitedPartyName?: string
+  },
+  module: "b2c" | "c2c" = "b2c"
+): AgreementRecord {
+  const records = readAll(module)
   const id = String(Date.now())
   const amount = input.saleAmount ? `₹${Number(input.saleAmount.replace(/\D/g, "") || 0).toLocaleString("en-IN")}` : "—"
   const record: AgreementRecord = {
@@ -155,6 +174,6 @@ export function saveAgreementFromWizard(input: {
     deliveryLocation: input.deliveryLocation,
     referenceNo: generateReferenceNo(),
   }
-  writeAll([record, ...records])
+  writeAll([record, ...records], module)
   return record
 }

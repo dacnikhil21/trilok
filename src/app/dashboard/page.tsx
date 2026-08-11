@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { C2CDashboardScreen } from "@/components/dashboard/C2CDashboardScreen"
+import { setAppModule } from "@/lib/app-module"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
@@ -12,7 +13,9 @@ function DashboardContent() {
   React.useEffect(() => {
     if (moduleType === "b2c") {
       router.replace("/business-category")
+      return
     }
+    setAppModule("c2c")
   }, [moduleType, router])
 
   if (moduleType === "b2c") {

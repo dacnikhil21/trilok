@@ -1,4 +1,55 @@
 const C2C_FROM_DASHBOARD_KEY = "c2c-from-dashboard"
+const C2C_PROFILE_KEY = "c2c-profile"
+const C2C_ONBOARDED_KEY = "c2c-onboarded"
+
+export type C2CProfile = {
+  fullName: string
+  email: string
+  mobile: string
+  verified: boolean
+}
+
+const DEFAULT_C2C_PROFILE: C2CProfile = {
+  fullName: "Ravi Kumar",
+  email: "ravi@example.com",
+  mobile: "+91 98765 43210",
+  verified: true,
+}
+
+/** Mark C2C registration complete. */
+export function setC2COnboarded(): void {
+  if (typeof window === "undefined") return
+  sessionStorage.setItem(C2C_ONBOARDED_KEY, "true")
+}
+
+export function isC2COnboarded(): boolean {
+  if (typeof window === "undefined") return false
+  return sessionStorage.getItem(C2C_ONBOARDED_KEY) === "true"
+}
+
+export function getC2CProfile(): C2CProfile {
+  if (typeof window === "undefined") return DEFAULT_C2C_PROFILE
+  const raw = sessionStorage.getItem(C2C_PROFILE_KEY)
+  const mobileRaw = sessionStorage.getItem("user_mobile")
+  const formattedMobile = mobileRaw
+    ? `+91 ${mobileRaw.slice(0, 5)} ${mobileRaw.slice(5)}`
+    : DEFAULT_C2C_PROFILE.mobile
+
+  if (!raw) {
+    return { ...DEFAULT_C2C_PROFILE, mobile: formattedMobile }
+  }
+  try {
+    return { ...DEFAULT_C2C_PROFILE, ...JSON.parse(raw), mobile: formattedMobile }
+  } catch {
+    return { ...DEFAULT_C2C_PROFILE, mobile: formattedMobile }
+  }
+}
+
+export function setC2CProfile(updates: Partial<C2CProfile>): void {
+  if (typeof window === "undefined") return
+  const next = { ...getC2CProfile(), ...updates }
+  sessionStorage.setItem(C2C_PROFILE_KEY, JSON.stringify(next))
+}
 
 /** Mark that the user entered create flow from the C2C home dashboard (not the FAB). */
 export function setC2CFromDashboard(): void {

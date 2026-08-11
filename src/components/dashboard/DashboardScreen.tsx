@@ -22,6 +22,7 @@ import {
   type DashboardTemplate,
 } from "@/lib/dashboard-configs"
 import { getB2CTemplateCreateUrl, getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
+import { setAppModule } from "@/lib/app-module"
 import { setB2CDashboard, setB2COnboarded, setB2CProfile, mapDashboardToCategoryId } from "@/lib/b2c-session"
 
 interface DashboardScreenProps {
@@ -38,6 +39,7 @@ export function DashboardScreen({ config }: DashboardScreenProps) {
   const router = useRouter()
 
   React.useEffect(() => {
+    setAppModule("b2c")
     setB2CDashboard(config.id)
     setB2COnboarded()
     setB2CProfile({ categoryId: mapDashboardToCategoryId(config.id) })

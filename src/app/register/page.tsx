@@ -11,6 +11,8 @@ import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVeri
 import { C2CVerificationStep } from "@/components/agreement/C2CVerificationStep"
 import { C2CVerifiedSuccessStep } from "@/components/agreement/C2CVerifiedSuccessStep"
 import { cn } from "@/lib/utils"
+import { setAppModule } from "@/lib/app-module"
+import { setC2COnboarded, setC2CProfile } from "@/lib/c2c-session"
 import { 
   ShieldCheck, Smartphone, CheckCircle2, Lock, MapPin, 
   Check, Sparkles, CreditCard, QrCode, ArrowRight, User, Store, Phone, ChevronDown, FileText,
@@ -271,6 +273,17 @@ export function RegisterFormContent() {
         setCurrentStep(5)
         return
       } else {
+        const digits = mobile.replace(/\D/g, "")
+        const formattedMobile =
+          digits.length >= 10 ? `+91 ${digits.slice(0, 5)} ${digits.slice(5, 10)}` : undefined
+        setC2CProfile({
+          fullName: aadhaarDetails?.name ?? "User",
+          ...(email ? { email } : {}),
+          ...(formattedMobile ? { mobile: formattedMobile } : {}),
+          verified: true,
+        })
+        setC2COnboarded()
+        setAppModule("c2c")
         router.push("/dashboard?module=c2c")
         return
       }
@@ -278,6 +291,7 @@ export function RegisterFormContent() {
 
     // Step 5: Business category selection before dashboard
     if (currentStep === 5) {
+      setAppModule("b2c")
       router.push("/business-category")
     }
   }

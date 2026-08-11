@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { getAgreementById } from "@/lib/b2c-agreements"
+import { resolveAppModule, type AppModule } from "@/lib/app-module"
 
 const STATUS_STYLE: Record<string, string> = {
   Pending: "bg-[#FFF7ED] text-[#EA580C]",
@@ -31,16 +32,16 @@ function AgreementDetailContent() {
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams()
-  const moduleType = searchParams.get("module") || "b2c"
+  const moduleType: AppModule = resolveAppModule(searchParams.get("module"))
   const isB2C = moduleType === "b2c"
   const id = params.id as string
   const [b2cDashboard, setB2cDashboard] = React.useState("mobile")
-  const [agreement, setAgreement] = React.useState(() => getAgreementById(id))
+  const [agreement, setAgreement] = React.useState(() => getAgreementById(id, moduleType))
 
   React.useEffect(() => {
     if (isB2C) setB2cDashboard(getB2CDashboard())
-    setAgreement(getAgreementById(id))
-  }, [id, isB2C])
+    setAgreement(getAgreementById(id, moduleType))
+  }, [id, isB2C, moduleType])
 
   const b2cHomePath = `/dashboard/${b2cDashboard}`
   const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
@@ -78,17 +79,17 @@ function AgreementDetailContent() {
       backgroundClassName="bg-[#F8FAFC]"
       header={<AppHeader showBack onBack={() => router.push(`/agreements?module=${moduleType}`)} />}
       bottomBar={
-        isB2C ? (
-          <AppBottomNav
-            activeTab="agreements"
-            onCreateAgreement={() => router.push(b2cCreatePath)}
-            onTabChange={(tab) => {
-              if (tab === "home") router.push(b2cHomePath)
-              if (tab === "verification") router.push(`/verify-identity?module=${moduleType}`)
-              if (tab === "profile") router.push(`/profile?module=${moduleType}`)
-            }}
-          />
-        ) : undefined
+        <AppBottomNav
+          activeTab="agreements"
+          onCreateAgreement={() =>
+            router.push(isB2C ? b2cCreatePath : `/create-agreement?module=${moduleType}`)
+          }
+          onTabChange={(tab) => {
+            if (tab === "home") router.push(isB2C ? b2cHomePath : "/dashboard?module=c2c")
+            if (tab === "verification") router.push(`/verify-identity?module=${moduleType}`)
+            if (tab === "profile") router.push(`/profile?module=${moduleType}`)
+          }}
+        />
       }
       contentClassName="px-4 pb-6 pt-2"
     >

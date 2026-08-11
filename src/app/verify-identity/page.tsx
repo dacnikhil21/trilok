@@ -13,6 +13,7 @@ import {
   VerificationTrustBanner,
 } from "@/components/verification/VerificationServicePicker"
 import { C2C_VERIFICATION_SERVICES } from "@/lib/c2c-config"
+import { DEFAULT_VERIFICATION_SERVICES } from "@/lib/dashboard-configs"
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
@@ -40,9 +41,10 @@ function VerifyIdentityContent() {
   const b2cCreatePath = getB2CCreateUrl(b2cDashboard)
   const c2cHomePath = `/dashboard?module=${moduleType}`
   const serviceParam = searchParams.get("service")
-  const showServicePicker = !isB2C && !serviceParam
+  const showServicePicker = !serviceParam
+  const verificationServices = isB2C ? DEFAULT_VERIFICATION_SERVICES : C2C_VERIFICATION_SERVICES
 
-  const selectedService = C2C_VERIFICATION_SERVICES.find((s) => s.icon === serviceParam)
+  const selectedService = verificationServices.find((s) => s.icon === serviceParam)
   const serviceLabel = selectedService?.shortLabel ?? selectedService?.label ?? "Identity"
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
@@ -589,9 +591,11 @@ function VerifyIdentityContent() {
         bottomBar={
           <AppBottomNav
             activeTab="verification"
-            onCreateAgreement={() => router.push("/create-agreement?module=c2c")}
+            onCreateAgreement={() =>
+              router.push(isB2C ? b2cCreatePath : "/create-agreement?module=c2c")
+            }
             onTabChange={(tab) => {
-              if (tab === "home") router.push(c2cHomePath)
+              if (tab === "home") router.push(isB2C ? b2cHomePath : c2cHomePath)
               if (tab === "agreements") router.push(`/agreements?module=${moduleType}`)
               if (tab === "profile") router.push(`/profile?module=${moduleType}`)
             }}
@@ -602,9 +606,9 @@ function VerifyIdentityContent() {
         <VerificationServicePickerIntro />
         <div className="px-4">
           <VerificationServiceGrid
-            services={C2C_VERIFICATION_SERVICES}
+            services={verificationServices}
             onSelect={(service) =>
-              router.push(`/verify-identity?module=c2c&service=${service.icon}`)
+              router.push(`/verify-identity?module=${moduleType}&service=${service.icon}`)
             }
           />
         </div>
@@ -655,7 +659,7 @@ function VerifyIdentityContent() {
         }
         onBackClick={() => {
           if (step === "aadhaar") {
-            if (!isB2C && serviceParam) {
+            if (serviceParam) {
               router.replace(`/verify-identity?module=${moduleType}`)
               return
             }
