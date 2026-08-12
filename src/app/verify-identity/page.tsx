@@ -24,12 +24,14 @@ import {
 import { getB2CCreateUrl } from "@/lib/b2c-dashboard-routes"
 import { getB2CDashboard } from "@/lib/b2c-session"
 import { ProgressStepper } from "@/components/ui/ProgressStepper"
-import { BusinessVerificationStep } from "@/components/agreement/BusinessVerificationStep"
-import { BusinessVerifiedSuccessStep } from "@/components/agreement/BusinessVerifiedSuccessStep"
-import { C2CVerificationStep } from "@/components/agreement/C2CVerificationStep"
-import { C2CVerifiedSuccessStep } from "@/components/agreement/C2CVerifiedSuccessStep"
+import { TermsModal } from "@/components/ui/TermsModal"
 import { Input } from "@/components/ui/input"
-import { ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, FileText, CreditCard, QrCode, Sparkles } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { 
+  ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, 
+  FileText, CreditCard, QrCode, Sparkles, Upload, Trash2, Download, AlertCircle, 
+  HelpCircle, UserCheck, Briefcase, Building, Coins, FileSignature, CheckCircle 
+} from "lucide-react"
 
 type OnboardingStep = VerificationFlowStep
 
@@ -64,8 +66,10 @@ function VerifyIdentityContent() {
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
-  // B2C Payment State
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<"upi" | "card" | "qr">("upi")
+  // Verification purpose & file upload states
+  const [purpose, setPurpose] = React.useState<string>("customer")
+  const [consentFile, setConsentFile] = React.useState<{ name: string; size: string } | null>(null)
+  const [isDragging, setIsDragging] = React.useState(false)
 
   // Service document input state
   const [documentValue, setDocumentValue] = React.useState("")
@@ -87,8 +91,19 @@ function VerifyIdentityContent() {
     }
   }, [timer, step])
 
-  // DPDP state
-  const [dpdpChecked, setDpdpChecked] = React.useState(false)
+  // Consent checkboxes & Terms modal states
+  const [termsAccepted, setTermsAccepted] = React.useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = React.useState(false)
+  const [isLegalModalOpen, setIsLegalModalOpen] = React.useState(false)
+  const [legalModalTab, setLegalModalTab] = React.useState<"privacy" | "terms" | "consent">("terms")
+
+  const openLegalDoc = (tab: "privacy" | "terms" | "consent") => {
+    setLegalModalTab(tab)
+    setIsLegalModalOpen(true)
+  }
+
+  // Selected payment option state
+  const [paymentMethod, setPaymentMethod] = React.useState<"upi" | "card" | "netbanking" | "wallet">("upi")
 
   // Permissions state
   const [gpsAllowed, setGpsAllowed] = React.useState(false)
@@ -106,7 +121,13 @@ function VerifyIdentityContent() {
     setOtp("")
     setTimer(0)
     setError("")
-    setDpdpChecked(false)
+    setPurpose("customer")
+    setConsentFile(null)
+    setTermsAccepted(false)
+    setPrivacyAccepted(false)
+    setPaymentMethod("upi")
+    setIsDragging(false)
+    setIsLegalModalOpen(false)
     setGpsAllowed(false)
     setCameraAllowed(false)
     setNotifAllowed(false)
@@ -135,24 +156,31 @@ function VerifyIdentityContent() {
     setError("")
 
     if (step === "aadhaar") {
-      setTimer(60)
-      advanceStep()
-    } else if (step === "otp") {
-      advanceStep()
-    } else if (step === "upload-ekyc") {
+      if (!isInputValid) {
+        setError(`Please enter a valid ${serviceConfig.label} number.`)
+        return
+      }
+      if (purpose === "customer" && !consentFile) {
+        setError("Please upload the customer consent document to proceed.")
+        return
+      }
       advanceStep()
     } else if (step === "consent") {
-      advanceStep()
-    } else if (step === "permissions") {
-      advanceStep()
-    } else if (step === "liveness") {
-      advanceStep()
-    } else if (step === "location") {
+      if (!termsAccepted || !privacyAccepted) {
+        setError("You must accept the Terms & Conditions and Privacy Policy.")
+        return
+      }
       advanceStep()
     } else if (step === "payment") {
-      advanceStep()
+      setIsLoading(true)
+      setTimeout(() => {
+        setIsLoading(false)
+        advanceStep()
+      }, 1200)
     } else if (step === "success") {
       router.push(isB2C ? b2cHomePath : `/dashboard?module=${moduleType}`)
+    } else {
+      advanceStep()
     }
   }
 
@@ -166,15 +194,19 @@ function VerifyIdentityContent() {
 
   // 1. Service-specific input screen
   const renderServiceInputContent = () => (
-    <div className="space-y-4 text-center">
-      <div className="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-2 border border-blue-100 shadow-sm">
-        <ShieldCheck className="w-8 h-8" strokeWidth={2.5} />
+    <div className="space-y-4">
+      {/* Service Header Info */}
+      <div className="text-center">
+        <div className="w-14 h-14 bg-blue-50 text-[#0033A0] rounded-full flex items-center justify-center mx-auto mb-2 border border-blue-100 shadow-sm">
+          <ShieldCheck className="w-7 h-7" strokeWidth={2.5} />
+        </div>
+        <p className="text-[12.5px] text-slate-500 font-semibold leading-relaxed max-w-[280px] mx-auto">
+          {serviceConfig.helperText}
+        </p>
       </div>
-      <p className="text-[13px] text-secondary-text font-medium leading-relaxed max-w-[280px] mx-auto">
-        {serviceConfig.helperText}
-      </p>
 
-      <div className="pt-2 space-y-3">
+      {/* ID Number input field */}
+      <div className="space-y-3">
         <Input
           label={serviceConfig.fieldLabel}
           type={serviceConfig.inputMode === "numeric" ? "tel" : "text"}
@@ -185,7 +217,7 @@ function VerifyIdentityContent() {
             setDocumentValue(val)
             setError("")
           }}
-          error={error}
+          error={error && !documentValue ? error : undefined}
         />
         {serviceConfig.secondaryField ? (
           <Input
@@ -201,12 +233,165 @@ function VerifyIdentityContent() {
         ) : null}
       </div>
 
-      <div className="p-3 bg-surface border border-border/50 rounded-[12px] flex items-start gap-3 mt-4">
-        <Lock className="w-4.5 h-4.5 text-success shrink-0 mt-0.5" />
-        <p className="text-left text-[11px] text-secondary-text font-medium leading-relaxed">
-          {serviceConfig.securityNote}
-        </p>
+      {/* Select Purpose segment */}
+      <div className="text-left space-y-2 pt-1">
+        <label className="text-[12px] font-extrabold text-[#041B4A] uppercase tracking-wider">
+          Select Purpose of Verification
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            { id: "customer", label: "Customer Verification", icon: UserCheck },
+            { id: "business", label: "Business Verification", icon: Building },
+            { id: "employment", label: "Employment Verification", icon: Briefcase },
+            { id: "transaction", label: "Transaction Verification", icon: Coins },
+            { id: "kyc", label: "KYC / Onboarding", icon: FileSignature },
+            { id: "other", label: "Other (Please specify)", icon: HelpCircle },
+          ].map((opt) => {
+            const Icon = opt.icon
+            const isSelected = purpose === opt.id
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => {
+                  setPurpose(opt.id)
+                  setError("")
+                }}
+                className={cn(
+                  "flex items-center gap-2.5 p-2.5 rounded-[12px] border text-left transition-all active:scale-[0.98] cursor-pointer",
+                  isSelected 
+                    ? "bg-[#0033A0]/5 border-[#0033A0] text-[#0033A0] font-bold" 
+                    : "bg-white border-slate-200/90 text-slate-500 hover:border-slate-300 font-medium"
+                )}
+              >
+                <div className={cn(
+                  "w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0",
+                  isSelected ? "bg-[#0033A0]/10 text-[#0033A0]" : "bg-slate-50 text-slate-400"
+                )}>
+                  <Icon className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[11.5px] leading-tight truncate">{opt.label}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
+
+      {/* Conditional File Upload segment */}
+      {purpose === "customer" && (
+        <div className="text-left space-y-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <label className="text-[12px] font-extrabold text-[#041B4A] uppercase tracking-wider flex items-center gap-1">
+            Upload Client Consent Form
+            <span className="text-[#EF4444] font-extrabold text-[11px]">*</span>
+          </label>
+          
+          {!consentFile ? (
+            <div
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDragging(true)
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  const file = e.dataTransfer.files[0]
+                  setConsentFile({
+                    name: file.name,
+                    size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
+                  })
+                  setError("")
+                }
+              }}
+              onClick={() => {
+                const input = document.getElementById("consent-file-input")
+                if (input) input.click()
+              }}
+              className={cn(
+                "w-full rounded-[14px] border-2 border-dashed flex flex-col items-center justify-center p-5 text-center cursor-pointer transition-all duration-200 bg-[#FBFBFA]",
+                isDragging 
+                  ? "border-[#0033A0] bg-[#0033A0]/5 scale-[1.01]" 
+                  : "border-slate-200/90 hover:border-slate-350 hover:bg-slate-50"
+              )}
+            >
+              <input
+                id="consent-file-input"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0]
+                    setConsentFile({
+                      name: file.name,
+                      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
+                    })
+                    setError("")
+                  }
+                }}
+              />
+              <div className="w-9 h-9 rounded-full bg-blue-50 text-[#0033A0] flex items-center justify-center mb-2 shadow-2xs">
+                <Upload className="w-4.5 h-4.5" />
+              </div>
+              <p className="text-[11.5px] font-bold text-[#0F172A] leading-tight">
+                Drag & drop consent form, or <span className="text-[#0033A0] underline">browse</span>
+              </p>
+              <p className="text-[9.5px] font-medium text-slate-400 mt-1 leading-normal">
+                Supports PDF, JPEG, PNG (Max 5MB)
+              </p>
+            </div>
+          ) : (
+            <div className="w-full rounded-[14px] border border-[#C5EBD6] bg-[#ECF8F1]/40 flex items-center justify-between p-3 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-[8px] bg-[#C5EBD6]/50 text-[#10B981] flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 text-left">
+                  <p className="text-[11px] font-extrabold text-[#0F172A] truncate leading-tight">
+                    {consentFile.name}
+                  </p>
+                  <p className="text-[9px] font-medium text-slate-500 mt-0.5 leading-none">
+                    {consentFile.size} • <span className="text-[#10B981] font-bold">Uploaded</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConsentFile(null)}
+                className="p-1 rounded-full hover:bg-slate-200 text-slate-400 hover:text-error transition-colors shrink-0"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Pricing and Security Indicator */}
+      <div className="pt-2 flex flex-col gap-2 text-left">
+        <div className="flex items-center justify-between p-3 bg-[#F8FAFC] border border-slate-200/90 rounded-[14px] shadow-2xs">
+          <div className="flex items-center gap-2">
+            <Coins className="w-4 h-4 text-[#10B981]" />
+            <span className="text-[11.5px] font-bold text-slate-500">Service Verification Fee</span>
+          </div>
+          <span className="text-[13.5px] font-extrabold text-[#10B981]">₹9</span>
+        </div>
+
+        <div className="p-3 bg-[#F8FAFC] border border-slate-200/90 rounded-[14px] flex items-start gap-2.5 shadow-2xs">
+          <Lock className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+          <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+            {serviceConfig.securityNote}
+          </p>
+        </div>
+      </div>
+
+      {error && (
+        <div className="p-2.5 bg-red-50 border border-red-200 rounded-[10px] text-left flex items-start gap-2 animate-shake">
+          <AlertCircle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
+          <span className="text-[11px] text-[#EF4444] font-bold leading-normal">{error}</span>
+        </div>
+      )}
     </div>
   )
 
@@ -425,21 +610,78 @@ function VerifyIdentityContent() {
   // 4. DPDP Consent screen content
   const renderConsentContent = () => (
     <div className="space-y-4 text-left">
-      <div className="max-h-[140px] overflow-y-auto border border-border rounded-[12px] p-3 text-[11px] text-secondary-text font-medium leading-relaxed space-y-2 bg-[#FBFBFA]">
-        <h4 className="font-bold text-foreground">Consent Notice (DPDP Act, 2023)</h4>
-        <p>1. <strong>Purpose of Collection:</strong> eSaleAgreement shall process your {serviceConfig.label} verification details and GPS coordinates solely for identity verification, timestamp audit tracking, and digital agreement signature execution.</p>
-        <p>2. <strong>Identity Matching:</strong> Your submitted {serviceConfig.label} details will be verified against authorized government databases.</p>
-        <p>3. <strong>Storage & Encryption:</strong> Consent records, agreement tokens, and encryption metadata are logged immutably under standard cryptographic hashes.</p>
+      {/* Centered Trust Icon & Headline */}
+      <div className="flex flex-col items-center text-center">
+        <div className="w-13 h-13 bg-[#ECF8F1] border border-[#C5EBD6] rounded-full flex items-center justify-center text-[#10B981] mb-2 shadow-sm animate-pulse">
+          <ShieldCheck className="w-6.5 h-6.5" strokeWidth={2.5} />
+        </div>
+        <h3 className="text-[15px] font-extrabold text-[#0F172A] leading-tight">Your Consent is Important</h3>
+        <p className="text-[11px] font-semibold text-slate-500 max-w-[285px] mx-auto mt-1 leading-normal">
+          We will fetch and process the information you have provided only for the purpose of this verification.
+        </p>
       </div>
 
-      <div className="flex items-start gap-3 cursor-pointer pt-1" onClick={() => setDpdpChecked(!dpdpChecked)}>
-        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${dpdpChecked ? "bg-primary border-primary" : "border-border"}`}>
-          {dpdpChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
-        </div>
-        <span className="text-[12px] font-semibold text-foreground leading-snug select-none">
-          I confirm that I have read the consent terms and authorize eSaleAgreement to verify my identity and execute agreements.
-        </span>
+      {/* Security Promises */}
+      <div className="space-y-2">
+        {[
+          "We do not sell your personal data.",
+          "We do not use data for marketing or advertising.",
+          "Verification data is deleted within 30 days after verification, except information required to be retained by law."
+        ].map((text, idx) => (
+          <div key={idx} className="flex items-start gap-2.5 p-2.5 bg-slate-50 border border-slate-200/60 rounded-[12px] shadow-2xs">
+            <div className="w-4.5 h-4.5 rounded-full bg-[#ECF8F1] text-[#10B981] flex items-center justify-center shrink-0 mt-0.5">
+              <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+            </div>
+            <span className="text-[10.5px] font-bold text-slate-600 leading-normal">{text}</span>
+          </div>
+        ))}
       </div>
+
+      {/* Checkbox Selections */}
+      <div className="space-y-2 pt-1 border-t border-slate-100">
+        <p className="text-[10px] font-extrabold text-[#041B4A] uppercase tracking-wider">Please read and agree:</p>
+        
+        <div 
+          onClick={() => setTermsAccepted(!termsAccepted)}
+          className="flex items-start gap-2.5 cursor-pointer p-2 rounded-[10px] hover:bg-slate-50 transition-colors"
+        >
+          <div className={cn(
+            "w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all cursor-pointer",
+            termsAccepted ? "bg-[#0033A0] border-[#0033A0] text-white" : "border-slate-300 bg-white"
+          )}>
+            {termsAccepted && <Check className="w-3 h-3 text-white" strokeWidth={3.5} />}
+          </div>
+          <span className="text-[11.5px] font-bold text-slate-700 leading-snug select-none">
+            I agree to the <span onClick={(e) => { e.stopPropagation(); openLegalDoc("terms"); }} className="text-[#0033A0] underline font-extrabold">Terms & Conditions</span>
+          </span>
+        </div>
+
+        <div 
+          onClick={() => setPrivacyAccepted(!privacyAccepted)}
+          className="flex items-start gap-2.5 cursor-pointer p-2 rounded-[10px] hover:bg-slate-50 transition-colors"
+        >
+          <div className={cn(
+            "w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all cursor-pointer",
+            privacyAccepted ? "bg-[#0033A0] border-[#0033A0] text-white" : "border-slate-300 bg-white"
+          )}>
+            {privacyAccepted && <Check className="w-3 h-3 text-white" strokeWidth={3.5} />}
+          </div>
+          <span className="text-[11.5px] font-bold text-slate-700 leading-snug select-none">
+            I have read the <span onClick={(e) => { e.stopPropagation(); openLegalDoc("privacy"); }} className="text-[#0033A0] underline font-extrabold">Privacy Policy</span>
+          </span>
+        </div>
+      </div>
+
+      <p className="text-[9.5px] text-center font-bold text-slate-400 pt-1 leading-normal">
+        This is the key consent step before we pull any data. (Mandatory)
+      </p>
+
+      {error && (
+        <div className="p-2.5 bg-red-50 border border-red-200 rounded-[10px] flex items-start gap-2 animate-shake">
+          <AlertCircle className="w-4 h-4 text-[#EF4444] shrink-0 mt-0.5" />
+          <span className="text-[11px] text-[#EF4444] font-bold leading-normal">{error}</span>
+        </div>
+      )}
     </div>
   )
 
@@ -550,39 +792,257 @@ function VerifyIdentityContent() {
     </div>
   )
 
-  // 8. Subscription / Tag Activation Payment screen content
-  const renderPaymentContent = () => (
-    isB2C ? (
-      <BusinessVerificationStep
-        onProceed={() => handlePrimaryAction()}
-        isLoading={isLoading}
-        selectedMethod={selectedPaymentMethod === "qr" ? "qr" : "upi"}
-        onMethodChange={(m) => setSelectedPaymentMethod(m)}
-      />
-    ) : (
-      <C2CVerificationStep
-        onProceed={() => handlePrimaryAction()}
-        isLoading={isLoading}
-        selectedMethod={selectedPaymentMethod === "qr" ? "qr" : "upi"}
-        onMethodChange={(m) => setSelectedPaymentMethod(m)}
-      />
+  // 8. Pay-per-use Payment screen content
+  const renderPaymentContent = () => {
+    const AuthenticUpiLogo = () => (
+      <div className="flex items-center gap-1 shrink-0">
+        <svg className="h-3 w-auto" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="24" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontStyle="italic" fontSize="24" fill="#003399" letterSpacing="0.5">UPI</text>
+          <path d="M62 6L75 16L62 26H70L83 16L70 6H62Z" fill="#10B981" />
+          <path d="M74 6L87 16L74 26H82L95 16L82 6H74Z" fill="#F59E0B" />
+        </svg>
+      </div>
     )
-  )
 
-  // 9. Success screen content with Verified Tag
-  const renderSuccessContent = () => (
-    <div className="space-y-4">
-      {isB2C ? (
-        <BusinessVerifiedSuccessStep
-          onContinue={() => handlePrimaryAction()}
-        />
-      ) : (
-        <C2CVerifiedSuccessStep
-          onContinue={() => handlePrimaryAction()}
-        />
-      )}
-    </div>
-  )
+    return (
+      <div className="space-y-4">
+        {/* Service Fee Box */}
+        <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/90 rounded-[14px] shadow-2xs">
+          <div className="text-left">
+            <span className="text-[12.5px] font-extrabold text-[#0F172A]">{serviceLabel} Verification Fee</span>
+            <p className="text-[9.5px] font-semibold text-slate-400 mt-0.5">Standard verification pull rate</p>
+          </div>
+          <span className="text-[16px] font-black text-[#10B981]">₹9</span>
+        </div>
+
+        {/* Secure Payment Alert */}
+        <div className="p-3 bg-[#ECF8F1]/40 border border-[#C5EBD6] rounded-[14px] flex items-start gap-2.5 shadow-2xs text-left">
+          <Lock className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[11.5px] font-bold text-[#0F172A] leading-tight">Secure & Encrypted Payment</p>
+            <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5 leading-normal">
+              Your transaction is 100% secure. Credentials are never saved on our servers.
+            </p>
+          </div>
+        </div>
+
+        {/* Payment Methods */}
+        <div className="space-y-2 text-left">
+          <label className="text-[10px] font-extrabold text-[#041B4A] uppercase tracking-wider">Choose a payment method</label>
+          <div className="space-y-2">
+            {[
+              { id: "upi", label: "UPI", desc: "Pay using Google Pay, PhonePe, Paytm", rightEl: <AuthenticUpiLogo /> },
+              { id: "card", label: "Card", desc: "Visa, Mastercard, RuPay cards", rightEl: <span className="text-[9.5px] font-bold text-slate-400">VISA / RUPAY</span> },
+              { id: "netbanking", label: "Net Banking", desc: "State Bank of India, HDFC, ICICI, etc.", rightEl: <span className="text-[9.5px] font-bold text-slate-400">NETBANKING</span> },
+              { id: "wallet", label: "Wallet", desc: "PhonePe Wallet, Paytm, etc.", rightEl: <span className="text-[9.5px] font-bold text-slate-400">WALLETS</span> },
+            ].map((method) => {
+              const isSelected = paymentMethod === method.id
+              return (
+                <div
+                  key={method.id}
+                  onClick={() => setPaymentMethod(method.id as any)}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-[12px] border cursor-pointer transition-all active:scale-[0.99]",
+                    isSelected 
+                      ? "border-[#0033A0] bg-[#0033A0]/5 shadow-2xs" 
+                      : "border-slate-200 bg-white hover:border-slate-350"
+                  )}
+                >
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className={cn(
+                      "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-all",
+                      isSelected ? "border-[#0033A0] bg-[#0033A0]" : "border-slate-300"
+                    )}>
+                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <p className="text-[11.5px] font-extrabold text-[#0F172A] leading-tight">{method.label}</p>
+                      <p className="text-[9px] text-slate-400 font-medium mt-0.5 leading-tight">{method.desc}</p>
+                    </div>
+                  </div>
+                  {method.rightEl}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Redirect Note */}
+        <p className="text-[9px] text-center font-semibold text-slate-400 pt-1 leading-normal">
+          You will be redirected to Razorpay secure payment gateway.
+        </p>
+
+        {/* CTA Button */}
+        <button
+          type="button"
+          onClick={() => handlePrimaryAction()}
+          disabled={isLoading}
+          className="w-full h-11 bg-[#0033A0] text-white rounded-[14px] font-bold text-[13px] flex items-center justify-center gap-2 shadow-sm transition-all hover:bg-[#002270] active:scale-[0.98] cursor-pointer mt-1"
+        >
+          {isLoading ? (
+            <>
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              <span>Processing secure payment...</span>
+            </>
+          ) : (
+            <>
+              <CreditCard className="w-4.5 h-4.5" />
+              <span>Pay ₹9 Securely</span>
+            </>
+          )}
+        </button>
+
+        {/* Razorpay Secured Footer */}
+        <div className="flex items-center justify-center gap-1.5 text-[9px] text-slate-400 font-semibold pt-1">
+          <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+          <span>Secured by Razorpay • PCI-DSS Compliant</span>
+        </div>
+      </div>
+    )
+  }
+
+  // 9. Success screen content with Verification Result Details Table
+  const renderSuccessContent = () => {
+    const now = new Date()
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`
+
+    const getMockDetails = () => {
+      const docVal = documentValue || "ABCDE1234F"
+      switch (serviceConfig.id) {
+        case "pan":
+          return [
+            { label: "PAN Number", value: docVal },
+            { label: "Name (as per PAN)", value: "RAMESH KUMAR" },
+            { label: "PAN Type", value: "Individual" },
+            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Last Updated On", value: dateStr },
+          ]
+        case "rc":
+          return [
+            { label: "Vehicle Number", value: docVal },
+            { label: "Owner Name", value: "RAJESH ANAND" },
+            { label: "Model / Variant", value: "MARUTI SWIFT VXI" },
+            { label: "Chassis Number", value: "MA3FCAXXXXXXXX678" },
+            { label: "Engine Number", value: "K12MXXXXXX456" },
+            { label: "Fitness Valid Upto", value: "14 Jan 2038" },
+            { label: "Insurance Valid Upto", value: "10 Jan 2027" },
+            { label: "RC Status", value: "Active (VAHAN Verified)", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+          ]
+        case "gstin":
+          return [
+            { label: "GSTIN Number", value: docVal },
+            { label: "Legal Name", value: "TRILOK RENTALS PRIVATE LIMITED" },
+            { label: "Taxpayer Type", value: "Regular" },
+            { label: "GSTIN Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Principal Place", value: "Flat 302, Green Meadows, Madhapur, Hyderabad, 500081" },
+          ]
+        case "driving-licence":
+          return [
+            { label: "DL Number", value: docVal },
+            { label: "Holder Name", value: "SURESH SHARMA" },
+            { label: "Date of Birth", value: secondaryValue || "12/04/1992" },
+            { label: "Licensing Authority", value: "RTO Hyderabad" },
+            { label: "Validity (Non-Transport)", value: "05 Dec 2040" },
+            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+          ]
+        case "udyam":
+          return [
+            { label: "Udyam Reg Number", value: docVal },
+            { label: "Enterprise Name", value: "TRILOK LOGISTICS" },
+            { label: "Major Activity", value: "Services" },
+            { label: "Enterprise Type", value: "Micro" },
+            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+          ]
+        case "utilities":
+          return [
+            { label: "Consumer Number", value: docVal },
+            { label: "Consumer Name", value: "V. KRISHNA MURTHY" },
+            { label: "Utility Provider", value: "APEPDCL (Power Distribution)" },
+            { label: "Billing Address", value: "Door No 4-82/A, Gajuwaka, Visakhapatnam, AP, 530026" },
+            { label: "Status", value: "Verified & Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+          ]
+        default:
+          return [
+            { label: "Reference Number", value: docVal },
+            { label: "Verification Status", value: "Success / Verified", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Timestamp", value: dateStr },
+          ]
+      }
+    }
+
+    const details = getMockDetails()
+
+    return (
+      <div className="space-y-4 animate-in zoom-in-95 duration-200">
+        {/* Verification Success Header */}
+        <div className="flex flex-col items-center text-center">
+          <div className="w-13 h-13 bg-[#ECF8F1] border border-[#C5EBD6] rounded-full flex items-center justify-center text-[#10B981] mb-2 shadow-sm">
+            <Check className="w-7 h-7 stroke-[3]" />
+          </div>
+          <h3 className="text-[15px] font-extrabold text-[#10B981] leading-tight">Verification Successful</h3>
+          <p className="text-[11px] font-semibold text-slate-500 mt-0.5 leading-normal">
+            Details fetched successfully.
+          </p>
+        </div>
+
+        {/* Verification Details Table card */}
+        <div className="bg-white border border-slate-200/90 rounded-[16px] overflow-hidden shadow-xs">
+          <div className="divide-y divide-slate-100">
+            {details.map((detail, idx) => (
+              <div key={idx} className="flex justify-between items-center px-4 py-3 text-left">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{detail.label}</span>
+                {detail.isBadge ? (
+                  <span className={cn("text-[9.5px] font-black px-2.5 py-0.5 rounded-full border uppercase", detail.badgeColor)}>
+                    {detail.value}
+                  </span>
+                ) : (
+                  <span className="text-[11.5px] font-extrabold text-[#0F172A] pl-4 text-right break-words max-w-[65%]">
+                    {detail.value}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Source trust banner */}
+        <div className="p-3 bg-[#ECF8F1]/40 border border-[#C5EBD6] rounded-[14px] flex items-start gap-2.5 shadow-2xs text-left">
+          <Lock className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+          <p className="text-[9.5px] text-slate-500 font-semibold leading-normal">
+            This information is fetched from authorized databases and used only for the purpose of this agreement.
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-2 pt-2">
+          <button
+            type="button"
+            onClick={() => {
+              alert("Result PDF saved to your downloads folder.")
+            }}
+            className="w-full h-11 bg-white border border-slate-200 hover:border-slate-350 text-slate-700 rounded-[14px] font-bold text-[12.5px] flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-[0.98] cursor-pointer"
+          >
+            <Download className="w-4 h-4 text-slate-500" />
+            <span>Download / Save Result</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handlePrimaryAction()}
+            className="w-full h-11 bg-[#0033A0] text-white rounded-[14px] font-bold text-[12.5px] flex items-center justify-center gap-1 shadow-sm transition-all hover:bg-[#002270] active:scale-[0.98] cursor-pointer"
+          >
+            <span>Done</span>
+          </button>
+        </div>
+
+        {/* Retention policy footnote */}
+        <p className="text-[9.5px] text-center font-bold text-slate-400 pt-1 leading-normal">
+          Verification data is scheduled for deletion within 30 days after verification, except information required to be retained by law.
+        </p>
+      </div>
+    )
+  }
 
   const isInputValid = React.useMemo(() => {
     if (!serviceConfig.isValid(documentValue)) return false
@@ -590,69 +1050,66 @@ function VerifyIdentityContent() {
     return true
   }, [serviceConfig, documentValue, secondaryValue])
 
-  const isAadhaarService = serviceConfig.id === "aadhaar"
-
   const pageConfig = React.useMemo<{ title: React.ReactNode; subtitle: React.ReactNode }>(() => {
     switch (step) {
       case "aadhaar":
         return {
           title: `${serviceLabel} Verification`,
-          subtitle: `Verify your ${serviceLabel} securely`,
+          subtitle: `Enter details and select purpose for verification`,
         }
-      case "otp":
-        return { title: `${serviceLabel} OTP`, subtitle: `Verify your ${serviceLabel}` }
-      case "upload-ekyc":
+      case "consent":
         return {
-          title: `Upload ${serviceLabel} Documents`,
-          subtitle: isAadhaarService
-            ? "Provide front, back and selfie"
-            : `Provide front and back of your ${serviceLabel}`,
+          title: "Consent & Terms",
+          subtitle: "Review and agree to legal consent terms",
         }
-      case "consent": return { title: "Data Privacy & Consent", subtitle: "DPDP Consent" }
-      case "permissions": return { title: "Permissions Required", subtitle: "Consent Access" }
-      case "liveness": return { title: "Face Verification", subtitle: "Liveness Audit" }
-      case "location": return { title: "Location Permission", subtitle: "Allow location access" }
-      case "payment": return { title: isB2C ? "Business Verification" : "Person Verification", subtitle: isB2C ? <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹99</span> for lifetime verification & access</span> : <span>One-time payment of <span className="font-extrabold text-[#10B981]">₹0</span> for lifetime verification & access</span> }
+      case "payment":
+        return {
+          title: "Payment",
+          subtitle: `Pay verification fee securely to proceed`,
+        }
       case "success":
         return {
-          title: <span><span className="text-[#10B981]">{serviceLabel}</span> Verified!</span>,
-          subtitle: `Your ${serviceLabel} is successfully verified and ready for agreements.`,
+          title: "Verification Result",
+          subtitle: "View pulled details and save result",
+        }
+      default:
+        return {
+          title: `${serviceLabel} Verification`,
+          subtitle: `Verify your ${serviceLabel} securely`,
         }
     }
-  }, [step, isB2C, serviceLabel, isAadhaarService])
+  }, [step, serviceLabel])
 
   const buttonTextConfig = React.useMemo(() => {
     switch (step) {
-      case "aadhaar": return serviceConfig.primaryButtonText
-      case "otp": return `Verify ${serviceLabel}`
-      case "upload-ekyc": return "Verify Documents"
-      case "consent": return "Confirm DPDP Consent"
-      case "permissions": return "Grant Permissions"
-      case "liveness": return livenessCaptured ? "Continue" : "Capture Face Selfie"
-      case "location": return isB2C ? "Proceed to ₹99 Payment" : "Allow Location"
-      case "payment": return "Complete ₹99 Payment & Activate"
-      case "success": return "Continue to Dashboard"
+      case "aadhaar": return "Proceed to Consent"
+      case "consent": return "I Agree & Continue"
+      case "payment": return "Pay ₹9 Securely"
+      case "success": return "Done"
+      default: return "Continue"
     }
-  }, [step, livenessCaptured, isB2C, serviceConfig.primaryButtonText, serviceLabel])
+  }, [step])
 
   const isButtonDisabled = React.useMemo(() => {
-    if (step === "aadhaar") return !isInputValid
-    if (step === "otp") return otp.length < 6
-    if (step === "consent") return !dpdpChecked
+    if (step === "aadhaar") {
+      const basicValid = isInputValid
+      if (purpose === "customer") {
+        return !basicValid || !consentFile
+      }
+      return !basicValid
+    }
+    if (step === "consent") return !termsAccepted || !privacyAccepted
     return false
-  }, [step, isInputValid, otp, dpdpChecked])
+  }, [step, isInputValid, purpose, consentFile, termsAccepted, privacyAccepted])
 
   const renderStepContent = () => {
     switch (step) {
       case "aadhaar": return renderServiceInputContent()
       case "otp": return renderOtpContent()
-      case "upload-ekyc": return renderUploadEkycContent()
       case "consent": return renderConsentContent()
-      case "permissions": return renderPermissionsContent()
-      case "liveness": return renderLivenessContent()
-      case "location": return renderLocationContent()
       case "payment": return renderPaymentContent()
       case "success": return renderSuccessContent()
+      default: return renderServiceInputContent()
     }
   }
 
@@ -743,6 +1200,11 @@ function VerifyIdentityContent() {
           if (prev) setStep(prev)
           else router.back()
         }}
+      />
+      <TermsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        initialTab={legalModalTab}
       />
     </>
   )

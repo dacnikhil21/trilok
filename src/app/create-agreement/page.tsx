@@ -180,16 +180,22 @@ function CreateAgreementContent() {
   const b2cInitialCategory =
     isB2C && categoryParam && typeParam ? findCategory(typeParam, categoryParam) : undefined
 
+  const initialCategory = React.useMemo(() => {
+    if (categoryParam && typeParam) {
+      return findCategory(typeParam as AgreementType, categoryParam)
+    }
+    return undefined
+  }, [categoryParam, typeParam])
+
   const [phase, setPhase] = React.useState<FlowPhase>(() => {
-    if (isB2C && categoryParam && typeParam) return "wizard"
-    if (categoryParam && typeParam) return "intro"
+    if (categoryParam && typeParam) return "wizard"
     if (typeParam) return "category"
     return "type"
   })
   const [agreementType, setAgreementType] = React.useState<AgreementType | null>(typeParam)
   const [categoryId, setCategoryId] = React.useState<string | null>(categoryParam)
   const [currentStep, setCurrentStep] = React.useState(1)
-  const inWizardRef = React.useRef(false)
+  const inWizardRef = React.useRef(!!(categoryParam && typeParam))
   const savedAgreementRef = React.useRef(false)
   const [formData, setFormData] = React.useState<AgreementData>(() => {
     const next: AgreementData = { ...INITIAL_FORM }
@@ -199,8 +205,9 @@ function CreateAgreementContent() {
     } else if (templateParam && B2C_TEMPLATE_PRODUCT[templateParam]) {
       next.productName = B2C_TEMPLATE_PRODUCT[templateParam]
     }
-    if (b2cInitialCategory) {
-      next.category = b2cInitialCategory.title
+    const matchedCategory = initialCategory || b2cInitialCategory
+    if (matchedCategory) {
+      next.category = matchedCategory.title
     }
     return next
   })
@@ -212,7 +219,12 @@ function CreateAgreementContent() {
     const category = searchParams.get("category")
 
     if (category && type) {
-      setPhase("intro")
+      const selectedCat = findCategory(type, category)
+      if (selectedCat) {
+        setFormData((prev) => ({ ...prev, category: selectedCat.title }))
+      }
+      setPhase("wizard")
+      inWizardRef.current = true
       setAgreementType(type)
       setCategoryId(category)
     } else if (type) {
@@ -325,7 +337,9 @@ function CreateAgreementContent() {
           return
         }
         inWizardRef.current = false
-        setPhase("intro")
+        setCategoryId(null)
+        setPhase("category")
+        router.replace(buildFlowUrl({ type: agreementType }))
       } else if (currentStep < 10) {
         prevStep()
       }
@@ -477,7 +491,13 @@ function CreateAgreementContent() {
               categories={getCategoriesForType(agreementType)}
               onSelect={(id) => {
                 setCategoryId(id)
-                setPhase("intro")
+                const selectedCat = findCategory(agreementType, id)
+                if (selectedCat) {
+                  updateData({ category: selectedCat.title })
+                }
+                setPhase("wizard")
+                inWizardRef.current = true
+                setCurrentStep(1)
                 router.replace(buildFlowUrl({ type: agreementType, category: id }))
               }}
             />

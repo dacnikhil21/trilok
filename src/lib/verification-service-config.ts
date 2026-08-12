@@ -49,18 +49,15 @@ const AADHAAR_FULL_FLOW: VerificationFlowStep[] = [
 
 const STANDARD_ID_FLOW: VerificationFlowStep[] = [
   "aadhaar",
-  "otp",
   "consent",
-  "location",
+  "payment",
   "success",
 ]
 
 const DL_FLOW: VerificationFlowStep[] = [
   "aadhaar",
-  "otp",
-  "upload-ekyc",
   "consent",
-  "location",
+  "payment",
   "success",
 ]
 
@@ -182,7 +179,7 @@ export const VERIFICATION_SERVICE_CONFIG: Record<VerificationServiceIcon, Verifi
     isValid: (v) => v.length >= 6,
     otpHint: "Enter the 6-digit OTP sent to your utility-registered mobile number.",
     primaryButtonText: "Verify Utilities",
-    steps: ["aadhaar", "otp", "consent", "success"],
+    steps: ["aadhaar", "consent", "payment", "success"],
   },
   more: {
     id: "more",
@@ -196,7 +193,7 @@ export const VERIFICATION_SERVICE_CONFIG: Record<VerificationServiceIcon, Verifi
     isValid: (v) => v.length >= 4,
     otpHint: "Enter the 6-digit OTP sent to your registered mobile number.",
     primaryButtonText: "Continue",
-    steps: ["aadhaar", "otp", "consent", "success"],
+    steps: ["aadhaar", "consent", "payment", "success"],
   },
 }
 
@@ -211,23 +208,7 @@ export function getServiceFlowSteps(
   config: VerificationServiceConfig,
   isB2C: boolean
 ): VerificationFlowStep[] {
-  const steps = [...config.steps]
-  if (isB2C && config.id === "aadhaar" && !steps.includes("payment")) {
-    const locIdx = steps.indexOf("location")
-    if (locIdx >= 0) {
-      steps.splice(locIdx + 1, 0, "payment")
-    }
-  }
-  if (isB2C && config.id !== "aadhaar" && !steps.includes("payment")) {
-    const locIdx = steps.indexOf("location")
-    if (locIdx >= 0) {
-      steps.splice(locIdx + 1, 0, "payment")
-    } else {
-      const successIdx = steps.indexOf("success")
-      if (successIdx >= 0) steps.splice(successIdx, 0, "payment")
-    }
-  }
-  return steps
+  return [...config.steps]
 }
 
 export function getNextFlowStep(

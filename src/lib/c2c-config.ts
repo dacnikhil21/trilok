@@ -170,7 +170,6 @@ export function findCategory(type: AgreementType, categoryId: string): Agreement
 }
 
 export const C2C_VERIFICATION_SERVICES = [
-  { label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#2563EB", icon: "aadhaar" as const },
   { label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#10B981", icon: "pan" as const },
   { label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#9333EA", icon: "gstin" as const },
   { label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB", icon: "driving-licence" as const },

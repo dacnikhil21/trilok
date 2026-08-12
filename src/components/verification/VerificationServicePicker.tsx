@@ -25,22 +25,22 @@ export function VerificationServiceGrid({
             key={service.label}
             type="button"
             onClick={() => onSelect(service)}
-            className="flex min-h-[76px] w-full items-center gap-2 rounded-[14px] border border-[#E8EDF3] bg-white px-2.5 py-2.5 text-left shadow-[0_2px_10px_rgba(15,23,42,0.04)] active:scale-[0.98] active:bg-[#FAFBFC]"
+            className="flex min-h-[78px] w-full items-center gap-2.5 rounded-[16px] border border-slate-200/90 bg-white px-3 py-3 text-left shadow-[0_2px_10px_rgba(15,23,42,0.04)] hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:border-slate-350 transition-all duration-200 active:scale-[0.97] active:bg-[#FAFBFC] group cursor-pointer"
           >
             <div
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]"
-              style={{ backgroundColor: `${service.color}18` }}
+              className="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-[12px] transition-transform duration-200 group-hover:scale-105"
+              style={{ backgroundColor: `${service.color}15` }}
             >
               <Icon3D name={service.icon} size="sm" alt={title} bare />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-[12px] font-bold leading-[1.2] text-[#0F172A]">{title}</p>
-              <p className="mt-0.5 line-clamp-1 text-[10px] leading-snug text-[#64748B]">{subtitle}</p>
+              <p className="line-clamp-2 text-[11.5px] font-bold leading-[1.2] text-[#0F172A]">{title}</p>
+              <p className="mt-0.5 line-clamp-1 text-[9.5px] leading-snug text-[#64748B] font-semibold">{subtitle}</p>
             </div>
             <ChevronRight
-              className="h-4 w-4 shrink-0"
+              className="h-3.5 w-3.5 shrink-0 transition-transform duration-250 group-hover:translate-x-0.5"
               style={{ color: service.color }}
-              strokeWidth={2.5}
+              strokeWidth={3}
               aria-hidden="true"
             />
           </button>

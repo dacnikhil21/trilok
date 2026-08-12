@@ -3,6 +3,9 @@ import { ChevronDown, Camera, Plus, CheckCircle2, Sparkles } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
+
+import { SALE_CATEGORIES, RENTAL_CATEGORIES, SERVICE_CATEGORIES } from "@/lib/c2c-config"
 
 type Props = {
   data: AgreementData
@@ -13,6 +16,43 @@ type Props = {
 
 export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: Props) {
   const [uploaded, setUploaded] = React.useState<Record<string, boolean>>({})
+
+  // Dropdown states and refs for click-outside handling
+  const [dropdownOpen, setDropdownOpen] = React.useState(false)
+  const [conditionOpen, setConditionOpen] = React.useState(false)
+  const [warrantyOpen, setWarrantyOpen] = React.useState(false)
+
+  const dropdownRef = React.useRef<HTMLDivElement>(null)
+  const conditionRef = React.useRef<HTMLDivElement>(null)
+  const warrantyRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
+      }
+      if (conditionRef.current && !conditionRef.current.contains(event.target as Node)) {
+        setConditionOpen(false)
+      }
+      if (warrantyRef.current && !warrantyRef.current.contains(event.target as Node)) {
+        setWarrantyOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const allCategories = React.useMemo(() => {
+    return [...SALE_CATEGORIES, ...RENTAL_CATEGORIES, ...SERVICE_CATEGORIES]
+  }, [])
+
+  const productOptions = React.useMemo(() => {
+    if (!data.category) return []
+    const matched = allCategories.find(
+      (c) => c.title.toLowerCase() === data.category.toLowerCase()
+    )
+    return matched ? matched.introItems : []
+  }, [data.category, allCategories])
 
   const toggleUpload = (key: string) => {
     setUploaded(prev => ({ ...prev, [key]: !prev[key] }))
@@ -47,46 +87,65 @@ export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: 
       {/* Form */}
       <div className="space-y-4">
         
-        {!isB2C ? (
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Category</label>
-            <div className="relative">
-              <select
-                value={data.category}
-                onChange={(e) => updateData({ category: e.target.value })}
-                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
-              >
-                <option value="" disabled>Select Category</option>
-                <option value="Industrial Plastic Parts">Industrial Plastic Parts</option>
-                <option value="Electronics & IT">Electronics & IT</option>
-                <option value="Automotive">Automotive</option>
-                <option value="Textiles">Textiles</option>
-                <option value="Other">Other</option>
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        ) : data.category ? (
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Category</label>
-            <div className="flex h-14 items-center rounded-[12px] border border-gray-200 bg-[#F8FAFC] px-4 text-[15px] font-semibold text-[#041B4A]">
+        {data.category ? (
+          <div className="space-y-1.5 text-left">
+            <label className="text-[13.5px] font-bold text-[#041B4A]">Category</label>
+            <div className="flex h-14 items-center rounded-[12px] border border-slate-200/90 bg-[#F8FAFC] px-4 text-[14.5px] font-semibold text-[#041B4A]">
               {data.category}
             </div>
           </div>
         ) : null}
 
-        <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">Product Name</label>
-          <Input 
-            type="text"
-            value={data.productName}
-            onChange={(e) => updateData({ productName: e.target.value })}
-            placeholder="e.g. Plastic Nozzle"
-            className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-          />
+        <div className="space-y-1.5 text-left">
+          <label className="text-[13.5px] font-bold text-[#041B4A]">Product / Item Type</label>
+          {productOptions.length > 0 ? (
+            <div className="relative">
+              <select
+                value={productOptions.includes(data.productName) ? data.productName : (data.productName ? "other" : "")}
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === "other") {
+                    updateData({ productName: "" })
+                  } else {
+                    updateData({ productName: val })
+                  }
+                }}
+                className="w-full appearance-none px-4 h-14 text-[14.5px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors cursor-pointer"
+              >
+                <option value="" disabled>Select Item Type</option>
+                {productOptions.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+                <option value="other">Other (Type custom)</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown className="w-5 h-5" />
+              </div>
+            </div>
+          ) : (
+            <Input 
+              type="text"
+              value={data.productName}
+              onChange={(e) => updateData({ productName: e.target.value })}
+              placeholder="e.g. Plastic Nozzle"
+              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
+            />
+          )}
         </div>
+
+        {/* Custom write-in text field if "other" is selected */}
+        {productOptions.length > 0 && (!productOptions.includes(data.productName) || data.productName === "") && (
+          <div className="space-y-1.5 text-left animate-in fade-in slide-in-from-top-1 duration-200">
+            <label className="text-[13.5px] font-bold text-[#041B4A]">Custom Product Name</label>
+            <Input 
+              type="text"
+              value={data.productName}
+              onChange={(e) => updateData({ productName: e.target.value })}
+              placeholder="Enter product name"
+              className="px-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-gray-200"
+            />
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
