@@ -399,13 +399,13 @@ export function RegisterFormContent() {
 
   // STEP 2: Owner / Person Aadhaar eKYC Verification
   const renderStep2 = () => (
-    <div className="space-y-4 select-none">
+    <div className="space-y-2.5 select-none">
       <div>
-        <label className="block text-[13.5px] font-bold text-[#0F172A] mb-1.5 px-0.5">
+        <label className="block text-[12.5px] font-bold text-[#0F172A] mb-1 px-0.5">
           {isB2C ? "Business Owner Aadhaar Number" : "Aadhaar Number"}
         </label>
         
-        <div className={`w-full h-[52px] rounded-[16px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3.5 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15 relative`}>
+        <div className={`w-full h-[46px] rounded-[12px] bg-white border ${error ? 'border-red-500' : 'border-slate-300'} shadow-2xs flex items-center px-3 transition-all focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/15 relative`}>
           <input
             type="text"
             value={aadhaarNumber}
@@ -417,31 +417,31 @@ export function RegisterFormContent() {
               setAadhaarDetails(null)
             }}
             placeholder="XXXX - XXXX - XXXX"
-            className="w-full h-full bg-transparent text-[14.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none tracking-wider pr-10"
+            className="w-full h-full bg-transparent text-[13.5px] font-bold text-[#0F172A] placeholder:text-slate-400 placeholder:font-normal focus:outline-none tracking-wider pr-10"
           />
           <div className="shrink-0 flex items-center gap-1">
-            <span className={cn("text-[10px] font-extrabold px-2.5 py-1 rounded-lg border transition-all shadow-2xs", aadhaarDetectedType.color)}>
+            <span className={cn("text-[9px] font-extrabold px-2 py-0.5 rounded-md border transition-all shadow-2xs", aadhaarDetectedType.color)}>
               {aadhaarDetectedType.label}
             </span>
           </div>
         </div>
         
         {/* Live Character Counter Progress Bar */}
-        <div className="flex items-center justify-between pt-1.5 px-0.5">
-          <span className="text-[11px] font-medium text-slate-500 truncate max-w-[240px]">
+        <div className="flex items-center justify-between pt-1 px-0.5">
+          <span className="text-[10px] font-medium text-slate-500 truncate max-w-[200px]">
             {aadhaarDetectedType.description}
           </span>
-          <span className="text-[10.5px] font-extrabold text-[#0052CC] bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-100/90 shrink-0">
+          <span className="text-[9.5px] font-extrabold text-[#0052CC] bg-blue-50/90 px-1.5 py-0.5 rounded border border-blue-100/90 shrink-0">
             {aadhaarNumber.length}/12 Digits
           </span>
         </div>
-
-        {error && <p className="text-[11.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
+        
+        {error && <p className="text-[10.5px] font-semibold text-red-500 mt-1 px-1">{error}</p>}
       </div>
 
       {/* Aadhaar OTP Verification button */}
       {!aadhaarDetails && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {!aadhaarOtpSent ? (
             <button
               type="button"
@@ -458,24 +458,24 @@ export function RegisterFormContent() {
                 setError("")
                 setAadhaarOtpSent(true)
               }}
-              className="w-full h-[48px] rounded-[16px] bg-blue-50 border border-blue-200 text-[#0052CC] font-bold text-[14px] hover:bg-blue-100/70 transition-all flex items-center justify-center gap-2"
+              className="w-full h-[42px] rounded-[12px] bg-blue-50 border border-blue-200 text-[#0052CC] font-bold text-[13px] hover:bg-blue-100/70 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Smartphone className="w-4.5 h-4.5 text-[#0052CC]" />
+              <Smartphone className="w-4 h-4 text-[#0052CC]" />
               <span>{isB2C ? "Send Owner Aadhaar OTP" : "Send Aadhaar OTP"}</span>
             </button>
           ) : (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-[18px] bg-blue-50/50 border border-blue-200/80 space-y-3 text-center"
+              className="p-3 rounded-[14px] bg-blue-50/50 border border-blue-200/80 space-y-2 text-center"
             >
-              <p className="text-[12.5px] font-semibold text-slate-700">
+              <p className="text-[11.5px] font-semibold text-slate-700">
                 Enter 6-digit Aadhaar OTP sent to UIDAI registered mobile:
               </p>
 
               <input
                 type="tel"
-                className="w-full max-w-[220px] text-center text-[26px] tracking-[0.4em] font-bold text-[#0F172A] h-12 border-b-2 border-[#0052CC] focus:outline-none bg-transparent"
+                className="w-full max-w-[180px] text-center text-[20px] tracking-[0.4em] font-bold text-[#0F172A] h-9 border-b-2 border-[#0052CC] focus:outline-none bg-transparent"
                 placeholder="••••••"
                 value={aadhaarOtp}
                 onChange={(e) => {
@@ -488,7 +488,7 @@ export function RegisterFormContent() {
                 type="button"
                 onClick={handleFetchAadhaarDetails}
                 disabled={aadhaarOtp.length < 6}
-                className="w-full h-[46px] rounded-[14px] bg-[#0052CC] text-white font-bold text-[14px] disabled:opacity-50 transition-opacity shadow-sm"
+                className="w-full h-[40px] rounded-[12px] bg-[#0052CC] text-white font-bold text-[13px] disabled:opacity-50 transition-opacity shadow-sm cursor-pointer"
               >
                 Verify & Fetch Aadhaar eKYC
               </button>
@@ -498,19 +498,19 @@ export function RegisterFormContent() {
       )}
 
       {/* ── GREEN LEGAL NOTICE & 3 SEPARATE DOCUMENTS BOX ── */}
-      <div className="p-4 rounded-[18px] bg-[#ECFDF5]/80 border border-[#10B981]/40 space-y-3">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-full bg-[#10B981]/15 flex items-center justify-center text-[#10B981] shrink-0 mt-0.5">
-            <ShieldCheck className="w-5 h-5" />
+      <div className="p-3 py-2.5 rounded-[14px] bg-[#ECFDF5]/80 border border-[#10B981]/40 space-y-2.5">
+        <div className="flex items-start gap-2">
+          <div className="w-7 h-7 rounded-full bg-[#10B981]/15 flex items-center justify-center text-[#10B981] shrink-0 mt-0.5">
+            <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="font-bold text-[14px] text-[#0F172A]">
+            <h4 className="font-bold text-[13px] text-[#0F172A]">
               {isB2C ? "Owner Identity Verification" : "Your Privacy Matters"}
             </h4>
-            <p className="text-[12px] text-slate-600 leading-snug mt-1 font-medium">
+            <p className="text-[11px] text-slate-600 leading-snug mt-0.5 font-medium">
               {isB2C
-                ? "Business owner verifies with Aadhaar eKYC firstly to establish authorized identity before registering business credentials."
-                : "We collect and process your Aadhaar number and eKYC details only for identity verification, agreement creation, fraud prevention and compliance with applicable laws."}
+                ? "Owner verifies Aadhaar eKYC to establish identity before registering business."
+                : "Aadhaar eKYC details are processed solely for verification, fraud prevention, and compliance."}
             </p>
           </div>
         </div>
@@ -518,47 +518,47 @@ export function RegisterFormContent() {
         {/* Checkbox */}
         <div 
           onClick={() => setStep2ConsentChecked(!step2ConsentChecked)}
-          className="flex items-start gap-2.5 pt-1 cursor-pointer"
+          className="flex items-start gap-2 pt-0.5 cursor-pointer select-none"
         >
-          <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
+          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
             step2ConsentChecked ? "bg-[#10B981] border-[#10B981] text-white" : "border-slate-300 bg-white"
           }`}>
-            {step2ConsentChecked && <Check className="w-3 h-3" strokeWidth={3} />}
+            {step2ConsentChecked && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
           </div>
-          <p className="text-[11.5px] font-semibold text-slate-700 leading-tight">
+          <p className="text-[10.5px] font-semibold text-slate-700 leading-tight">
             {isB2C
               ? "I confirm that I am the authorized business owner and voluntarily consent to verify my identity via Aadhaar eKYC."
-              : "I voluntarily consent to eSaleAgreement collecting and processing my Aadhaar number and Aadhaar eKYC details solely for identity verification, agreement creation, fraud prevention, and compliance with applicable laws."}
+              : "I voluntarily consent to processing my Aadhaar eKYC solely for identity verification & compliance."}
           </p>
         </div>
 
         {/* 3 Clickable Legal Document Pill Buttons */}
-        <div className="pt-2.5 border-t border-[#10B981]/25 text-[11px] font-bold">
+        <div className="pt-2 border-t border-[#10B981]/25 text-[10px] font-bold">
           <div className="grid grid-cols-3 gap-1.5 w-full text-center">
             <button
               type="button"
               onClick={() => openLegalDoc("privacy")}
-              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs"
+              className="flex items-center justify-center gap-0.5 py-1 px-0.5 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs cursor-pointer"
             >
-              <FileText className="w-3.5 h-3.5 text-[#0052CC] shrink-0" />
+              <FileText className="w-3 h-3 text-[#0052CC] shrink-0" />
               <span className="truncate">Privacy Policy</span>
             </button>
 
             <button
               type="button"
               onClick={() => openLegalDoc("terms")}
-              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs"
+              className="flex items-center justify-center gap-0.5 py-1 px-0.5 rounded-lg bg-white border border-slate-200 text-[#0052CC] hover:bg-slate-50 hover:border-[#0052CC] transition-all shadow-2xs cursor-pointer"
             >
-              <FileText className="w-3.5 h-3.5 text-[#0052CC] shrink-0" />
+              <FileText className="w-3 h-3 text-[#0052CC] shrink-0" />
               <span className="truncate">Terms & Conditions</span>
             </button>
 
             <button
               type="button"
               onClick={() => openLegalDoc("consent")}
-              className="flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg bg-white border border-slate-200 text-[#10B981] hover:bg-slate-50 hover:border-[#10B981] transition-all shadow-2xs"
+              className="flex items-center justify-center gap-0.5 py-1 px-0.5 rounded-lg bg-white border border-slate-200 text-[#10B981] hover:bg-slate-50 hover:border-[#10B981] transition-all shadow-2xs cursor-pointer"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+              <ShieldCheck className="w-3 h-3 text-[#10B981] shrink-0" />
               <span className="truncate">Consent Notice</span>
             </button>
           </div>
@@ -568,25 +568,25 @@ export function RegisterFormContent() {
       {/* Verified Details Result Box */}
       {aadhaarDetails && (
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-[18px] bg-[#ECFDF5] border border-[#10B981]/40 space-y-2 text-[13px]"
+          className="p-3 rounded-[14px] bg-[#ECFDF5] border border-[#10B981]/40 space-y-1.5 text-[12px]"
         >
-          <div className="flex items-center gap-2 text-[#10B981] font-bold text-[14px]">
-            <CheckCircle2 className="w-5 h-5 fill-[#10B981] text-white" />
+          <div className="flex items-center gap-1.5 text-[#10B981] font-bold text-[13px]">
+            <CheckCircle2 className="w-4 h-4 fill-[#10B981] text-white" />
             <span>Owner Aadhaar eKYC Verified</span>
           </div>
-          <div className="text-[#0F172A] font-semibold pt-1">
-            <p className="text-[15.5px] font-bold text-[#0052CC]">{aadhaarDetails.name}</p>
-            <p className="text-[12.5px] text-slate-600 mt-0.5 leading-snug">{aadhaarDetails.address}</p>
-            {aadhaarDetails.extra && <p className="text-[12px] text-[#0052CC] font-bold mt-1.5">{aadhaarDetails.extra}</p>}
+          <div className="text-[#0F172A] font-semibold pt-0.5">
+            <p className="text-[14px] font-bold text-[#0052CC]">{aadhaarDetails.name}</p>
+            <p className="text-[11.5px] text-slate-600 mt-0.5 leading-snug">{aadhaarDetails.address}</p>
+            {aadhaarDetails.extra && <p className="text-[11px] text-[#0052CC] font-bold mt-1">{aadhaarDetails.extra}</p>}
           </div>
         </motion.div>
       )}
 
       {/* DPDP Tagline */}
-      <div className="text-center text-[11px] text-slate-500 font-semibold flex items-center justify-center gap-1 pt-0.5">
-        <Lock className="w-3 h-3 text-slate-400" />
+      <div className="text-center text-[10px] text-slate-500 font-semibold flex items-center justify-center gap-1 pt-0.5">
+        <Lock className="w-2.5 h-2.5 text-slate-400" />
         <span>Secure. Encrypted. UIDAI Compliant eKYC.</span>
       </div>
     </div>

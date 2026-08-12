@@ -96,31 +96,60 @@ export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: 
           </div>
         ) : null}
 
-        <div className="space-y-1.5 text-left">
+        <div className="space-y-1.5 text-left relative" ref={dropdownRef}>
           <label className="text-[13.5px] font-bold text-[#041B4A]">Product / Item Type</label>
           {productOptions.length > 0 ? (
             <div className="relative">
-              <select
-                value={productOptions.includes(data.productName) ? data.productName : (data.productName ? "other" : "")}
-                onChange={(e) => {
-                  const val = e.target.value
-                  if (val === "other") {
-                    updateData({ productName: "" })
-                  } else {
-                    updateData({ productName: val })
-                  }
-                }}
-                className="w-full appearance-none px-4 h-14 text-[14.5px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors cursor-pointer"
+              {/* Dropdown Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-full px-4 h-14 text-[14.5px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors flex items-center justify-between text-[#0F172A] cursor-pointer"
               >
-                <option value="" disabled>Select Item Type</option>
-                {productOptions.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-                <option value="other">Other (Type custom)</option>
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <ChevronDown className="w-5 h-5" />
-              </div>
+                <span>{data.productName || "Select Item Type"}</span>
+                <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform duration-200", dropdownOpen ? "transform rotate-180" : "")} />
+              </button>
+
+              {/* Custom Dropdown Overlay */}
+              {dropdownOpen && (
+                <div className="absolute left-0 right-0 top-[60px] bg-white border border-gray-200 rounded-[12px] shadow-[0_4px_20px_rgba(15,23,42,0.08)] z-50 py-1.5 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="max-h-[200px] overflow-y-auto divide-y divide-slate-50">
+                    {productOptions.map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => {
+                          updateData({ productName: opt })
+                          setDropdownOpen(false)
+                        }}
+                        className={cn(
+                          "w-full text-left px-4 py-3 text-[13.5px] transition-colors font-semibold cursor-pointer",
+                          data.productName === opt 
+                            ? "bg-[#0033A0]/5 text-[#0033A0] font-bold" 
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                        )}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateData({ productName: "" })
+                        setDropdownOpen(false)
+                      }}
+                      className={cn(
+                        "w-full text-left px-4 py-3 text-[13.5px] transition-colors font-semibold border-t border-slate-100 cursor-pointer",
+                        data.productName !== "" && !productOptions.includes(data.productName)
+                          ? "bg-[#0033A0]/5 text-[#0033A0] font-bold" 
+                          : "bg-white text-[#0033A0] hover:bg-slate-50"
+                      )}
+                    >
+                      Other (Type custom)
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <Input 

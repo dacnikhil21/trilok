@@ -27,6 +27,7 @@ import { ProgressStepper } from "@/components/ui/ProgressStepper"
 import { TermsModal } from "@/components/ui/TermsModal"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useDevSettingsHandlers } from "@/components/ui/DevSettingsProvider"
 import { 
   ShieldCheck, Camera, MapPin, Check, Bell, RefreshCw, CheckCircle2, Lock, Smartphone, 
   FileText, CreditCard, QrCode, Sparkles, Upload, Trash2, Download, AlertCircle, 
@@ -63,6 +64,15 @@ function VerifyIdentityContent() {
     () => getServiceFlowSteps(serviceConfig, isB2C),
     [serviceConfig, isB2C]
   )
+
+  const verificationSteps = React.useMemo(() => {
+    return [
+      { label: "Details", icon: FileText },
+      { label: "Consent", icon: FileSignature },
+      { label: "Payment", icon: CreditCard },
+      { label: "Report", icon: ShieldCheck },
+    ]
+  }, [])
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
@@ -114,6 +124,58 @@ function VerifyIdentityContent() {
   const [livenessCaptured, setLivenessCaptured] = React.useState(false)
   const [scanning, setScanning] = React.useState(false)
 
+  // Register Developer Settings handlers
+  useDevSettingsHandlers({
+    onAutoFillAadhaar: (valid) => {
+      if (valid) {
+        let testVal = ""
+        switch (serviceConfig.id) {
+          case "pan": testVal = "ABCDE1234F"; break
+          case "rc": testVal = "AP39AA1234"; break
+          case "gstin": testVal = "36AAAAA1111A1Z1"; break
+          case "driving-licence": testVal = "AP0920150000000"; break
+          case "udyam": testVal = "UDYAM-TS-02-0000001"; break
+          case "utilities": testVal = "1122334455"; break
+          default: testVal = "1234567890";
+        }
+        setDocumentValue(testVal)
+        if (serviceConfig.secondaryField) {
+          setSecondaryValue("12/04/1992")
+        }
+        setConsentFile({ name: "consent_auto_filled.pdf", size: "142 KB" })
+        setTermsAccepted(true)
+        setPrivacyAccepted(true)
+      } else {
+        setDocumentValue("")
+        setSecondaryValue("")
+        setConsentFile(null)
+        setTermsAccepted(false)
+        setPrivacyAccepted(false)
+      }
+    },
+    onAutoFillBusiness: () => {
+      let testVal = ""
+      if (serviceConfig.id === "gstin") {
+        testVal = "36AAAAA1111A1Z1"
+      } else if (serviceConfig.id === "pan") {
+        testVal = "ABCDE1234F"
+      } else {
+        testVal = "TESTBUSINESS123"
+      }
+      setDocumentValue(testVal)
+      setConsentFile({ name: "consent_auto_filled.pdf", size: "142 KB" })
+      setTermsAccepted(true)
+      setPrivacyAccepted(true)
+    },
+    onJumpStep: (targetStepNumber) => {
+      const stepsList: OnboardingStep[] = ["aadhaar", "consent", "payment", "success"]
+      const targetStep = stepsList[targetStepNumber - 1]
+      if (targetStep) {
+        setStep(targetStep)
+      }
+    }
+  })
+
   React.useEffect(() => {
     setStep("aadhaar")
     setDocumentValue("")
@@ -142,9 +204,7 @@ function VerifyIdentityContent() {
 
   const stepNumber = React.useMemo(() => {
     const idx = flowSteps.indexOf(step)
-    if (idx < 0) return 1
-    const total = flowSteps.filter((s) => s !== "success").length
-    return Math.min(5, Math.max(1, Math.ceil(((idx + 1) / total) * 4)))
+    return idx >= 0 ? idx : 0
   }, [step, flowSteps])
 
   const advanceStep = () => {
@@ -906,6 +966,7 @@ function VerifyIdentityContent() {
     const now = new Date()
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`
+    const timestampStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}, ${now.toLocaleTimeString("en-US", { hour: 'numeric', minute: '2-digit', hour12: true })}`
 
     const getMockDetails = () => {
       const docVal = documentValue || "ABCDE1234F"
@@ -914,8 +975,10 @@ function VerifyIdentityContent() {
           return [
             { label: "PAN Number", value: docVal },
             { label: "Name (as per PAN)", value: "RAMESH KUMAR" },
+            { label: "Father's Name", value: "SURESH KUMAR" },
+            { label: "Date of Birth", value: "15 Jan 1990" },
             { label: "PAN Type", value: "Individual" },
-            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Status", value: "Active" },
             { label: "Last Updated On", value: dateStr },
           ]
         case "rc":
@@ -927,14 +990,14 @@ function VerifyIdentityContent() {
             { label: "Engine Number", value: "K12MXXXXXX456" },
             { label: "Fitness Valid Upto", value: "14 Jan 2038" },
             { label: "Insurance Valid Upto", value: "10 Jan 2027" },
-            { label: "RC Status", value: "Active (VAHAN Verified)", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "RC Status", value: "Active" },
           ]
         case "gstin":
           return [
             { label: "GSTIN Number", value: docVal },
             { label: "Legal Name", value: "TRILOK RENTALS PRIVATE LIMITED" },
             { label: "Taxpayer Type", value: "Regular" },
-            { label: "GSTIN Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "GSTIN Status", value: "Active" },
             { label: "Principal Place", value: "Flat 302, Green Meadows, Madhapur, Hyderabad, 500081" },
           ]
         case "driving-licence":
@@ -944,7 +1007,7 @@ function VerifyIdentityContent() {
             { label: "Date of Birth", value: secondaryValue || "12/04/1992" },
             { label: "Licensing Authority", value: "RTO Hyderabad" },
             { label: "Validity (Non-Transport)", value: "05 Dec 2040" },
-            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Status", value: "Active" },
           ]
         case "udyam":
           return [
@@ -952,7 +1015,7 @@ function VerifyIdentityContent() {
             { label: "Enterprise Name", value: "TRILOK LOGISTICS" },
             { label: "Major Activity", value: "Services" },
             { label: "Enterprise Type", value: "Micro" },
-            { label: "Status", value: "Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Status", value: "Active" },
           ]
         case "utilities":
           return [
@@ -960,58 +1023,182 @@ function VerifyIdentityContent() {
             { label: "Consumer Name", value: "V. KRISHNA MURTHY" },
             { label: "Utility Provider", value: "APEPDCL (Power Distribution)" },
             { label: "Billing Address", value: "Door No 4-82/A, Gajuwaka, Visakhapatnam, AP, 530026" },
-            { label: "Status", value: "Verified & Active", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Status", value: "Verified & Active" },
           ]
         default:
           return [
             { label: "Reference Number", value: docVal },
-            { label: "Verification Status", value: "Success / Verified", isBadge: true, badgeColor: "bg-[#ECF8F1] text-[#10B981] border-[#C5EBD6]" },
+            { label: "Verification Status", value: "Verified" },
             { label: "Timestamp", value: dateStr },
           ]
       }
     }
 
+    const getSourceInfo = () => {
+      switch (serviceConfig.id) {
+        case "pan":
+          return {
+            fetchedFrom: "Income Tax Department (NSDL)",
+            dataProvider: "Protean eGov Technologies Limited (NSDL)",
+            refNo: "NSDL842093847561"
+          }
+        case "rc":
+          return {
+            fetchedFrom: "Ministry of Road Transport & Highways",
+            dataProvider: "VAHAN Common Portal",
+            refNo: "VAHAN9903847162"
+          }
+        case "gstin":
+          return {
+            fetchedFrom: "Goods and Services Tax Network",
+            dataProvider: "GST Common Portal",
+            refNo: "GSTN3384729103"
+          }
+        case "driving-licence":
+          return {
+            fetchedFrom: "Ministry of Road Transport & Highways",
+            dataProvider: "SARATHI Portal",
+            refNo: "SARATHI77283910"
+          }
+        case "udyam":
+          return {
+            fetchedFrom: "Ministry of Micro, Small and Medium Enterprises",
+            dataProvider: "MSME Udyam Portal",
+            refNo: "UDYAM9923847261"
+          }
+        case "utilities":
+          return {
+            fetchedFrom: "State Electricity / Water Board Portal",
+            dataProvider: "Power/Water Distribution Utility",
+            refNo: "UTIL1029384756"
+          }
+        default:
+          return {
+            fetchedFrom: "National Verification Database",
+            dataProvider: "Verification API Gateway",
+            refNo: "VERIFY00123984"
+          }
+      }
+    }
+
     const details = getMockDetails()
+    const sourceInfo = getSourceInfo()
 
     return (
       <div className="space-y-4 animate-in zoom-in-95 duration-200">
-        {/* Verification Success Header */}
-        <div className="flex flex-col items-center text-center">
-          <div className="w-13 h-13 bg-[#ECF8F1] border border-[#C5EBD6] rounded-full flex items-center justify-center text-[#10B981] mb-2 shadow-sm">
-            <Check className="w-7 h-7 stroke-[3]" />
-          </div>
-          <h3 className="text-[15px] font-extrabold text-[#10B981] leading-tight">Verification Successful</h3>
-          <p className="text-[11px] font-semibold text-slate-500 mt-0.5 leading-normal">
-            Details fetched successfully.
-          </p>
-        </div>
-
-        {/* Verification Details Table card */}
-        <div className="bg-white border border-slate-200/90 rounded-[16px] overflow-hidden shadow-xs">
-          <div className="divide-y divide-slate-100">
-            {details.map((detail, idx) => (
-              <div key={idx} className="flex justify-between items-center px-4 py-3 text-left">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{detail.label}</span>
-                {detail.isBadge ? (
-                  <span className={cn("text-[9.5px] font-black px-2.5 py-0.5 rounded-full border uppercase", detail.badgeColor)}>
-                    {detail.value}
-                  </span>
-                ) : (
-                  <span className="text-[11.5px] font-extrabold text-[#0F172A] pl-4 text-right break-words max-w-[65%]">
-                    {detail.value}
-                  </span>
-                )}
+        
+        {/* Verification Report Document Card */}
+        <div className="bg-white border border-slate-200 rounded-[14px] p-5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] text-left space-y-4 max-w-full mx-auto relative overflow-hidden">
+          
+          {/* Header */}
+          <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+            <div>
+              <div className="flex items-center gap-1">
+                <div className="w-4.5 h-4.5 bg-[#0033A0] rounded-[6px] flex items-center justify-center text-white">
+                  <Check className="w-3 h-3 stroke-[3.5]" />
+                </div>
+                <span className="text-[13px] font-black text-[#0033A0] tracking-tight">eSaleAgreement</span>
               </div>
-            ))}
+              <p className="text-[7.5px] text-slate-400 font-extrabold tracking-wider uppercase mt-0.5">Trusted. Verified. Secure.</p>
+            </div>
+            <div className="text-right">
+              <h4 className="text-[11px] font-black text-[#0F172A] leading-tight">Verification Report</h4>
+              <p className="text-[7.5px] text-slate-400 font-semibold mt-0.5">Generated on: {timestampStr}</p>
+            </div>
           </div>
-        </div>
 
-        {/* Source trust banner */}
-        <div className="p-3 bg-[#ECF8F1]/40 border border-[#C5EBD6] rounded-[14px] flex items-start gap-2.5 shadow-2xs text-left">
-          <Lock className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
-          <p className="text-[9.5px] text-slate-500 font-semibold leading-normal">
-            This information is fetched from authorized databases and used only for the purpose of this agreement.
-          </p>
+          {/* Verification Title */}
+          <div className="flex items-center gap-1.5 text-[#10B981] font-bold text-[10px] uppercase tracking-wide">
+            <CheckCircle className="w-3.5 h-3.5 text-[#10B981]" strokeWidth={2.5} />
+            <span>{serviceLabel} Verification Report</span>
+          </div>
+
+          {/* Metadata Table */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[9.5px] border-b border-slate-100 pb-3 font-semibold">
+            <div className="flex justify-between"><span className="text-slate-400">Verification ID</span> <span className="font-extrabold text-slate-700">EVR827364</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Request ID</span> <span className="font-extrabold text-slate-700">REQ12938475</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Verification Type</span> <span className="font-extrabold text-slate-700">{serviceLabel} Verification</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Purpose</span> <span className="font-extrabold text-slate-700 capitalize">{purpose} Verification</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Requested By</span> <span className="font-extrabold text-slate-700">ABC Enterprises</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Verified On</span> <span className="font-extrabold text-slate-700">{dateStr}</span></div>
+          </div>
+
+          {/* Verification Result Card */}
+          <div className="border border-[#10B981]/25 bg-[#ECF8F1]/10 rounded-[12px] p-3 space-y-1.5">
+            <div className="flex justify-between items-center border-b border-[#10B981]/15 pb-1.5 mb-1">
+              <span className="text-[9.5px] font-black text-slate-400 uppercase tracking-wider">Verification Result</span>
+              <span className="flex items-center gap-0.5 text-[8.5px] font-black text-[#10B981] bg-[#ECF8F1] border border-[#C5EBD6] px-2 py-0.5 rounded-full uppercase">
+                <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                Verification Successful
+              </span>
+            </div>
+            
+            <div className="divide-y divide-slate-100/50">
+              {details.map((detail, idx) => (
+                <div key={idx} className="flex justify-between items-center py-1.5 text-[10px] font-semibold">
+                  <span className="text-slate-400">{detail.label}</span>
+                  <span className="font-extrabold text-[#0F172A]">{detail.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Source Information Card */}
+          <div className="border border-slate-200 bg-slate-50/50 rounded-[12px] p-3 space-y-1.5">
+            <div className="border-b border-slate-200/50 pb-1.5 mb-1">
+              <span className="text-[9.5px] font-black text-slate-400 uppercase tracking-wider">Source Information</span>
+            </div>
+            <div className="divide-y divide-slate-100">
+              <div className="flex justify-between py-1.5 text-[10px] font-semibold">
+                <span className="text-slate-400">Data fetched from</span>
+                <span className="font-extrabold text-slate-700">{sourceInfo.fetchedFrom}</span>
+              </div>
+              <div className="flex justify-between py-1.5 text-[10px] font-semibold">
+                <span className="text-slate-400">Data Provider</span>
+                <span className="font-extrabold text-slate-700">{sourceInfo.dataProvider}</span>
+              </div>
+              <div className="flex justify-between py-1.5 text-[10px] font-semibold">
+                <span className="text-slate-400">Fetch Reference No.</span>
+                <span className="font-mono text-slate-600 font-semibold">{sourceInfo.refNo}</span>
+              </div>
+              <div className="flex justify-between py-1.5 text-[10px] font-semibold">
+                <span className="text-slate-400">Data as on</span>
+                <span className="font-extrabold text-slate-700">{timestampStr}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="border-l-2 border-slate-300 pl-2.5">
+            <p className="text-[8px] text-slate-400 font-semibold leading-normal text-justify">
+              <span className="font-extrabold uppercase text-slate-500">Disclaimer:</span> This report is generated based on data received from authorized source through secure API. eSaleAgreement does not store unnecessary data and uses it only for the above verification purpose.
+            </p>
+          </div>
+
+          {/* Footer Address */}
+          <div className="flex justify-between items-end text-[8px] border-t border-slate-150 pt-2.5">
+            <div>
+              <div className="flex items-center gap-0.5">
+                <div className="w-3 h-3 bg-[#0033A0] rounded-sm flex items-center justify-center text-white">
+                  <Check className="w-2 h-2 stroke-[3.5]" />
+                </div>
+                <span className="font-black text-[#0033A0]">eSaleAgreement</span>
+              </div>
+              <p className="text-slate-400 font-bold mt-0.5">Trilok Infotech Private Limited</p>
+            </div>
+            <div className="text-right font-bold text-slate-500 space-y-0.5">
+              <p>www.esaleagreement.in</p>
+              <p>support@esaleagreement.in</p>
+              <p>+91 86398 33447</p>
+            </div>
+          </div>
+
+          {/* Blue Bottom Bar */}
+          <div className="-mx-5 -mb-5 bg-[#041B4A] text-white px-5 py-2.5 rounded-b-[14px] flex justify-between text-[7.5px] font-black uppercase tracking-wider mt-3">
+            <span>Secure • Private • Trusted</span>
+            <span>Thank you for using eSaleAgreement</span>
+          </div>
+
         </div>
 
         {/* Action Buttons */}
@@ -1161,6 +1348,7 @@ function VerifyIdentityContent() {
         isButtonLoading={isLoading}
         showBackButton={step !== "success"}
         stepperStep={stepNumber}
+        stepperSteps={verificationSteps}
         hideFooterButton={step === "payment" || step === "success"}
         noCardWrapper={step === "payment" || step === "success"}
         moduleType={isB2C ? "b2c" : "c2c"}
