@@ -76,8 +76,9 @@ function VerifyIdentityContent() {
 
   const [step, setStep] = React.useState<OnboardingStep>("aadhaar")
 
-  // Verification purpose & file upload states
+  // Verification purpose state
   const [purpose, setPurpose] = React.useState<string>("customer")
+  const [otherPurposeText, setOtherPurposeText] = React.useState<string>("")
   const [consentFile, setConsentFile] = React.useState<{ name: string; size: string } | null>(null)
   const [isDragging, setIsDragging] = React.useState(false)
 
@@ -220,8 +221,8 @@ function VerifyIdentityContent() {
         setError(`Please enter a valid ${serviceConfig.label} number.`)
         return
       }
-      if (purpose === "customer" && !consentFile) {
-        setError("Please upload the customer consent document to proceed.")
+      if (purpose === "other" && otherPurposeText.trim().length === 0) {
+        setError("Please specify the purpose of verification.")
         return
       }
       advanceStep()
@@ -337,94 +338,30 @@ function VerifyIdentityContent() {
         </div>
       </div>
 
-      {/* Conditional File Upload segment */}
-      {purpose === "customer" && (
-        <div className="text-left space-y-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-          <label className="text-[12px] font-extrabold text-[#041B4A] uppercase tracking-wider flex items-center gap-1">
-            Upload Client Consent Form
-            <span className="text-[#EF4444] font-extrabold text-[11px]">*</span>
-          </label>
-          
-          {!consentFile ? (
-            <div
-              onDragOver={(e) => {
-                e.preventDefault()
-                setIsDragging(true)
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault()
-                setIsDragging(false)
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                  const file = e.dataTransfer.files[0]
-                  setConsentFile({
-                    name: file.name,
-                    size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-                  })
-                  setError("")
-                }
-              }}
-              onClick={() => {
-                const input = document.getElementById("consent-file-input")
-                if (input) input.click()
-              }}
-              className={cn(
-                "w-full rounded-[14px] border-2 border-dashed flex flex-col items-center justify-center p-5 text-center cursor-pointer transition-all duration-200 bg-[#FBFBFA]",
-                isDragging 
-                  ? "border-[#0033A0] bg-[#0033A0]/5 scale-[1.01]" 
-                  : "border-slate-200/90 hover:border-slate-350 hover:bg-slate-50"
-              )}
-            >
-              <input
-                id="consent-file-input"
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0]
-                    setConsentFile({
-                      name: file.name,
-                      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-                    })
-                    setError("")
-                  }
-                }}
-              />
-              <div className="w-9 h-9 rounded-full bg-blue-50 text-[#0033A0] flex items-center justify-center mb-2 shadow-2xs">
-                <Upload className="w-4.5 h-4.5" />
-              </div>
-              <p className="text-[11.5px] font-bold text-[#0F172A] leading-tight">
-                Drag & drop consent form, or <span className="text-[#0033A0] underline">browse</span>
-              </p>
-              <p className="text-[9.5px] font-medium text-slate-400 mt-1 leading-normal">
-                Supports PDF, JPEG, PNG (Max 5MB)
-              </p>
-            </div>
-          ) : (
-            <div className="w-full rounded-[14px] border border-[#C5EBD6] bg-[#ECF8F1]/40 flex items-center justify-between p-3 shadow-2xs">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-[8px] bg-[#C5EBD6]/50 text-[#10B981] flex items-center justify-center shrink-0">
-                  <FileText className="w-4 h-4" />
-                </div>
-                <div className="min-w-0 text-left">
-                  <p className="text-[11px] font-extrabold text-[#0F172A] truncate leading-tight">
-                    {consentFile.name}
-                  </p>
-                  <p className="text-[9px] font-medium text-slate-500 mt-0.5 leading-none">
-                    {consentFile.size} • <span className="text-[#10B981] font-bold">Uploaded</span>
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setConsentFile(null)}
-                className="p-1 rounded-full hover:bg-slate-200 text-slate-400 hover:text-error transition-colors shrink-0"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
+      {/* Conditional 50-word specification box for Other */}
+      {purpose === "other" && (
+        <div className="text-left space-y-1.5 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center justify-between">
+            <label className="text-[12px] font-extrabold text-[#041B4A] uppercase tracking-wider">
+              Specify Purpose <span className="text-[#EF4444]">*</span>
+            </label>
+            <span className="text-[11px] font-bold text-slate-400">
+              {otherPurposeText.trim().split(/\s+/).filter(Boolean).length} / 50 words
+            </span>
+          </div>
+          <textarea
+            value={otherPurposeText}
+            onChange={(e) => {
+              const text = e.target.value
+              const words = text.trim().split(/\s+/).filter(Boolean)
+              if (words.length <= 50 || text.length < otherPurposeText.length) {
+                setOtherPurposeText(text)
+                setError("")
+              }
+            }}
+            placeholder="Please describe the purpose of verification (maximum 50 words)..."
+            className="w-full p-3.5 text-[13.5px] font-semibold text-[#0F172A] placeholder:text-slate-400 bg-white border border-slate-200/90 rounded-[12px] min-h-[90px] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/20 focus:border-[#0033A0] shadow-2xs"
+          />
         </div>
       )}
 
