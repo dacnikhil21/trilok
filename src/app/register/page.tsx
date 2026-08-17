@@ -35,7 +35,7 @@ const C2C_REGISTRATION_STEPS = [
 ]
 
 
-export function RegisterFormContent() {
+function RegisterFormContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const rawModule = (searchParams.get("module") || "c2c").toLowerCase()
