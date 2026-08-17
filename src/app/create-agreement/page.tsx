@@ -267,7 +267,7 @@ function CreateAgreementContent() {
     (opts: { type?: AgreementType | null; category?: string | null }) => {
       const p = new URLSearchParams()
       p.set("module", moduleType)
-      const t = opts.type ?? agreementType
+      const t = opts.type !== undefined ? opts.type : agreementType
       if (t) p.set("type", t)
       const c = opts.category !== undefined ? opts.category : categoryId
       if (c) p.set("category", c)
@@ -287,39 +287,19 @@ function CreateAgreementContent() {
 
     const t = parseAgreementType(searchParams.get("type"))
     const c = searchParams.get("category")
-    const p = searchParams.get("phase") as FlowPhase | null
 
     setAgreementType(t)
     setCategoryId(c)
 
-    if (inWizardRef.current && t && c) {
-      setPhase("wizard")
-      return
-    }
-
-    if (p) {
-      setPhase(p)
-      return
-    }
-
-    if (isC2CFromDashboard()) {
-      if (t && c) {
-        setPhase("wizard")
-        inWizardRef.current = true
-      } else if (t) {
-        setPhase("category")
-      } else {
-        setPhase("type")
-      }
-      return
-    }
-
     if (!t) {
       setPhase("type")
+      inWizardRef.current = false
     } else if (!c) {
       setPhase("category")
+      inWizardRef.current = false
     } else {
       setPhase("wizard")
+      inWizardRef.current = true
     }
   }, [searchParams, isB2C, b2cCategoryId])
 
@@ -367,17 +347,23 @@ function CreateAgreementContent() {
 
   const handleBack = () => {
     if (phase === "wizard") {
-      if (currentStep === 1) {
-        if (isB2C) {
-          router.push(b2cReturnPath)
-          return
-        }
-        inWizardRef.current = false
-        setCategoryId(null)
-        setPhase("category")
-        router.replace(buildFlowUrl({ type: agreementType }))
-      } else if (currentStep <= 10) {
+      if (currentStep > 1) {
         prevStep()
+        return
+      }
+      // currentStep === 1 (Select Your Role)
+      if (isB2C) {
+        router.push(b2cReturnPath)
+        return
+      }
+      inWizardRef.current = false
+      setCategoryId(null)
+      setCurrentStep(1)
+      setPhase("category")
+      if (agreementType) {
+        router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}`)
+      } else {
+        router.replace(`/create-agreement?module=${moduleType}`)
       }
       return
     }
@@ -389,7 +375,11 @@ function CreateAgreementContent() {
       }
       setPhase("category")
       setCategoryId(null)
-      router.replace(buildFlowUrl({ type: agreementType }))
+      if (agreementType) {
+        router.replace(`/create-agreement?module=${moduleType}&type=${agreementType}`)
+      } else {
+        router.replace(`/create-agreement?module=${moduleType}`)
+      }
       return
     }
 
@@ -398,15 +388,16 @@ function CreateAgreementContent() {
         router.push(b2cReturnPath)
         return
       }
-      if (isC2CFromDashboard()) {
-        clearC2CFromDashboard()
-        router.push(c2cHomePath)
-        return
-      }
+      clearC2CFromDashboard()
       setAgreementType(null)
       setCategoryId(null)
       setPhase("type")
       router.replace(`/create-agreement?module=${moduleType}`)
+      return
+    }
+
+    if (phase === "type") {
+      router.push(isB2C ? b2cReturnPath : c2cHomePath)
       return
     }
 
