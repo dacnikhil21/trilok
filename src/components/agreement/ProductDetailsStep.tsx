@@ -1,93 +1,303 @@
 import * as React from "react"
-import { ChevronDown, Camera, Plus, CheckCircle2, Sparkles } from "lucide-react"
+import { ChevronDown, Calendar, Check } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import { AgreementStepper } from "@/components/agreement/AgreementStepper"
 
-import { SALE_CATEGORIES, RENTAL_CATEGORIES, SERVICE_CATEGORIES } from "@/lib/c2c-config"
+import {
+  type AgreementType,
+  type TemplateField,
+  findCategory,
+  getTypeConfig,
+  SALE_CATEGORIES,
+  RENTAL_CATEGORIES,
+  SERVICE_CATEGORIES,
+} from "@/lib/c2c-config"
 
 type Props = {
   data: AgreementData
   updateData: (d: Partial<AgreementData>) => void
   onNext: () => void
   isB2C?: boolean
+  agreementType?: AgreementType | null
+  categoryId?: string | null
 }
 
-export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: Props) {
-  const [uploaded, setUploaded] = React.useState<Record<string, boolean>>({})
+export function ProductDetailsStep({ data, updateData, onNext, agreementType, categoryId }: Props) {
+  const category =
+    agreementType && categoryId ? findCategory(agreementType, categoryId) : undefined
 
-  // Dropdown states and refs for click-outside handling
-  const [dropdownOpen, setDropdownOpen] = React.useState(false)
-  const [conditionOpen, setConditionOpen] = React.useState(false)
-  const [warrantyOpen, setWarrantyOpen] = React.useState(false)
-
-  const dropdownRef = React.useRef<HTMLDivElement>(null)
-  const conditionRef = React.useRef<HTMLDivElement>(null)
-  const warrantyRef = React.useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false)
-      }
-      if (conditionRef.current && !conditionRef.current.contains(event.target as Node)) {
-        setConditionOpen(false)
-      }
-      if (warrantyRef.current && !warrantyRef.current.contains(event.target as Node)) {
-        setWarrantyOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  const allCategories = React.useMemo(() => {
-    return [...SALE_CATEGORIES, ...RENTAL_CATEGORIES, ...SERVICE_CATEGORIES]
-  }, [])
-
-  const productOptions = React.useMemo(() => {
-    if (!data.category) return []
-    const matched = allCategories.find(
-      (c) => c.title.toLowerCase() === data.category.toLowerCase()
+  if (category?.fields?.length) {
+    return (
+      <ConfiguredItemDetailsForm
+        data={data}
+        updateData={updateData}
+        onNext={onNext}
+        fields={category.fields}
+        title={category.detailsTitle ?? "Item Details"}
+        subtitle={category.detailsSubtitle ?? "Enter details about the item"}
+        stepLabel={agreementType === "rental" ? "Item/Property" : "Item Details"}
+        accentColor={getTypeConfig(agreementType ?? "sale").color}
+      />
     )
-    return matched ? matched.introItems : []
-  }, [data.category, allCategories])
-
-  const toggleUpload = (key: string) => {
-    setUploaded(prev => ({ ...prev, [key]: !prev[key] }))
-    // Simulate updating global state array
-    if (!uploaded[key]) {
-      updateData({ productPhotos: [...data.productPhotos, key] })
-    } else {
-      updateData({ productPhotos: data.productPhotos.filter(p => p !== key) })
-    }
   }
 
-  const photos = [
-    { key: "front", label: "Front View" },
-    { key: "back", label: "Back View" },
-    { key: "left", label: "Left View" },
-    { key: "right", label: "Right View" },
-  ]
+  return <LegacyItemDetailsForm data={data} updateData={updateData} onNext={onNext} />
+}
+
+function ConfiguredItemDetailsForm({
+  data,
+  updateData,
+  onNext,
+  fields,
+  title,
+  subtitle,
+  stepLabel,
+  accentColor,
+}: {
+  data: AgreementData
+  updateData: (d: Partial<AgreementData>) => void
+  onNext: () => void
+  fields: TemplateField[]
+  title: string
+  subtitle: string
+  stepLabel: string
+  accentColor: string
+}) {
+  const getValue = (key: string): string =>
+    (data as unknown as Record<string, string>)[key] ?? ""
+
+  const setValue = (key: string, value: string) => {
+    updateData({ [key]: value } as Partial<AgreementData>)
+  }
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
-      
+      {/* 3-Step Wizard Stepper (Node 1 Active) */}
+      <AgreementStepper
+        steps={[stepLabel, "Parties", "Agreement"]}
+        currentIndex={0}
+        color={accentColor}
+        className="mb-4 shrink-0"
+      />
+
       {/* Title */}
-      <div className="text-center mt-2 mb-8">
-        <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight">
-          Product Details
-        </h2>
-        <p className="text-[13px] text-gray-500 mt-2 font-medium max-w-[220px] mx-auto">
-          Enter item information & photos
+      <div className="mb-4 shrink-0">
+        <h2 className="text-[18px] font-bold text-[#0F172A] leading-tight">{title}</h2>
+        <p className="text-[13px] text-[#64748B] mt-1 font-medium">{subtitle}</p>
+      </div>
+
+      {/* Scrollable Form Fields */}
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 pb-4">
+        {fields.map((field) => (
+          <FieldControl
+            key={field.key}
+            field={field}
+            value={getValue(field.key)}
+            onChange={(v) => setValue(field.key, v)}
+          />
+        ))}
+      </div>
+
+      {/* Pinned Bottom Button */}
+      <div className="pt-3 pb-1 border-t border-[#F1F5F9] shrink-0">
+        <Button
+          onClick={onNext}
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg active:scale-[0.99] transition-all"
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function CustomSelect({
+  label,
+  placeholder,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  placeholder: string
+  value: string
+  options: string[]
+  onChange: (val: string) => void
+}) {
+  const [open, setOpen] = React.useState(false)
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  // Click outside to close
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [open])
+
+  const hasValue = value && value.trim().length > 0
+
+  return (
+    <div ref={ref} className="space-y-1.5 text-left relative w-full">
+      <label className="text-[13px] font-bold text-[#041B4A]">{label}</label>
+
+      {/* Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between px-4 h-14 text-[14.5px] font-semibold bg-white border border-[#CBD5E1] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors shadow-xs ${
+          open ? "border-[#2563EB] ring-2 ring-[#2563EB]/20" : ""
+        }`}
+      >
+        <span className={`truncate text-left pr-2 ${hasValue ? "text-[#0F172A]" : "text-[#94A3B8]"}`}>
+          {hasValue ? value : placeholder}
+        </span>
+        <ChevronDown
+          className={`w-5 h-5 text-[#64748B] shrink-0 transition-transform duration-200 ${
+            open ? "rotate-180 text-[#2563EB]" : ""
+          }`}
+          strokeWidth={2.5}
+        />
+      </button>
+
+      {/* Dropdown Menu (Strictly contained within mobile frame) */}
+      {open && (
+        <div className="absolute left-0 right-0 top-[100%] mt-1.5 max-h-56 overflow-y-auto rounded-[14px] border border-[#CBD5E1] bg-white shadow-xl z-50 p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+          {options.map((opt) => {
+            const isSelected = value === opt
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => {
+                  onChange(opt)
+                  setOpen(false)
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-[10px] text-[13.5px] font-semibold text-left transition-colors ${
+                  isSelected
+                    ? "bg-[#EFF6FF] text-[#2563EB] font-bold"
+                    : "text-[#334155] hover:bg-[#F8FAFC]"
+                }`}
+              >
+                <span className="truncate pr-2">{opt}</span>
+                {isSelected && <Check className="w-4 h-4 text-[#2563EB] shrink-0" strokeWidth={3} />}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FieldControl({
+  field,
+  value,
+  onChange,
+}: {
+  field: TemplateField
+  value: string
+  onChange: (v: string) => void
+}) {
+  const label = field.required
+    ? `${field.label} *`
+    : `${field.label}${field.type !== "select" ? " (Optional)" : ""}`
+
+  if (field.type === "select") {
+    return (
+      <CustomSelect
+        label={label}
+        placeholder={field.placeholder ?? `Select ${field.label}`}
+        value={value}
+        options={field.options ?? []}
+        onChange={onChange}
+      />
+    )
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <div className="space-y-1.5 text-left">
+        <label className="text-[13px] font-bold text-[#041B4A]">{label}</label>
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder}
+          className="w-full p-4 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border border-[#CBD5E1] min-h-[96px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] shadow-xs"
+        />
+      </div>
+    )
+  }
+
+  if (field.type === "date") {
+    return (
+      <div className="space-y-1.5 text-left">
+        <label className="text-[13px] font-bold text-[#041B4A]">{label}</label>
+        <div className="relative">
+          <Input
+            type="date"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="pl-4 pr-10 h-14 text-[14.5px] font-semibold text-[#0F172A] rounded-[12px] border-[#CBD5E1] shadow-xs"
+          />
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#64748B]">
+            <Calendar className="w-4 h-4" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-1.5 text-left">
+      <label className="text-[13px] font-bold text-[#041B4A]">{label}</label>
+      <Input
+        type="text"
+        inputMode={field.type === "number" ? "numeric" : "text"}
+        value={value}
+        onChange={(e) =>
+          onChange(field.type === "number" ? e.target.value.replace(/[^\d]/g, "") : e.target.value)
+        }
+        placeholder={field.placeholder}
+        className="px-4 h-14 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border-[#CBD5E1] shadow-xs"
+      />
+    </div>
+  )
+}
+
+function LegacyItemDetailsForm({
+  data,
+  updateData,
+  onNext,
+}: Pick<Props, "data" | "updateData" | "onNext">) {
+  const allCategories = React.useMemo(
+    () => [...SALE_CATEGORIES, ...RENTAL_CATEGORIES, ...SERVICE_CATEGORIES],
+    []
+  )
+  const matchedCategory = allCategories.find(
+    (c) => c.title.toLowerCase() === data.category.toLowerCase()
+  )
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
+      <div className="text-center mt-2 mb-6">
+        <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight">Product / Service Details</h2>
+        <p className="text-[13px] text-gray-500 mt-1 font-medium max-w-[220px] mx-auto">
+          Enter item or service information
         </p>
       </div>
 
-      {/* Form */}
-      <div className="space-y-4">
-        
-        {data.category ? (
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1 pb-4">
+        {matchedCategory ? (
           <div className="space-y-1.5 text-left">
             <label className="text-[13.5px] font-bold text-[#041B4A]">Category</label>
             <div className="flex h-14 items-center rounded-[12px] border border-slate-200/90 bg-[#F8FAFC] px-4 text-[14.5px] font-semibold text-[#041B4A]">
@@ -96,244 +306,48 @@ export function ProductDetailsStep({ data, updateData, onNext, isB2C = false }: 
           </div>
         ) : null}
 
-        <div className="space-y-1.5 text-left relative" ref={dropdownRef}>
-          <label className="text-[13.5px] font-bold text-[#041B4A]">Product / Item Type</label>
-          {productOptions.length > 0 ? (
-            <div className="relative">
-              {/* Dropdown Trigger Button */}
-              <button
-                type="button"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full px-4 h-14 text-[14.5px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors flex items-center justify-between text-[#0F172A] cursor-pointer"
-              >
-                <span>{data.productName || "Select Item Type"}</span>
-                <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform duration-200", dropdownOpen ? "transform rotate-180" : "")} />
-              </button>
-
-              {/* Custom Dropdown Overlay */}
-              {dropdownOpen && (
-                <div className="absolute left-0 right-0 top-[60px] bg-white border border-gray-200 rounded-[12px] shadow-[0_4px_20px_rgba(15,23,42,0.08)] z-50 py-1.5 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="max-h-[200px] overflow-y-auto divide-y divide-slate-50">
-                    {productOptions.map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => {
-                          updateData({ productName: opt })
-                          setDropdownOpen(false)
-                        }}
-                        className={cn(
-                          "w-full text-left px-4 py-3 text-[13.5px] transition-colors font-semibold cursor-pointer",
-                          data.productName === opt 
-                            ? "bg-[#0033A0]/5 text-[#0033A0] font-bold" 
-                            : "bg-white text-slate-700 hover:bg-slate-50"
-                        )}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        updateData({ productName: "" })
-                        setDropdownOpen(false)
-                      }}
-                      className={cn(
-                        "w-full text-left px-4 py-3 text-[13.5px] transition-colors font-semibold border-t border-slate-100 cursor-pointer",
-                        data.productName !== "" && !productOptions.includes(data.productName)
-                          ? "bg-[#0033A0]/5 text-[#0033A0] font-bold" 
-                          : "bg-white text-[#0033A0] hover:bg-slate-50"
-                      )}
-                    >
-                      Other (Type custom)
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Input 
-              type="text"
-              value={data.productName}
-              onChange={(e) => updateData({ productName: e.target.value })}
-              placeholder="e.g. Plastic Nozzle"
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-            />
-          )}
-        </div>
-
-        {/* Custom write-in text field if "other" is selected */}
-        {productOptions.length > 0 && (!productOptions.includes(data.productName) || data.productName === "") && (
-          <div className="space-y-1.5 text-left animate-in fade-in slide-in-from-top-1 duration-200">
-            <label className="text-[13.5px] font-bold text-[#041B4A]">Custom Product Name</label>
-            <Input 
-              type="text"
-              value={data.productName}
-              onChange={(e) => updateData({ productName: e.target.value })}
-              placeholder="Enter product name"
-              className="px-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-gray-200"
-            />
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Brand</label>
-            <Input 
-              type="text"
-              value={data.brand}
-              onChange={(e) => updateData({ brand: e.target.value })}
-              placeholder="Brand"
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Model</label>
-            <Input 
-              type="text"
-              value={data.model}
-              onChange={(e) => updateData({ model: e.target.value })}
-              placeholder="Model"
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">Serial Number / IMEI</label>
-          <Input 
+        <div className="space-y-1.5 text-left">
+          <label className="text-[13.5px] font-bold text-[#041B4A]">Name *</label>
+          <Input
             type="text"
-            value={data.serialNumber}
-            onChange={(e) => updateData({ serialNumber: e.target.value })}
-            placeholder="e.g. SN123456789"
-            className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
+            value={data.productName}
+            onChange={(e) => updateData({ productName: e.target.value })}
+            placeholder="Enter name"
+            className="px-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-[#CBD5E1]"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Quantity</label>
-            <Input 
-              type="text"
-              value={data.quantity}
-              onChange={(e) => updateData({ quantity: e.target.value })}
-              placeholder="e.g. 1"
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-[13px] font-bold text-[#041B4A]">Price (₹)</label>
-            <Input 
-              type="text"
-              value={data.saleAmount}
-              onChange={(e) => updateData({ saleAmount: e.target.value })}
-              placeholder="e.g. 5000"
-              className="px-4 h-14 text-[15px] font-semibold rounded-[12px] border-gray-200"
-            />
-          </div>
+        <div className="space-y-1.5 text-left">
+          <label className="text-[13px] font-bold text-[#041B4A]">Price / Amount (₹) *</label>
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={data.saleAmount}
+            onChange={(e) => updateData({ saleAmount: e.target.value.replace(/[^\d]/g, "") })}
+            placeholder="e.g. 5000"
+            className="px-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-[#CBD5E1]"
+          />
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[13px] font-bold text-[#041B4A]">Condition & Warranty</label>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="relative">
-              <select
-                value={data.condition}
-                onChange={(e) => updateData({ condition: e.target.value })}
-                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
-              >
-                <option value="" disabled>Condition</option>
-                <option value="New">New</option>
-                <option value="Used - Like New">Used - Like New</option>
-                <option value="Used - Good">Used - Good</option>
-                <option value="Used - Fair">Used - Fair</option>
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="relative">
-              <select
-                value={data.warranty}
-                onChange={(e) => updateData({ warranty: e.target.value })}
-                className="w-full appearance-none px-4 h-14 text-[15px] font-semibold bg-white border border-gray-200 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
-              >
-                <option value="" disabled>Warranty</option>
-                <option value="None">None</option>
-                <option value="6 Months">6 Months</option>
-                <option value="1 Year">1 Year</option>
-                <option value="Extended">Extended</option>
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <ChevronDown className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 text-left">
           <label className="text-[13px] font-bold text-[#041B4A]">Description</label>
-          <textarea 
+          <textarea
             value={data.description}
             onChange={(e) => updateData({ description: e.target.value })}
-            placeholder="Brief description of the product..."
-            className="w-full p-4 text-[15px] font-semibold rounded-[12px] border border-gray-200 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            placeholder="Brief description..."
+            className="w-full p-4 text-[14.5px] font-semibold rounded-[12px] border border-[#CBD5E1] min-h-[96px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
         </div>
-
-        {/* Photos Inline */}
-        <div className="space-y-2 pt-4">
-          <label className="text-[13px] font-bold text-[#041B4A]">Product Photos</label>
-          <div className="grid grid-cols-4 gap-2">
-            {photos.map((photo) => (
-              <div key={photo.key} className="flex flex-col items-center gap-1">
-                <div
-                  className={`w-full aspect-square rounded-[12px] flex flex-col items-center justify-center transition-all cursor-pointer ${
-                    uploaded[photo.key] 
-                      ? "bg-[#EAF7EE] border-2 border-[#1E9E40]" 
-                      : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
-                  }`}
-                  onClick={() => toggleUpload(photo.key)}
-                >
-                  {uploaded[photo.key] ? (
-                    <CheckCircle2 className="w-6 h-6 text-[#1E9E40]" strokeWidth={2.5} />
-                  ) : (
-                    <Camera className="w-5 h-5 text-gray-400" strokeWidth={2} />
-                  )}
-                </div>
-                <span className="text-[10px] font-semibold text-gray-500">{photo.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Add Multiple Products Button */}
-        <div className="pt-2">
-          <div className="relative w-full max-w-[320px] mx-auto">
-            <Button 
-              variant="ghost" 
-              className="w-full text-[#2563EB] font-bold text-[14px] border border-dashed border-[#2563EB]/30 hover:bg-[#2563EB]/5 h-[50px] rounded-[12px]"
-            >
-              <Plus className="w-4 h-4 mr-2" /> Add Another Product
-            </Button>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-10 h-10 bg-[#E5EDFF] border-2 border-white rounded-full shadow-sm flex items-center justify-center pointer-events-none">
-               <Sparkles className="w-5 h-5 text-[#2563EB]" strokeWidth={2} />
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      {/* Footer Button */}
-      <div className="mt-8 pt-6">
-        <Button 
+      <div className="pt-3 pb-1 border-t border-[#F1F5F9]">
+        <Button
           onClick={onNext}
-          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg active:scale-[0.99]"
         >
           Next
         </Button>
       </div>
-
     </div>
   )
 }

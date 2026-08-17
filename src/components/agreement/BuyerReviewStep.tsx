@@ -1,110 +1,161 @@
 import * as React from "react"
-import { ShieldAlert, CheckCircle2, User, FileText, Send } from "lucide-react"
+import { ShieldCheck, Check, FileText, Users, ArrowRight } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
+import { AgreementStepper } from "@/components/agreement/AgreementStepper"
+import { type AgreementType, getTypeConfig } from "@/lib/c2c-config"
 
 type Props = {
   data: AgreementData
   onNext: () => void
+  agreementType?: AgreementType | null
 }
 
-export function BuyerReviewStep({ data, onNext }: Props) {
-  const roleDisplay = data.role === "buyer" ? "Buyer" : "Seller"
+export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
+  const [confirmed, setConfirmed] = React.useState(false)
+  const accentColor = getTypeConfig(agreementType ?? "sale").color
+
+  const isSellerRole = data.role === "seller"
+  const sellerName = isSellerRole ? (data.customerName || "Ravi Kumar") : (data.invitedPartyName || "Ravi Kumar")
+  const sellerMobile = isSellerRole ? (data.customerMobile || "9876543210") : (data.invitedPartyMobile || "9876543210")
+  const buyerName = isSellerRole ? (data.invitedPartyName || "Rajesh Kumar") : (data.customerName || "Rajesh Kumar")
+  const buyerMobile = isSellerRole ? (data.invitedPartyMobile || "9123456700") : (data.customerMobile || "9123456700")
+
+  const categoryName = data.category || "Mobile Phone & Electronics"
+  const itemName = data.productName || data.model || "iPhone 14 Pro"
+  const brand = data.brand || "Apple"
+  const model = data.model || "iPhone 14 Pro"
+  const imeiOrReg = data.serialNumber || data.registrationNumber || "356789123456789"
+  const price = data.saleAmount || data.monthlyRent || data.totalCharges || "45,000"
+  const description = data.description || "Excellent condition, no scratches."
 
   return (
-    <div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
-      
+    <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
+      {/* 3-Step Creation Stepper (Node 3 Active) */}
+      <AgreementStepper
+        steps={["Item Details", "Parties", "Agreement"]}
+        currentIndex={2}
+        color={accentColor}
+        className="mb-5"
+      />
+
       {/* Header */}
-      <div className="text-center mt-2 mb-6">
-        <h2 className="text-[20px] font-bold text-[#041B4A] leading-tight mb-2">
-          Agreement Review
-        </h2>
-        <p className="text-[13px] text-gray-500 font-medium max-w-[260px] mx-auto">
-          Review the agreement details before sending the invitation.
+      <div className="mb-4">
+        <h2 className="text-[18px] font-bold text-[#0F172A] leading-tight">Review Agreement Details</h2>
+        <p className="text-[13px] text-[#64748B] mt-1 font-medium">
+          Please verify all details before proceeding.
         </p>
       </div>
 
-      {/* Summary Card */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-5 flex-1 overflow-y-auto">
-        
-        {/* Initiator Info */}
-        <div className="flex items-start gap-4 pb-5 border-b border-gray-100">
-          <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
-            <User className="w-6 h-6 text-[#2563EB]" />
+      <div className="space-y-3.5 flex-1 overflow-y-auto pr-0.5">
+        {/* Item Details Card */}
+        <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#F1F5F9]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#EFF6FF] text-[#2563EB]">
+              <FileText className="h-3.5 w-3.5" />
+            </div>
+            <h3 className="text-[13.5px] font-bold text-[#0F172A]">Item Details</h3>
           </div>
-          <div>
-            <p className="text-[12px] font-bold text-gray-500 uppercase tracking-wide">Your Role: {roleDisplay}</p>
-            <p className="text-[16px] font-bold text-[#041B4A]">{data.customerName || "Creator Name"}</p>
-            <div className="flex items-center gap-1 mt-1">
-               <CheckCircle2 className="w-3.5 h-3.5 text-[#1E9E40]" />
-               <p className="text-[11px] font-bold text-[#1E9E40]">Ready to Send</p>
+
+          <div className="space-y-2 text-[12.5px]">
+            <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+              <span className="text-[#64748B] font-medium">Category</span>
+              <span className="font-bold text-[#0F172A] text-right">{categoryName}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+              <span className="text-[#64748B] font-medium">Item Name</span>
+              <span className="font-bold text-[#0F172A] text-right">{itemName}</span>
+            </div>
+            {brand && (
+              <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+                <span className="text-[#64748B] font-medium">Brand</span>
+                <span className="font-bold text-[#0F172A] text-right">{brand}</span>
+              </div>
+            )}
+            {model && (
+              <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+                <span className="text-[#64748B] font-medium">Model</span>
+                <span className="font-bold text-[#0F172A] text-right">{model}</span>
+              </div>
+            )}
+            {imeiOrReg && (
+              <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+                <span className="text-[#64748B] font-medium">IMEI / Identifier</span>
+                <span className="font-bold text-[#0F172A] text-right">{imeiOrReg}</span>
+              </div>
+            )}
+            <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+              <span className="text-[#64748B] font-medium">Sale Price</span>
+              <span className="font-bold text-[#16A34A] text-[13px] text-right">
+                ₹{Number(price).toLocaleString("en-IN") || price}
+              </span>
+            </div>
+            {description && (
+              <div className="flex flex-col py-1">
+                <span className="text-[#64748B] font-medium mb-0.5">Description</span>
+                <span className="text-[#0F172A] text-[12px] leading-relaxed bg-[#F8FAFC] p-2 rounded-[8px]">
+                  {description}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Parties Card */}
+        <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#F1F5F9]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F0FDF4] text-[#16A34A]">
+              <Users className="h-3.5 w-3.5" />
+            </div>
+            <h3 className="text-[13.5px] font-bold text-[#0F172A]">Parties</h3>
+          </div>
+
+          <div className="space-y-2.5 text-[12.5px]">
+            <div className="flex justify-between items-center py-1 border-b border-dashed border-[#F1F5F9]">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block">
+                  Seller
+                </span>
+                <span className="font-bold text-[#0F172A]">{sellerName}</span>
+              </div>
+              <span className="text-[#64748B] font-semibold text-right">{sellerMobile}</span>
+            </div>
+            <div className="flex justify-between items-center py-1">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block">
+                  Buyer
+                </span>
+                <span className="font-bold text-[#0F172A]">{buyerName}</span>
+              </div>
+              <span className="text-[#64748B] font-semibold text-right">{buyerMobile}</span>
             </div>
           </div>
         </div>
 
-        {/* Product Summary */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-2">
-             <FileText className="w-4 h-4 text-[#2563EB]" />
-             <h3 className="text-[14px] font-bold text-[#041B4A]">Product & Terms</h3>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Product</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.productName || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Model / S.N.</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right truncate max-w-[150px]">{data.model || "-"} {data.serialNumber ? `(${data.serialNumber})` : ""}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Quantity</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.quantity || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Price</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">₹{data.saleAmount || "0"}</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
-              <span className="text-[12px] text-gray-500 font-medium">Condition</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.condition || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Warranty</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right">{data.warranty || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Return Policy</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.returnPolicy || "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-500 font-medium">Payment Term</span>
-              <span className="text-[12px] text-[#041B4A] font-bold text-right max-w-[150px] truncate">{data.paymentTerms || "-"}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Notice */}
-        <div className="bg-amber-50 rounded-lg p-3 flex gap-3 border border-amber-100">
-          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
-            Please ensure all details are correct. Once the invitation is sent, these terms cannot be changed unless the other party rejects them.
-          </p>
-        </div>
-
+        {/* Legal Confirmation Checkbox */}
+        <label className="flex items-start gap-3 rounded-[12px] border border-[#E2E8F0] bg-[#F8FAFC] p-3.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-[#2563EB] focus:ring-[#2563EB] mt-0.5"
+          />
+          <span className="text-[12px] font-medium text-[#334155] leading-snug">
+            I have reviewed all details and confirm they are correct and legally accurate.
+          </span>
+        </label>
       </div>
 
-      {/* Footer Buttons */}
-      <div className="mt-6 pt-4 bg-[#fcfcfc] space-y-3 pb-4">
-        <Button 
+      {/* Footer CTA */}
+      <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
+        <Button
           onClick={onNext}
-          className="w-full h-[52px] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[14px] text-[16px] font-bold shadow-lg"
+          className="h-[52px] w-full rounded-[14px] bg-[#2563EB] hover:bg-[#1D4ED8] text-[16px] font-bold text-white shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
         >
-          Continue
+          Proceed to Payment
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
-
     </div>
   )
 }

@@ -4,10 +4,20 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { AppShell } from "@/components/layout/AppShell"
+import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
+import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
+import { BuyerReviewStep } from "@/components/agreement/BuyerReviewStep"
+import { PaymentStep } from "@/components/agreement/PaymentStep"
+import { AadhaarConsentStep } from "@/components/agreement/AadhaarConsentStep"
+import { AadhaarEsignSetupStep } from "@/components/agreement/AadhaarEsignSetupStep"
+import { CreatorEsignStep } from "@/components/agreement/CreatorEsignStep"
+import { ShareLinkStep } from "@/components/agreement/ShareLinkStep"
+import { WaitingForResponseStep } from "@/components/agreement/WaitingForResponseStep"
+import { AgreementCompletedStep } from "@/components/agreement/AgreementCompletedStep"
 import {
-  AgreementCategoryIntro,
-  AgreementCategoryPicker,
   AgreementFlowHeader,
+  AgreementCategoryPicker,
+  AgreementCategoryIntro,
   AgreementIntroFooter,
   AgreementTypePicker,
 } from "@/components/agreement/AgreementFlowScreens"
@@ -16,280 +26,302 @@ import {
   findCategory,
   getCategoriesForType,
   getTypeTitle,
+  getTypeConfig,
 } from "@/lib/c2c-config"
 import {
-  clearC2CFromDashboard,
   isC2CFromDashboard,
-  setC2CFromDashboard,
+  clearC2CFromDashboard,
 } from "@/lib/c2c-session"
 import {
-  B2C_CATEGORY_TO_DASHBOARD,
-  B2C_DASHBOARD_DEFAULTS,
-  B2C_TEMPLATE_PRODUCT,
-  getB2CProductLabel,
   getB2CReturnPath,
+  getB2CProductLabel,
+  B2C_DASHBOARD_DEFAULTS,
 } from "@/lib/b2c-dashboard-routes"
-import { setB2CDashboard } from "@/lib/b2c-session"
+import { resolveAppModule, type AppModule } from "@/lib/app-module"
 import { saveAgreementFromWizard } from "@/lib/b2c-agreements"
-import { RoleSelectionStep } from "@/components/agreement/RoleSelectionStep"
-import { ProductDetailsStep } from "@/components/agreement/ProductDetailsStep"
-import { PaymentDeliveryStep } from "@/components/agreement/PaymentDeliveryStep"
-import { BuyerReviewStep } from "@/components/agreement/BuyerReviewStep"
-import { WhatsAppInviteStep } from "@/components/agreement/WhatsAppInviteStep"
-import { WaitingForResponseStep } from "@/components/agreement/WaitingForResponseStep"
-import { AcceptanceSuccessStep } from "@/components/agreement/AcceptanceSuccessStep"
-import { ReviewSignStep } from "@/components/agreement/ReviewSignStep"
-import { PaymentStep } from "@/components/agreement/PaymentStep"
-import { FinalAgreementNote } from "@/components/agreement/FinalAgreementNote"
 
 export type AgreementData = {
-  role: "buyer" | "seller" | null
-  customerMobile: string
-  customerName: string
-  aadhaarNumber: string
-  otp: string
-  category: string
+  role: "seller" | "buyer" | null
   productName: string
   brand: string
   model: string
+  serialNumber: string
   quantity: string
-  buyerMobile: string
-  buyerName: string
-  buyerAadhaar: string
-  buyerOtp: string
   saleAmount: string
-  paymentMethod: string
-  advancePaid: string
-  balance: string
+  condition: string
+  warranty: string
+  paymentTerms: string
+  returnPolicy: string
   deliveryDate: string
   deliveryLocation: string
-  serialNumber: string
-  warranty: string
-  condition: string
+  deliveryTime: string
+  transportMode: string
+  transitInsurance: boolean
+  customerMobile: string
+  customerName: string
+  customerAadhaar: string
+  customerOtp: string
+  category: string
   description: string
-  productPhotos: string[]
-  returnPolicy: string
-  warrantyTerms: string
-  additionalClauses: string
-  paymentTerms: string
-  creatorSelfie: string
-  invitedPartySelfie: string
-  creatorLocation: string
-  invitedPartyLocation: string
-  dpdpConsent: boolean
-  eSignStatus: string
+  photos: {
+    front: string | null
+    back: string | null
+    imei: string | null
+    bill: string | null
+  }
   invitedPartyName: string
   invitedPartyMobile: string
   invitedPartyAadhaar: string
   invitedPartyOtp: string
+  aadhaarNumber: string
+  buyerName?: string
+  buyerMobile?: string
+  buyerAadhaar?: string
+  buyerOtp?: string
+  creatorLocation?: string
+  invitedPartyLocation?: string
+  creatorSelfie?: string | null
+  invitedPartySelfie?: string | null
+  warrantyTerms?: string
+  additionalClauses?: string
+  eSignStatus?: string
+  dpdpConsent?: boolean
+  // Category-specific item/property fields
+  material: string
+  vehicleType: string
+  registrationNumber: string
+  modelYear: string
+  color: string
+  fuelType: string
+  dailyRent: string
+  extraCharges: string
+  propertyType: string
+  roomType: string
+  address: string
+  monthlyRent: string
+  securityDeposit: string
+  amenities: string
+  rulesRegulations: string
+  itemType: string
+  accessoriesIncluded: string
+  usagePurpose: string
+  serviceType: string
+  serviceName: string
+  serviceDescription: string
+  durationType: string
+  startDate: string
+  endDate: string
+  totalCharges: string
+  specialInstructions: string
+  othersCategory: string
+}
+
+function parseAgreementType(val: string | null): AgreementType | null {
+  if (val === "sale" || val === "rental" || val === "service") return val
+  return null
+}
+
+function getB2CCategoryId(templateParam: string | null, dashboardParam: string | null): string | null {
+  if (dashboardParam && B2C_DASHBOARD_DEFAULTS[dashboardParam]?.category) {
+    return B2C_DASHBOARD_DEFAULTS[dashboardParam].category!
+  }
+  return "mobile-electronics"
 }
 
 type FlowPhase = "type" | "category" | "intro" | "wizard"
 
+function determineInitialPhase(
+  moduleType: AppModule,
+  type: AgreementType | null,
+  catId: string | null,
+  dashboardParam: string | null,
+  templateParam: string | null
+): FlowPhase {
+  if (moduleType === "b2c") {
+    if (dashboardParam || templateParam) return "wizard"
+    return "wizard"
+  }
+  if (isC2CFromDashboard() && type) {
+    if (catId) return "wizard"
+    return "category"
+  }
+  if (!type) return "type"
+  if (!catId) return "category"
+  return "intro"
+}
+
 const INITIAL_FORM: AgreementData = {
-  role: null,
-  customerMobile: "",
-  customerName: "",
-  aadhaarNumber: "",
-  otp: "",
-  category: "",
+  role: "seller",
   productName: "",
   brand: "",
   model: "",
-  quantity: "",
-  buyerMobile: "",
-  buyerName: "",
-  buyerAadhaar: "",
-  buyerOtp: "",
+  serialNumber: "",
+  quantity: "1",
   saleAmount: "",
-  paymentMethod: "",
-  advancePaid: "",
-  balance: "",
+  condition: "New",
+  warranty: "None",
+  paymentTerms: "100% on Delivery",
+  returnPolicy: "No Returns",
   deliveryDate: "",
   deliveryLocation: "",
-  serialNumber: "",
-  warranty: "",
-  condition: "",
+  deliveryTime: "Flexible",
+  transportMode: "Direct Handover",
+  transitInsurance: false,
+  customerMobile: "9876543210",
+  customerName: "Ravi Kumar",
+  customerAadhaar: "",
+  customerOtp: "",
+  category: "",
   description: "",
-  productPhotos: [],
-  returnPolicy: "",
-  warrantyTerms: "",
-  additionalClauses: "",
-  paymentTerms: "",
-  creatorSelfie: "",
-  invitedPartySelfie: "",
-  creatorLocation: "",
-  invitedPartyLocation: "",
-  dpdpConsent: false,
-  eSignStatus: "",
-  invitedPartyName: "",
-  invitedPartyMobile: "",
+  photos: {
+    front: null,
+    back: null,
+    imei: null,
+    bill: null,
+  },
+  invitedPartyName: "Rajesh Kumar",
+  invitedPartyMobile: "9123456700",
   invitedPartyAadhaar: "",
   invitedPartyOtp: "",
+  aadhaarNumber: "554433221100",
+  buyerName: "Rajesh Kumar",
+  buyerMobile: "9123456700",
+  buyerAadhaar: "",
+  buyerOtp: "",
+  creatorLocation: "",
+  invitedPartyLocation: "",
+  creatorSelfie: null,
+  invitedPartySelfie: null,
+  warrantyTerms: "",
+  additionalClauses: "",
+  eSignStatus: "pending",
+  dpdpConsent: true,
+  material: "",
+  vehicleType: "",
+  registrationNumber: "",
+  modelYear: "",
+  color: "",
+  fuelType: "",
+  dailyRent: "",
+  extraCharges: "",
+  propertyType: "",
+  roomType: "",
+  address: "",
+  monthlyRent: "",
+  securityDeposit: "",
+  amenities: "",
+  rulesRegulations: "",
+  itemType: "",
+  accessoriesIncluded: "",
+  usagePurpose: "",
+  serviceType: "",
+  serviceName: "",
+  serviceDescription: "",
+  durationType: "",
+  startDate: "",
+  endDate: "",
+  totalCharges: "",
+  specialInstructions: "",
+  othersCategory: "",
 }
 
 function CreateAgreementContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const moduleType = searchParams.get("module") || "c2c"
+
+  const moduleType: AppModule = resolveAppModule(searchParams.get("module"))
   const isB2C = moduleType === "b2c"
+
   const dashboardParam = searchParams.get("dashboard")
-  const typeParam =
-    (searchParams.get("type") as AgreementType | null) ??
-    (isB2C && dashboardParam ? (B2C_DASHBOARD_DEFAULTS[dashboardParam]?.type ?? "sale") : null)
-  const categoryParam = searchParams.get("category")
   const templateParam = searchParams.get("template")
 
-  const b2cReturnPath = getB2CReturnPath(dashboardParam, categoryParam)
+  const b2cCategoryId = getB2CCategoryId(templateParam, dashboardParam)
+  const b2cReturnPath = getB2CReturnPath(dashboardParam)
   const c2cHomePath = `/dashboard?module=${moduleType}`
-  const fromDashboardRef = React.useRef(
-    searchParams.get("from") === "dashboard" || isC2CFromDashboard()
+
+  const rawType = searchParams.get("type")
+  const initialType: AgreementType | null = isB2C
+    ? "sale"
+    : parseAgreementType(rawType)
+  const initialCategory: string | null = isB2C
+    ? b2cCategoryId
+    : searchParams.get("category")
+
+  const [agreementType, setAgreementType] = React.useState<AgreementType | null>(initialType)
+  const [categoryId, setCategoryId] = React.useState<string | null>(initialCategory)
+  const [phase, setPhase] = React.useState<FlowPhase>(() =>
+    determineInitialPhase(moduleType, initialType, initialCategory, dashboardParam, templateParam)
   )
 
-  const isFromDashboard = () =>
-    fromDashboardRef.current ||
-    searchParams.get("from") === "dashboard" ||
-    isC2CFromDashboard()
+  const inWizardRef = React.useRef(
+    isB2C ||
+      (typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("inWizard") === "true")
+  )
+
+  const [currentStep, setCurrentStep] = React.useState(1)
+  const [formData, setFormData] = React.useState<AgreementData>(INITIAL_FORM)
+  const savedAgreementRef = React.useRef(false)
 
   const buildFlowUrl = React.useCallback(
-    (params: { type?: AgreementType | null; category?: string | null }) => {
-      const qs = new URLSearchParams({ module: moduleType })
-      if (params.type) qs.set("type", params.type)
-      if (params.category) qs.set("category", params.category)
-      if (fromDashboardRef.current) qs.set("from", "dashboard")
-      return `/create-agreement?${qs.toString()}`
+    (opts: { type?: AgreementType | null; category?: string | null }) => {
+      const p = new URLSearchParams()
+      p.set("module", moduleType)
+      const t = opts.type ?? agreementType
+      if (t) p.set("type", t)
+      const c = opts.category !== undefined ? opts.category : categoryId
+      if (c) p.set("category", c)
+      return `/create-agreement?${p.toString()}`
     },
-    [moduleType]
+    [moduleType, agreementType, categoryId]
   )
 
-  // Keep from-dashboard flag in sync with URL + sessionStorage
   React.useEffect(() => {
-    if (isB2C) return
-    const fromUrl = searchParams.get("from") === "dashboard"
-    const fromSession = isC2CFromDashboard()
-    if (fromUrl || fromSession) {
-      fromDashboardRef.current = true
-      if (!fromSession) setC2CFromDashboard()
-    }
-    if (!typeParam && !categoryParam && searchParams.get("from") !== "dashboard") {
-      clearC2CFromDashboard()
-      fromDashboardRef.current = false
-    }
-  }, [isB2C, searchParams, typeParam, categoryParam])
-
-  const b2cInitialCategory =
-    isB2C && categoryParam && typeParam ? findCategory(typeParam, categoryParam) : undefined
-
-  const initialCategory = React.useMemo(() => {
-    if (categoryParam && typeParam) {
-      return findCategory(typeParam as AgreementType, categoryParam)
-    }
-    return undefined
-  }, [categoryParam, typeParam])
-
-  const [phase, setPhase] = React.useState<FlowPhase>(() => {
-    if (categoryParam && typeParam) return "wizard"
-    if (typeParam) return "category"
-    return "type"
-  })
-  const [agreementType, setAgreementType] = React.useState<AgreementType | null>(typeParam)
-  const [categoryId, setCategoryId] = React.useState<string | null>(categoryParam)
-  const [currentStep, setCurrentStep] = React.useState(1)
-  const inWizardRef = React.useRef(!!(categoryParam && typeParam))
-  const savedAgreementRef = React.useRef(false)
-  const [formData, setFormData] = React.useState<AgreementData>(() => {
-    const next: AgreementData = { ...INITIAL_FORM }
-    const label = getB2CProductLabel(templateParam, dashboardParam)
-    if (label) {
-      next.productName = label
-    } else if (templateParam && B2C_TEMPLATE_PRODUCT[templateParam]) {
-      next.productName = B2C_TEMPLATE_PRODUCT[templateParam]
-    }
-    const matchedCategory = initialCategory || b2cInitialCategory
-    if (matchedCategory) {
-      next.category = matchedCategory.title
-    }
-    return next
-  })
-
-  // Sync flow phase when URL changes (browser back/forward) — never override wizard
-  React.useEffect(() => {
-    if (isB2C || inWizardRef.current) return
-    const type = searchParams.get("type") as AgreementType | null
-    const category = searchParams.get("category")
-
-    if (category && type) {
-      const selectedCat = findCategory(type, category)
-      if (selectedCat) {
-        setFormData((prev) => ({ ...prev, category: selectedCat.title }))
-      }
+    if (isB2C) {
+      setAgreementType("sale")
+      setCategoryId(b2cCategoryId)
       setPhase("wizard")
       inWizardRef.current = true
-      setAgreementType(type)
-      setCategoryId(category)
-    } else if (type) {
-      setPhase("category")
-      setAgreementType(type)
-      setCategoryId(null)
-    } else if (!isFromDashboard()) {
-      setPhase("type")
-      setAgreementType(null)
-      setCategoryId(null)
-    }
-  }, [isB2C, searchParams])
-
-  // B2C: lock to merchant dashboard — never show C2C type/category pickers
-  React.useEffect(() => {
-    if (isB2C && dashboardParam) {
-      setB2CDashboard(dashboardParam)
-    }
-  }, [isB2C, dashboardParam])
-
-  React.useEffect(() => {
-    if (!isB2C || !dashboardParam) return
-    const defaults = B2C_DASHBOARD_DEFAULTS[dashboardParam]
-    if (!defaults) return
-
-    const params = new URLSearchParams(searchParams.toString())
-    let needsReplace = false
-
-    if (params.get("type") !== defaults.type) {
-      params.set("type", defaults.type)
-      needsReplace = true
+      return
     }
 
-    const currentCategory = params.get("category")
-    const currentType = params.get("type") as AgreementType | null
+    const t = parseAgreementType(searchParams.get("type"))
+    const c = searchParams.get("category")
+    const p = searchParams.get("phase") as FlowPhase | null
 
-    if (
-      currentCategory &&
-      currentType &&
-      B2C_CATEGORY_TO_DASHBOARD[currentCategory] === dashboardParam
-    ) {
-      if (phase !== "wizard") {
+    setAgreementType(t)
+    setCategoryId(c)
+
+    if (inWizardRef.current && t && c) {
+      setPhase("wizard")
+      return
+    }
+
+    if (p) {
+      setPhase(p)
+      return
+    }
+
+    if (isC2CFromDashboard()) {
+      if (t && c) {
         setPhase("wizard")
-        setAgreementType(currentType)
-        setCategoryId(currentCategory)
+        inWizardRef.current = true
+      } else if (t) {
+        setPhase("category")
+      } else {
+        setPhase("type")
       }
       return
     }
 
-    if (defaults.category && currentCategory !== defaults.category) {
-      params.set("category", defaults.category)
-      needsReplace = true
-    }
-
-    if (needsReplace) {
-      router.replace(`/create-agreement?${params.toString()}`)
-      return
-    }
-
-    if (currentCategory && currentType && phase !== "wizard") {
+    if (!t) {
+      setPhase("type")
+    } else if (!c) {
+      setPhase("category")
+    } else {
       setPhase("wizard")
-      setAgreementType(currentType)
-      setCategoryId(currentCategory)
     }
-  }, [isB2C, dashboardParam, categoryParam, phase, router, searchParams])
+  }, [searchParams, isB2C, b2cCategoryId])
 
   const updateData = (updates: Partial<AgreementData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))
@@ -303,31 +335,35 @@ function CreateAgreementContent() {
 
   const productLabel = getB2CProductLabel(templateParam, dashboardParam)
 
-  // B2C: keep category in sync when URL params are normalized
+  // B2C / C2C: keep category in sync
   React.useEffect(() => {
-    if (!isB2C || phase !== "wizard" || !selectedCategory) return
+    if (phase !== "wizard" || !selectedCategory) return
     setFormData((prev) =>
       prev.category === selectedCategory.title ? prev : { ...prev, category: selectedCategory.title }
     )
-  }, [isB2C, phase, selectedCategory])
+  }, [phase, selectedCategory])
 
+  // Save completed agreement when reaching final step
   React.useEffect(() => {
-    if (!isB2C || currentStep !== 10 || savedAgreementRef.current) return
+    if (currentStep !== 10 || savedAgreementRef.current) return
     savedAgreementRef.current = true
-    saveAgreementFromWizard({
-      productName: formData.productName || "Product",
-      category: formData.category || selectedCategory?.title || "General",
-      role: formData.role,
-      saleAmount: formData.saleAmount,
-      brand: formData.brand,
-      model: formData.model,
-      serialNumber: formData.serialNumber,
-      paymentTerms: formData.paymentTerms,
-      deliveryDate: formData.deliveryDate,
-      deliveryLocation: formData.deliveryLocation,
-      invitedPartyName: formData.invitedPartyName,
-    })
-  }, [isB2C, currentStep, formData, selectedCategory])
+    saveAgreementFromWizard(
+      {
+        productName: formData.productName || formData.model || "Mobile Phone",
+        category: formData.category || selectedCategory?.title || "Mobile Phone & Electronics",
+        role: formData.role,
+        saleAmount: formData.saleAmount || formData.monthlyRent || formData.totalCharges || "45,000",
+        brand: formData.brand,
+        model: formData.model,
+        serialNumber: formData.serialNumber,
+        paymentTerms: formData.paymentTerms,
+        deliveryDate: formData.deliveryDate,
+        deliveryLocation: formData.deliveryLocation,
+        invitedPartyName: formData.invitedPartyName,
+      },
+      moduleType
+    )
+  }, [currentStep, formData, selectedCategory, moduleType])
 
   const handleBack = () => {
     if (phase === "wizard") {
@@ -340,7 +376,7 @@ function CreateAgreementContent() {
         setCategoryId(null)
         setPhase("category")
         router.replace(buildFlowUrl({ type: agreementType }))
-      } else if (currentStep < 10) {
+      } else if (currentStep <= 10) {
         prevStep()
       }
       return
@@ -362,7 +398,7 @@ function CreateAgreementContent() {
         router.push(b2cReturnPath)
         return
       }
-      if (isFromDashboard()) {
+      if (isC2CFromDashboard()) {
         clearC2CFromDashboard()
         router.push(c2cHomePath)
         return
@@ -386,34 +422,125 @@ function CreateAgreementContent() {
     setPhase("wizard")
   }
 
+  // Exact 10-step wizard flow as specified by user:
+  // 1: Role Selection
+  // 2: Product Details
+  // 3: Agreement Preview / Review
+  // 4: Payment ₹99
+  // 5: Consent for Aadhaar Verification
+  // 6: Enter Aadhaar & Generate Link
+  // 7: Creator eSigns
+  // 8: Share Agreement Link
+  // 9: Waiting for Approval
+  // 10: Agreement Completed
   const wizardSteps = [
-    { id: 1, title: "Select Your Role", component: <RoleSelectionStep data={formData} updateData={updateData} onNext={nextStep} /> },
+    {
+      id: 1,
+      title: "Select Your Role",
+      component: (
+        <RoleSelectionStep
+          data={formData}
+          updateData={updateData}
+          onNext={nextStep}
+          agreementType={agreementType}
+        />
+      ),
+    },
     {
       id: 2,
-      title: "Product Details",
+      title: selectedCategory?.title || "Product Details",
       component: (
         <ProductDetailsStep
           data={formData}
           updateData={updateData}
           onNext={nextStep}
           isB2C={isB2C}
+          agreementType={agreementType}
+          categoryId={categoryId}
         />
       ),
     },
-    { id: 3, title: "Terms & Conditions", component: <PaymentDeliveryStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 4, title: "Agreement Review", component: <BuyerReviewStep data={formData} onNext={nextStep} /> },
-    { id: 5, title: "Other Party Details", component: <WhatsAppInviteStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 6, title: "Waiting For Response", component: <WaitingForResponseStep onNext={nextStep} /> },
-    { id: 7, title: "Acceptance Success", component: <AcceptanceSuccessStep data={formData} onNext={nextStep} /> },
-    { id: 8, title: "Final Review", component: <ReviewSignStep data={formData} updateData={updateData} onNext={nextStep} /> },
-    { id: 9, title: "Agreement Fee", component: <PaymentStep data={formData} onNext={nextStep} /> },
+    {
+      id: 3,
+      title: "Agreement Review",
+      component: (
+        <BuyerReviewStep
+          data={formData}
+          onNext={nextStep}
+          agreementType={agreementType}
+        />
+      ),
+    },
+    {
+      id: 4,
+      title: "Payment",
+      component: (
+        <PaymentStep
+          data={formData}
+          onNext={nextStep}
+        />
+      ),
+    },
+    {
+      id: 5,
+      title: "eSign Process",
+      component: (
+        <AadhaarConsentStep
+          onNext={nextStep}
+        />
+      ),
+    },
+    {
+      id: 6,
+      title: "eSign Process",
+      component: (
+        <AadhaarEsignSetupStep
+          data={formData}
+          updateData={updateData}
+          onNext={nextStep}
+        />
+      ),
+    },
+    {
+      id: 7,
+      title: "eSign Document",
+      component: (
+        <CreatorEsignStep
+          data={formData}
+          updateData={updateData}
+          onNext={nextStep}
+        />
+      ),
+    },
+    {
+      id: 8,
+      title: "Share Agreement Link",
+      component: (
+        <ShareLinkStep
+          data={formData}
+          onNext={nextStep}
+          onGoToAgreements={() => router.push(`/agreements?module=${moduleType}`)}
+        />
+      ),
+    },
+    {
+      id: 9,
+      title: "Agreement Status",
+      component: (
+        <WaitingForResponseStep
+          data={formData}
+          onNext={nextStep}
+        />
+      ),
+    },
     {
       id: 10,
-      title: "",
+      title: "Agreement Completed",
       component: (
-        <FinalAgreementNote
+        <AgreementCompletedStep
           data={formData}
           onHome={() => router.push(isB2C ? b2cReturnPath : `/dashboard?module=${moduleType}`)}
+          onViewAgreements={() => router.push(`/agreements?module=${moduleType}`)}
         />
       ),
     },
@@ -426,46 +553,31 @@ function CreateAgreementContent() {
       ? getTypeTitle(agreementType)
       : phase === "intro" && selectedCategory
         ? productLabel ?? selectedCategory.title
-        : phase === "wizard" && currentStep < 10
-          ? currentStepData?.title ?? "Create Agreement"
-          : "Create Agreement"
+        : phase === "wizard" && currentStep === 2 && selectedCategory
+          ? selectedCategory.title
+          : phase === "wizard"
+            ? currentStepData?.title ?? "Create Agreement"
+            : "Create Agreement"
 
-  const showColoredHeader = phase !== "wizard" || currentStep < 10
   const headerType = agreementType ?? "sale"
-
   const showIntroFooter = phase === "intro" && agreementType && selectedCategory
 
   return (
     <AppShell
       backgroundClassName="bg-white"
       header={
-        showColoredHeader ? (
-          phase === "wizard" ? (
-            <div className="border-b border-[#E2E8F0] bg-white px-4">
-              <div className="flex h-[52px] items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <h1 className="truncate text-[16px] font-extrabold text-[#0F172A]">{headerTitle}</h1>
-              </div>
-            </div>
-          ) : (
-            <AgreementFlowHeader type={headerType} title={headerTitle} onBack={handleBack} />
-          )
-        ) : undefined
+        <AgreementFlowHeader
+          type={headerType}
+          title={headerTitle}
+          onBack={handleBack}
+        />
       }
       footer={
         showIntroFooter ? (
           <AgreementIntroFooter type={headerType} onCreate={startWizard} />
         ) : undefined
       }
-      contentClassName={phase === "wizard" ? "px-4 py-3" : "p-0"}
+      contentClassName={phase === "wizard" ? "px-4 py-4" : "p-0"}
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -476,7 +588,7 @@ function CreateAgreementContent() {
           transition={{ duration: 0.2 }}
           className="w-full"
         >
-          {!isB2C && phase === "type" && !isFromDashboard() && (
+          {!isB2C && phase === "type" && !isC2CFromDashboard() && (
             <AgreementTypePicker
               onSelect={(type) => {
                 setAgreementType(type)
