@@ -53,6 +53,7 @@ export interface DashboardConfig {
 }
 
 export const DEFAULT_VERIFICATION_SERVICES: VerificationService[] = [
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#3B82F6" },
   { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
   { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
   { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },
@@ -62,6 +63,7 @@ export const DEFAULT_VERIFICATION_SERVICES: VerificationService[] = [
 ]
 
 export const FURNITURE_VERIFICATION_SERVICES: VerificationService[] = [
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#3B82F6" },
   { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
   { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
   { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },
@@ -72,6 +74,7 @@ export const FURNITURE_VERIFICATION_SERVICES: VerificationService[] = [
 export const RENTAL_VERIFICATION_SERVICES = DEFAULT_VERIFICATION_SERVICES
 
 export const SERVICE_VERIFICATION_SERVICES: VerificationService[] = [
+  { icon: "aadhaar", label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#3B82F6" },
   { icon: "pan", label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#22C55E" },
   { icon: "gstin", label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#A855F7" },
   { icon: "driving-licence", label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB" },

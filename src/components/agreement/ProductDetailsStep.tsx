@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronDown, Calendar, Check } from "lucide-react"
+import { ChevronDown, Calendar, Check, User } from "lucide-react"
 import { AgreementData } from "@/app/create-agreement/page"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,13 +37,13 @@ export function ProductDetailsStep({ data, updateData, onNext, agreementType, ca
         fields={category.fields}
         title={category.detailsTitle ?? "Item Details"}
         subtitle={category.detailsSubtitle ?? "Enter details about the item"}
-        stepLabel={agreementType === "rental" ? "Item/Property" : "Item Details"}
+        agreementType={agreementType}
         accentColor={getTypeConfig(agreementType ?? "sale").color}
       />
     )
   }
 
-  return <LegacyItemDetailsForm data={data} updateData={updateData} onNext={onNext} />
+  return <LegacyItemDetailsForm data={data} updateData={updateData} onNext={onNext} agreementType={agreementType} />
 }
 
 function ConfiguredItemDetailsForm({
@@ -53,7 +53,7 @@ function ConfiguredItemDetailsForm({
   fields,
   title,
   subtitle,
-  stepLabel,
+  agreementType,
   accentColor,
 }: {
   data: AgreementData
@@ -62,7 +62,7 @@ function ConfiguredItemDetailsForm({
   fields: TemplateField[]
   title: string
   subtitle: string
-  stepLabel: string
+  agreementType?: AgreementType | null
   accentColor: string
 }) {
   const getValue = (key: string): string =>
@@ -72,11 +72,19 @@ function ConfiguredItemDetailsForm({
     updateData({ [key]: value } as Partial<AgreementData>)
   }
 
+  const isSellerRole = data.role === "seller"
+  const otherPartyTitle =
+    agreementType === "rental"
+      ? (isSellerRole ? "Tenant / Renter" : "Owner / Landlord")
+      : agreementType === "service"
+      ? "Client / Customer"
+      : (isSellerRole ? "Buyer / Customer" : "Seller / Vendor")
+
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
-      {/* 3-Step Wizard Stepper (Node 1 Active) */}
+      {/* 2-Step Wizard Stepper (Node 1 Active) */}
       <AgreementStepper
-        steps={[stepLabel, "Parties", "Agreement"]}
+        steps={["Agreement Details", "Review"]}
         currentIndex={0}
         color={accentColor}
         className="mb-4 shrink-0"
@@ -98,6 +106,65 @@ function ConfiguredItemDetailsForm({
             onChange={(v) => setValue(field.key, v)}
           />
         ))}
+
+        {/* Other Party / Customer Details Card with Distinct Card Container */}
+        <div className="mt-6 rounded-[18px] bg-gradient-to-b from-[#F8FAFC] to-[#F1F5F9] border-2 border-[#E2E8F0] p-4.5 space-y-4 shadow-sm">
+          <div className="flex items-center gap-2.5 pb-2.5 border-b border-[#E2E8F0]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+              <User className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-[14.5px] font-extrabold text-[#0F172A] tracking-tight">
+                  {otherPartyTitle} Details
+                </h3>
+                <span className="text-[10.5px] font-bold bg-[#EFF6FF] text-[#2563EB] px-2 py-0.5 rounded-full border border-[#DBEAFE]">
+                  2nd Party
+                </span>
+              </div>
+              <p className="text-[11.5px] text-[#64748B] font-medium mt-0.5">
+                Required for agreement invitation & customer eSign
+              </p>
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-[12.5px] font-bold text-[#1E293B] uppercase tracking-wide">
+              {otherPartyTitle} Name *
+            </label>
+            <Input
+              type="text"
+              value={data.invitedPartyName}
+              onChange={(e) => updateData({ invitedPartyName: e.target.value })}
+              placeholder={`Enter ${otherPartyTitle.toLowerCase()} name`}
+              className="bg-white px-4 h-13 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border-[#CBD5E1] shadow-xs focus:bg-white"
+            />
+          </div>
+
+          {/* Mobile Number */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-[12.5px] font-bold text-[#1E293B] uppercase tracking-wide">
+              {otherPartyTitle} Mobile Number *
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-bold text-[#64748B]">
+                +91
+              </span>
+              <Input
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                value={data.invitedPartyMobile}
+                onChange={(e) =>
+                  updateData({ invitedPartyMobile: e.target.value.replace(/\D/g, "").slice(0, 10) })
+                }
+                placeholder="Enter 10-digit mobile number"
+                className="bg-white pl-14 pr-4 h-13 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border-[#CBD5E1] shadow-xs focus:bg-white"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Pinned Bottom Button */}
@@ -212,11 +279,13 @@ function FieldControl({
     ? `${field.label} *`
     : `${field.label}${field.type !== "select" ? " (Optional)" : ""}`
 
+  const placeholder = field.placeholder
+
   if (field.type === "select") {
     return (
       <CustomSelect
         label={label}
-        placeholder={field.placeholder ?? `Select ${field.label}`}
+        placeholder={placeholder ?? `Select ${field.label}`}
         value={value}
         options={field.options ?? []}
         onChange={onChange}
@@ -231,7 +300,7 @@ function FieldControl({
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           className="w-full p-4 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border border-[#CBD5E1] min-h-[96px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] shadow-xs"
         />
       </div>
@@ -267,7 +336,7 @@ function FieldControl({
         onChange={(e) =>
           onChange(field.type === "number" ? e.target.value.replace(/[^\d]/g, "") : e.target.value)
         }
-        placeholder={field.placeholder}
+        placeholder={placeholder}
         className="px-4 h-14 text-[14.5px] font-semibold text-[#0F172A] placeholder-[#94A3B8] rounded-[12px] border-[#CBD5E1] shadow-xs"
       />
     </div>
@@ -278,7 +347,8 @@ function LegacyItemDetailsForm({
   data,
   updateData,
   onNext,
-}: Pick<Props, "data" | "updateData" | "onNext">) {
+  agreementType,
+}: Pick<Props, "data" | "updateData" | "onNext" | "agreementType">) {
   const allCategories = React.useMemo(
     () => [...SALE_CATEGORIES, ...RENTAL_CATEGORIES, ...SERVICE_CATEGORIES],
     []
@@ -337,6 +407,40 @@ function LegacyItemDetailsForm({
             placeholder="Brief description..."
             className="w-full p-4 text-[14.5px] font-semibold rounded-[12px] border border-[#CBD5E1] min-h-[96px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
+        </div>
+
+        {/* Other Party Section */}
+        <div className="pt-4 border-t border-[#E2E8F0] space-y-3.5">
+          <div className="space-y-1.5 text-left">
+            <label className="text-[13.5px] font-bold text-[#041B4A]">Other Party Name *</label>
+            <Input
+              type="text"
+              value={data.invitedPartyName}
+              onChange={(e) => updateData({ invitedPartyName: e.target.value })}
+              placeholder="Enter name"
+              className="px-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-[#CBD5E1]"
+            />
+          </div>
+
+          <div className="space-y-1.5 text-left">
+            <label className="text-[13.5px] font-bold text-[#041B4A]">Other Party Mobile *</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14.5px] font-bold text-[#64748B]">
+                +91
+              </span>
+              <Input
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                value={data.invitedPartyMobile}
+                onChange={(e) =>
+                  updateData({ invitedPartyMobile: e.target.value.replace(/\D/g, "").slice(0, 10) })
+                }
+                placeholder="Enter 10-digit mobile"
+                className="pl-14 pr-4 h-14 text-[14.5px] font-semibold rounded-[12px] border-[#CBD5E1]"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

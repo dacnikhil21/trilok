@@ -217,27 +217,15 @@ function VerifyIdentityContent() {
     setError("")
 
     if (step === "aadhaar") {
-      if (!isInputValid) {
-        setError(`Please enter a valid ${serviceConfig.label} number.`)
-        return
-      }
-      if (purpose === "other" && otherPurposeText.trim().length === 0) {
-        setError("Please specify the purpose of verification.")
-        return
-      }
       advanceStep()
     } else if (step === "consent") {
-      if (!termsAccepted || !privacyAccepted) {
-        setError("You must accept the Terms & Conditions and Privacy Policy.")
-        return
-      }
       advanceStep()
     } else if (step === "payment") {
       setIsLoading(true)
       setTimeout(() => {
         setIsLoading(false)
         advanceStep()
-      }, 1200)
+      }, 1000)
     } else if (step === "success") {
       router.push(isB2C ? b2cHomePath : `/dashboard?module=${moduleType}`)
     } else {
@@ -908,6 +896,16 @@ function VerifyIdentityContent() {
     const getMockDetails = () => {
       const docVal = documentValue || "ABCDE1234F"
       switch (serviceConfig.id) {
+        case "aadhaar":
+          return [
+            { label: "Aadhaar Number", value: docVal.replace(/(\d{4})(\d{4})(\d{4})/, "XXXX XXXX $3") || "XXXX XXXX 9012" },
+            { label: "Full Name (UIDAI)", value: "RAVI KUMAR SHARMA" },
+            { label: "Date of Birth", value: "24 Aug 1994" },
+            { label: "Gender", value: "Male" },
+            { label: "Address", value: "Flat 401, Sri Sai Residency, Madhapur, Hyderabad, Telangana, 500081" },
+            { label: "Verification Status", value: "Active & UIDAI Verified" },
+            { label: "Verified On", value: timestampStr },
+          ]
         case "pan":
           return [
             { label: "PAN Number", value: docVal },
@@ -1215,16 +1213,8 @@ function VerifyIdentityContent() {
   }, [step])
 
   const isButtonDisabled = React.useMemo(() => {
-    if (step === "aadhaar") {
-      const basicValid = isInputValid
-      if (purpose === "customer") {
-        return !basicValid || !consentFile
-      }
-      return !basicValid
-    }
-    if (step === "consent") return !termsAccepted || !privacyAccepted
     return false
-  }, [step, isInputValid, purpose, consentFile, termsAccepted, privacyAccepted])
+  }, [])
 
   const renderStepContent = () => {
     switch (step) {

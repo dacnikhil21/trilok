@@ -98,6 +98,8 @@ export type AgreementData = {
   propertyType: string
   roomType: string
   address: string
+  rentFrequency: string
+  rentalDuration: string
   monthlyRent: string
   securityDeposit: string
   amenities: string
@@ -138,12 +140,10 @@ function determineInitialPhase(
   templateParam: string | null
 ): FlowPhase {
   if (moduleType === "b2c") {
-    if (dashboardParam || templateParam) return "wizard"
     return "wizard"
   }
-  if (isC2CFromDashboard() && type) {
-    if (catId) return "wizard"
-    return "category"
+  if (type && catId) {
+    return "wizard"
   }
   if (!type) return "type"
   if (!catId) return "category"
@@ -207,6 +207,8 @@ const INITIAL_FORM: AgreementData = {
   propertyType: "",
   roomType: "",
   address: "",
+  rentFrequency: "Monthly",
+  rentalDuration: "",
   monthlyRent: "",
   securityDeposit: "",
   amenities: "",

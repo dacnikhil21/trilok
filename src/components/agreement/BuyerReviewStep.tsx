@@ -16,10 +16,20 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
   const accentColor = getTypeConfig(agreementType ?? "sale").color
 
   const isSellerRole = data.role === "seller"
-  const sellerName = isSellerRole ? (data.customerName || "Ravi Kumar") : (data.invitedPartyName || "Ravi Kumar")
-  const sellerMobile = isSellerRole ? (data.customerMobile || "9876543210") : (data.invitedPartyMobile || "9876543210")
-  const buyerName = isSellerRole ? (data.invitedPartyName || "Rajesh Kumar") : (data.customerName || "Rajesh Kumar")
-  const buyerMobile = isSellerRole ? (data.invitedPartyMobile || "9123456700") : (data.customerMobile || "9123456700")
+  const creatorName = data.customerName || "Ravi Kumar"
+  const creatorMobile = data.customerMobile || "9876543210"
+  const invitedPartyName = data.invitedPartyName || "Rajesh Kumar"
+  const invitedPartyMobile = data.invitedPartyMobile || "9123456700"
+
+  const creatorRole =
+    isSellerRole
+      ? (agreementType === "rental" ? "Owner" : agreementType === "service" ? "Service Provider" : "Seller")
+      : (agreementType === "rental" ? "Tenant / Renter" : agreementType === "service" ? "Client" : "Buyer")
+
+  const invitedPartyRole =
+    !isSellerRole
+      ? (agreementType === "rental" ? "Owner" : agreementType === "service" ? "Service Provider" : "Seller")
+      : (agreementType === "rental" ? "Tenant / Renter" : agreementType === "service" ? "Client" : "Buyer")
 
   const categoryName = data.category || "Mobile Phone & Electronics"
   const itemName = data.productName || data.model || "iPhone 14 Pro"
@@ -31,10 +41,10 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-500">
-      {/* 3-Step Creation Stepper (Node 3 Active) */}
+      {/* 2-Step Creation Stepper (Node 2 Active) */}
       <AgreementStepper
-        steps={["Item Details", "Parties", "Agreement"]}
-        currentIndex={2}
+        steps={["Agreement Details", "Review"]}
+        currentIndex={1}
         color={accentColor}
         className="mb-5"
       />
@@ -54,7 +64,9 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#EFF6FF] text-[#2563EB]">
               <FileText className="h-3.5 w-3.5" />
             </div>
-            <h3 className="text-[13.5px] font-bold text-[#0F172A]">Item Details</h3>
+            <h3 className="text-[13.5px] font-bold text-[#0F172A]">
+              {agreementType === "rental" ? "Rental Details" : "Item Details"}
+            </h3>
           </div>
 
           <div className="space-y-2 text-[12.5px]">
@@ -63,7 +75,9 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
               <span className="font-bold text-[#0F172A] text-right">{categoryName}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
-              <span className="text-[#64748B] font-medium">Item Name</span>
+              <span className="text-[#64748B] font-medium">
+                {agreementType === "rental" ? "Property / Item" : "Item Name"}
+              </span>
               <span className="font-bold text-[#0F172A] text-right">{itemName}</span>
             </div>
             {brand && (
@@ -80,19 +94,35 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
             )}
             {imeiOrReg && (
               <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
-                <span className="text-[#64748B] font-medium">IMEI / Identifier</span>
+                <span className="text-[#64748B] font-medium">Identifier / Reg</span>
                 <span className="font-bold text-[#0F172A] text-right">{imeiOrReg}</span>
               </div>
             )}
+            {data.rentalDuration && (
+              <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+                <span className="text-[#64748B] font-medium">Rental Duration</span>
+                <span className="font-bold text-[#0F172A] text-right">{data.rentalDuration}</span>
+              </div>
+            )}
             <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
-              <span className="text-[#64748B] font-medium">Sale Price</span>
+              <span className="text-[#64748B] font-medium">
+                {agreementType === "rental" ? "Rent Amount" : "Sale Price"}
+              </span>
               <span className="font-bold text-[#16A34A] text-[13px] text-right">
                 ₹{Number(price).toLocaleString("en-IN") || price}
               </span>
             </div>
+            {data.securityDeposit && (
+              <div className="flex justify-between py-1 border-b border-dashed border-[#F1F5F9]">
+                <span className="text-[#64748B] font-medium">Security Deposit</span>
+                <span className="font-bold text-[#0F172A] text-right">
+                  ₹{Number(data.securityDeposit).toLocaleString("en-IN") || data.securityDeposit}
+                </span>
+              </div>
+            )}
             {description && (
               <div className="flex flex-col py-1">
-                <span className="text-[#64748B] font-medium mb-0.5">Description</span>
+                <span className="text-[#64748B] font-medium mb-0.5">Description / Terms</span>
                 <span className="text-[#0F172A] text-[12px] leading-relaxed bg-[#F8FAFC] p-2 rounded-[8px]">
                   {description}
                 </span>
@@ -101,33 +131,46 @@ export function BuyerReviewStep({ data, onNext, agreementType }: Props) {
           </div>
         </div>
 
-        {/* Parties Card */}
+        {/* Parties Card (Creator in Priority 1) */}
         <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#F1F5F9]">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F0FDF4] text-[#16A34A]">
               <Users className="h-3.5 w-3.5" />
             </div>
-            <h3 className="text-[13.5px] font-bold text-[#0F172A]">Parties</h3>
+            <h3 className="text-[13.5px] font-bold text-[#0F172A]">Parties Information</h3>
           </div>
 
           <div className="space-y-2.5 text-[12.5px]">
-            <div className="flex justify-between items-center py-1 border-b border-dashed border-[#F1F5F9]">
+            {/* 1. CREATOR (YOU) - Priority 1 */}
+            <div className="flex justify-between items-center p-2.5 rounded-[12px] bg-[#EFF6FF]/70 border border-[#DBEAFE]">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block">
-                  Seller
-                </span>
-                <span className="font-bold text-[#0F172A]">{sellerName}</span>
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-[#2563EB]">
+                    Creator (You)
+                  </span>
+                  <span className="text-[10px] font-bold bg-white text-[#1E40AF] px-1.5 py-0.5 rounded border border-[#BFDBFE]">
+                    {creatorRole}
+                  </span>
+                </div>
+                <span className="font-bold text-[#0F172A] text-[13.5px]">{creatorName}</span>
               </div>
-              <span className="text-[#64748B] font-semibold text-right">{sellerMobile}</span>
+              <span className="text-[#2563EB] font-bold text-right text-[13px]">{creatorMobile}</span>
             </div>
-            <div className="flex justify-between items-center py-1">
+
+            {/* 2. OTHER PARTY */}
+            <div className="flex justify-between items-center p-2.5 rounded-[12px] bg-[#F8FAFC] border border-[#E2E8F0]">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] block">
-                  Buyer
-                </span>
-                <span className="font-bold text-[#0F172A]">{buyerName}</span>
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-[#64748B]">
+                    2nd Party
+                  </span>
+                  <span className="text-[10px] font-bold bg-white text-[#475569] px-1.5 py-0.5 rounded border border-[#CBD5E1]">
+                    {invitedPartyRole}
+                  </span>
+                </div>
+                <span className="font-bold text-[#0F172A] text-[13.5px]">{invitedPartyName}</span>
               </div>
-              <span className="text-[#64748B] font-semibold text-right">{buyerMobile}</span>
+              <span className="text-[#64748B] font-semibold text-right text-[13px]">{invitedPartyMobile}</span>
             </div>
           </div>
         </div>

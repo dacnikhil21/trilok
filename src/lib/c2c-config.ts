@@ -9,7 +9,7 @@ export interface AgreementTypeConfig {
   buttonClass: string
 }
 
-export type TemplateFieldType = "text" | "number" | "select" | "textarea" | "date"
+export type TemplateFieldType = "text" | "number" | "select" | "textarea" | "date" | "pills"
 
 export interface TemplateField {
   key: string
@@ -265,7 +265,7 @@ export const RENTAL_CATEGORIES: AgreementCategory[] = [
     title: "PG Rental",
     description: "Paying Guest and shared accommodation rental agreements.",
     introTitle: "Create Agreement for PG Rental",
-    introItems: ["PG / Hostel Rooms", "Shared Accommodation", "Monthly Rent Terms", "Security Deposit"],
+    introItems: ["PG / Hostel Rooms", "Shared Accommodation", "Rent Terms", "Security Deposit"],
     icon: "pg",
     detailsTitle: "PG Details",
     detailsSubtitle: "Enter details about the paying guest accommodation",
@@ -288,7 +288,15 @@ export const RENTAL_CATEGORIES: AgreementCategory[] = [
         options: ["Single Sharing (Private Room)", "Double Sharing (2 Beds)", "Triple Sharing (3 Beds)", "Four Sharing", "Dormitory"],
       },
       { key: "address", label: "Complete Property Address", type: "textarea", required: true, placeholder: "Enter complete address with landmark & pincode" },
-      { key: "monthlyRent", label: "Monthly Rent (₹)", type: "number", required: true, placeholder: "Enter monthly rent amount" },
+      { key: "monthlyRent", label: "Rent Amount (₹)", type: "number", required: true, placeholder: "Enter rent amount" },
+      {
+        key: "rentalDuration",
+        label: "Rental Duration",
+        type: "select",
+        required: true,
+        placeholder: "Select Duration (e.g. 1 Month, 11 Months)",
+        options: ["1 Day", "3 Days", "1 Week", "15 Days", "1 Month", "3 Months", "6 Months", "11 Months", "1 Year", "Flexible / Custom Stay"],
+      },
       { key: "securityDeposit", label: "Security Deposit (₹)", type: "number", placeholder: "Enter security deposit" },
       { key: "amenities", label: "Amenities Included", type: "textarea", placeholder: "WiFi, 3 Times Food, AC, Geyser, Washing Machine, Daily Cleaning" },
       { key: "rulesRegulations", label: "Rules & Notice Period", type: "textarea", placeholder: "Gate closing time: 10:30 PM, 30 days notice period before vacating..." },
@@ -323,7 +331,15 @@ export const RENTAL_CATEGORIES: AgreementCategory[] = [
         placeholder: "Select Fuel Type",
         options: ["Petrol", "Diesel", "Electric (EV)", "CNG"],
       },
-      { key: "dailyRent", label: "Daily / Monthly Rent (₹)", type: "number", required: true, placeholder: "Enter rent amount" },
+      { key: "dailyRent", label: "Rent Amount (₹)", type: "number", required: true, placeholder: "Enter rent amount" },
+      {
+        key: "rentalDuration",
+        label: "Rental Duration",
+        type: "select",
+        required: true,
+        placeholder: "Select Duration (e.g. 3 Days, 1 Month)",
+        options: ["1 Day", "3 Days", "1 Week", "15 Days", "1 Month", "3 Months", "6 Months", "Custom Duration"],
+      },
       { key: "securityDeposit", label: "Security Deposit (₹)", type: "number", placeholder: "Enter security deposit" },
       { key: "extraCharges", label: "Extra KM & Late Charges", type: "text", placeholder: "₹10/km after 150km limit, ₹200/hr late return fee" },
       { key: "condition", label: "Condition of Vehicle", type: "select", required: true, placeholder: "Select Condition", options: CONDITION_OPTIONS },
@@ -353,6 +369,14 @@ export const RENTAL_CATEGORIES: AgreementCategory[] = [
       { key: "condition", label: "Item Condition", type: "select", required: true, placeholder: "Select Condition", options: CONDITION_OPTIONS },
       { key: "accessoriesIncluded", label: "Accessories Included", type: "text", placeholder: "Original charger, carry case, HDMI cable..." },
       { key: "dailyRent", label: "Rent Amount (₹)", type: "number", required: true, placeholder: "Enter rent amount" },
+      {
+        key: "rentalDuration",
+        label: "Rental Duration",
+        type: "select",
+        required: true,
+        placeholder: "Select Duration (e.g. 1 Week, 1 Month)",
+        options: ["1 Day", "3 Days", "1 Week", "15 Days", "1 Month", "3 Months", "6 Months", "Custom Duration"],
+      },
       { key: "securityDeposit", label: "Security Deposit (₹)", type: "number", placeholder: "Enter refundable deposit" },
       { key: "description", label: "Rental Terms", type: "textarea", placeholder: "Any physical damage or loss of accessories will be deducted from deposit..." },
     ],
@@ -377,16 +401,16 @@ export const RENTAL_CATEGORIES: AgreementCategory[] = [
       },
       { key: "serviceName", label: "Service / Item Name", type: "text", required: true, placeholder: "Example: Event Hall / High-End Lighting" },
       {
-        key: "durationType",
-        label: "Rental Duration Type",
+        key: "rentalDuration",
+        label: "Rental Duration",
         type: "select",
         required: true,
-        placeholder: "Select Duration Type",
-        options: ["Hourly", "Daily", "Weekly", "Monthly"],
+        placeholder: "Select Duration (e.g. 1 Day, 1 Month)",
+        options: ["1 Day", "3 Days", "1 Week", "15 Days", "1 Month", "3 Months", "6 Months", "Custom Duration"],
       },
       { key: "startDate", label: "Start Date", type: "date", required: true },
       { key: "endDate", label: "End Date", type: "date", required: true },
-      { key: "totalCharges", label: "Total Rental Charges (₹)", type: "number", required: true, placeholder: "Enter total charges" },
+      { key: "totalCharges", label: "Rent Amount (₹)", type: "number", required: true, placeholder: "Enter rent amount" },
       { key: "securityDeposit", label: "Security Deposit (₹)", type: "number", placeholder: "Enter security deposit" },
       { key: "specialInstructions", label: "Special Instructions", type: "textarea", placeholder: "Setup guidelines, delivery terms, cancellation policy..." },
     ],
@@ -518,6 +542,7 @@ export function findCategory(type: AgreementType, categoryId: string): Agreement
 }
 
 export const C2C_VERIFICATION_SERVICES = [
+  { label: "Aadhaar Verification", shortLabel: "Aadhaar", description: "Verify Aadhaar", color: "#3B82F6", icon: "aadhaar" as const },
   { label: "PAN Verification", shortLabel: "PAN", description: "Verify PAN", color: "#10B981", icon: "pan" as const },
   { label: "GSTIN Verification", shortLabel: "GSTIN", description: "Verify GSTIN", color: "#9333EA", icon: "gstin" as const },
   { label: "Driving Licence Verification", shortLabel: "Driving Licence", description: "Verify DL", color: "#2563EB", icon: "driving-licence" as const },

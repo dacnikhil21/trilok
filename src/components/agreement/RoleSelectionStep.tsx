@@ -27,8 +27,8 @@ const ROLE_COPY: Record<
     iconReflectsSelection: false,
   },
   rental: {
-    seller: { title: "I am the Owner (Seller / Lessor)", subtitle: "I want to rent out my property or item", icon: User, iconColor: "#10B981" },
-    buyer: { title: "I am the Tenant / Renter (Buyer / Lessee)", subtitle: "I want to rent a property or item", icon: User, iconColor: "#10B981" },
+    seller: { title: "I am the Owner", subtitle: "I want to rent out my property or item", icon: User, iconColor: "#10B981" },
+    buyer: { title: "I am the Tenant / Renter", subtitle: "I want to rent a property or item", icon: User, iconColor: "#10B981" },
     accentColor: "#10B981",
     iconReflectsSelection: true,
   },
@@ -101,7 +101,8 @@ export function RoleSelectionStep({ data, updateData, onNext, agreementType }: P
             <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
           </div>
           <p className="text-[11px] font-medium text-[#1A8A3C] leading-snug">
-            You can create agreements<br/>as Seller or Buyer on this device.
+            You can create agreements<br/>
+            {agreementType === "rental" ? "as Owner or Tenant on this device." : "as Seller or Buyer on this device."}
           </p>
         </div>
       </div>
